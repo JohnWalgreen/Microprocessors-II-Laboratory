@@ -19,3 +19,7 @@ Laboratory 1 Information
 The LED and PWM function together in <<main.c>>.
 
 <<main.c>> must be built inside project template provided (to be found in <<provided materials>> folder)
+
+Derek and Hans tried to get hardware working.  In the end, we emailed TA and Derek got the entire chip wired over 23-24/9 weekend.  Hans coded light sensor and led output, and he worked with Derek to fix register initialisations on 25/9 to get LED code working.
+
+Meanwhile, Kyle coded PWM.
