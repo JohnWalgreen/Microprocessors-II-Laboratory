@@ -1,82 +1,6 @@
 #include "mcc_generated_files/mcc.h" //default library 
 
 
-
-// ++++++++++++ Helpful Notes ++++++++++++++++
-
-
-/*
- include or set any library or definition you think you will need
- */
-#include <htc.h>
-// ====================  prototype functions: ====================
-
-/*  example: void Timer2_Init(void)  {}     
- *  Configure Timer 2 and start it
-    
- USE Timer 2
- * 
- * ---- Set the Registers below:-----------
- * 
- * 1. Set the Basic Configuration Register for Timer 2 
- * 2. Set the Clock Source in relation with system Oscillator frequency 
- * 3. T2PSYNC Not Synchronized; T2MODE Software control; T2CKPOL Rising Edge; T2CKSYNC Not Synchronized; Timer Mode
- * 4. T2RSEL T2CKIPPS pin; Reset Source
- * 5. Set PR2 255; 
- * 6. Set TMR2  Prescale Value to 0 
- * 7. Clearing IF flag.
- * 8. Start Timer2
- * 
- * ----------------------
- */  
-
-
-
-/*  example: void PWM_Init(void)  {}  
- *  Configure CCP1 module in PWM mode (PWM channel = RC3 by default, Timer selection)
-  Registers:
- * 
- * --- Set the Registers below: ---
- * 
- * 1. Set up CCP1 module register in PWM mode and bits alignment
- * 2. Set RH to 0; 
- * 3. Set RL to 0; 
- * 4. Selecting Timer 2 - for PWM in CCP1 module
- * 
- * ---------------
-  */ 
-
-
-
-/*  example: void ADC_Init(void)  {}   
- *  Configure ADC module  
- ----- Set the Registers below::
- * 1. Set ADC CONTROL REGISTER 1 to 0 
- * 2. Set ADC CONTROL REGISTER 2 to 0 
- * 3. Set ADC THRESHOLD REGISTER to 0
- * 4. Disable ADC auto conversion trigger control register
- * 5. Disable ADACT  
- * 6. Clear ADAOV ACC or ADERR not Overflowed  related register
- * 7. Disable ADC Capacitors
- * 8. Set ADC Precharge time control to 0 
- * 9. Set ADC Clock 
- * 10 Set ADC positive and negative references
- * 11. ADC channel - Analog Input
- * 12. Set ADC result alignment, Enable ADC module, Clock Selection Bit, Disable ADC Continuous Operation, Keep ADC inactive
- 
-  */ 
-
-
-
-/*
- PWM_signal_out() prototype function 
- *
- *- you set 10bits value for the duty cycle being careful with the MSB/LSB alignment 
- *- Set the appropriate Registers in the right sequence
- */
-
-
-
 /*
  ADC_conversion_results() prototype function
  * 
@@ -87,7 +11,7 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #define LED_THRESHOLD 12
-#define LED_ROLLOVER 1000
+#define LED_ROLLOVER 1500
 
 /*
  * Read Me -- Hans
@@ -119,10 +43,55 @@ void main(void)
     
 	TRISAbits.TRISA0 = 0;			// TRISC bit0 is output
 	TRISAbits.TRISA1 = 1;			// PORTC bit1 is input
-	ANSELAbits.ANSA1 = 1;				// bit 1 is analog input
+	//ANSELAbits.ANSA1 = 1;				// bit 1 is analog input
     
-    ADCON0bits.ADON = 1;			// adc enabled
-	ADCON0bits.ADFM = 0;			// left justified
+    ADCON1 = 1;
+    ADCON2 = 0;
+    ADCON3 = 0;                     // set adc threshold reg to 0
+    ADACT = 0;                      // disable adc auto conversion trigger (is this how????????????)
+                                    // 5 already disabled, genius
+    ADAOV = 0;                      // I hope this works?
+    ADCAP = 0;                      // 7
+    ADPRE = 0;                      // 8
+    
+    //ADCCS = 1;                      // 9 help!
+    //ADCON2bits.ACQT     = 6;// 16 TAD
+    //ADCON2bits.ADCS     =0b101;// use Fosc/16 for clock source
+    
+    // 10 references?
+    //ADCON1bits.VCFG     =0b00;// set v+ reference to Vdd
+    //ADCON1bits.VNCFG    =0b0;  // set v- reference to GND
+    //ADCON1bits.CHSN     =0b000;// set negative input to GND
+   // ADCON2bits.ADFM     =0b1;  // right justify the output
+    
+    ANSELAbits.ANSA1 = 1;           // 11
+    
+    // 12
+    ADCON0bits.ADFM = 0;			// left justified alignment?
+    // maybe ^ = ADCON0bits.ADFRM0 = 0???
+    ADCON0bits.ADON = 1;                // adc enable
+    ADCON0bits.ADCS = 0;                //  Clock supplied by FOSC, divided according to ADCLK register? (0) vs. Clock supplied from FRC dedicated oscillator
+    ADCON0bits.ADCONT = 0;              // disable continuous operation
+    
+    /*ADREF Register
+     
+     Unimplemented: Read as ?0?
+bit 4 ADNREF: ADC Negative Voltage Reference Selection bit
+1 = VREF- is connected to VREF- pin
+0 = VREF- is connected to AVSS
+bit 3-2 Unimplemented: Read as ?0?
+bit 1-0 ADPREF: ADC Positive Voltage Reference Selection bits
+11 = VREF+ is connected to FVR_buffer 1
+10 = VREF+ is connected to VREF+ pin
+01 = Reserved
+00 = VREF+ is connected to VDD
+     
+     */
+    
+    //ADCON0bits.ADON = 1;			// adc enabled
+	//ADCON0bits.ADFM = 0;			// left justified
+    
+    
     
     /*This is pprobably gahbage
     ADCON1bits.VCFG     =0b00;// set v+ reference to Vdd
@@ -140,11 +109,36 @@ void main(void)
 	//ADCON0 = ADCON0 | 00011100b; //(CHS2,CHS1,CHS0)
 	//ADCON0bits.CHS1 = 0;
 	//ADCON0bits.CHS0 = 1;
-
+    
+    LATAbits.LATA0 = 1;
+    __delay_ms(2000);
+    LATAbits.LATA0 = 0;
+    
+    
+    ADCON0bits.GO = 1;
+    while (ADCON0bits.GO != 0) {continue;}
+    
+    led_counter = ADRESH * 100;
+    while (led_counter != 0) {
+        LATAbits.LATA0 = 1;
+        __delay_ms(200);
+        LATAbits.LATA0 = 0;
+        __delay_ms(500);
+        led_counter--;
+    }
+    
+    LATAbits.LATA0 = 1;
+    __delay_ms(2000);
+    LATAbits.LATA0 = 0;
+    
+    while (1) {continue;}
+    
+    return;
+/*
     while (1) // keep your application in a loop
     {
         
-        /*START LED/LIGHT SENSOR PART*/
+        //START LED/LIGHT SENSOR PART
         if (led_counter < 0) {
             // adc conversion is running - check if done
             if (ADCON0bits.GO == 0) {
@@ -167,16 +161,12 @@ void main(void)
             // neither so just update counter
             ++led_counter;
         }
-        /*END LED/LIGHT SENSOR PART*/
+        //END LED/LIGHT SENSOR PART
         
         
         
         
     }
     
-    
+    */
 }
-
-/**
- End of File
-*/
