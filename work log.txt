@@ -16,3 +16,4 @@ Update: It is now 2157.  We have discovered that the microcontroller has stopped
 27/9/2017
 0950 - 1102: I edited the counter code to get a constant frequency with Derek.  The rotator moved left, but not right.  Signal was okay though.
 1215: Kyle walked in to help Derek.  Although his code did not work, he fixed the duty cycles to make my work in jjust five minutes.  The duty cycles make no sense, but hey, they work.  And <<if it works, ship it!>>  We I learned via text that it worked, I stopped by to take a look.  Then, because we were technically done, I left and went to eat Arroz con Pollo.
+1330 - ?: Walked in and starting cleaning my code that Kyle edited.  I added really descriptive comments, fixed indentation, commented oout irrelevant code that could be discarded, and eventually deleted irrelevant code.  It works. :-)
