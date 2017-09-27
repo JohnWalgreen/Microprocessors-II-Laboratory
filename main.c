@@ -2,8 +2,8 @@
 #include <htc.h>
 
 #define _XTAL_FREQ 500000            //500khz speed for delay in microseconds
-#define LED_THRESHOLD 125
-#define LED_ROLLOVER 1
+#define LED_THRESHOLD 100
+#define LED_ROLLOVER 1000
 #define PWM_ROLLOVER 10000
 
 #define LEFT 10
@@ -234,6 +234,57 @@ int duty_counter;
 
 direction = LEFT;
 duty_counter = pwm_counter = 0;
+
+/*START TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+
+direction = RIGHT;
+while (1) {
+    if (pwm_counter >= PWM_ROLLOVER) {
+		// change direction
+		switch (direction) {
+		case LEFT:
+			direction = RIGHT;
+			break;
+		default:
+			direction = LEFT;
+		}
+
+		pwm_counter = 0;
+	} else {
+
+		/*switch (direction) {
+			case LEFT:
+				if (TRISAbits.TRISA3 == 1 && duty_counter == 1) {
+					TRISAbits.TRISA3 = 0;
+					duty_counter = 0;
+				} else {
+				}
+		}*/
+
+
+		if (LATAbits.LATA3 == 0b1) {	// if off
+            // keep LED on for direction duty cycles
+			if (duty_counter >= direction) {
+				LATAbits.LATA3 = 0b0;
+			}
+            
+            duty_counter++;
+            
+		} else {	// if off
+            // keep LED off for remainder of cycles (everything out of 100)
+			if (duty_counter >= 100) {
+				LATAbits.LATA3 = 0b1;
+				duty_counter = 0;
+			} else {
+				duty_counter++;
+			}
+		}
+        pwm_counter++;
+	}
+}
+
+/*END TEST!!!!!!!!!!!!!!!!!!!*/
+
 
 while (1) {
 
