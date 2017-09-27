@@ -1,14 +1,14 @@
 #include "mcc_generated_files/mcc.h" //default library
 #include <htc.h>
 
-#define _XTAL_FREQ 500000            //500khz speed for delay in microseconds
+#define _XTAL_FREQ 500000           //500khz speed for delay in microseconds
 #define LED_THRESHOLD 100
 #define LED_ROLLOVER 1000
-#define PWM_ROLLOVER 10000
+#define PWM_ROLLOVER 11000
 
-#define LEFT 10
-#define CENTER 15
-#define RIGHT 20
+#define LEFT 0                      // Adjust the duty cycles for the PWM LEFT module
+#define CENTER 7                    // Adjust the duty cycles for the PWM CENTER module
+#define RIGHT 15                    // Adjust the duty cycles for the PWM RIGHT module
 
 
     
@@ -19,7 +19,9 @@
  include or set any library or definition you think you will need
  */
 
-// ====================  prototype functions: ====================
+// ====================  prototype functions: ====================  //
+
+/* =========================== TIMER PROTOTYPES ===============================*/
 
 /*  example: void Timer2_Init(void)  {}     
  *  Configure Timer 2 and start it
@@ -39,6 +41,8 @@
  * 
  * ----------------------
  */
+
+/* CURRENTLY UNUSED TIMER MODULE
  void Timer2_Init(void)
 {
     //RC2PPS = 0x09;
@@ -54,8 +58,9 @@
     T2CONbits.TMR2ON = 1;             // Turn Timer 2 on
     
 }
+*/
 
-
+/*================================== PWM INITIATE =======================================*/
 
 /*  example: void PWM_Init(void)  {}  
  *  Configure CCP1 module in PWM mode (PWM channel = RC3 by default, Timer selection)
@@ -70,21 +75,26 @@
  * 
  * ---------------
   */
-  void PWM_Init(void)
+ 
+/* CURRENTLY UNUSED PWM MODULE 
+void PWM_Init(void)
 {
     CCP1PPS = 0;
     CCP1CON = 0b10001111;           // Set CCP1 to PWM output
     PR2 =  255; //0b10011011;               // Set PR2 to ~155
-
     CCPR1H = 0;                     // CCPR register set to 0.
     CCPR1L = 0;
     CCPTMRS0bits.C1TSEL = 0b01;     // Select timer 2 for PWM CCP1 Module
     CCP1CONbits.EN = 1;
     TRISCbits.TRISC2 = 0;
-}
+}*/
 
-
-/*  example: void ADC_Init(void)  {}   
+/*======================== ADC INITIATE MODULE ==================================*/
+/* void ADC_Init(void) module
+ * Purpose: Initializes the ADC registers to be prepared for an analog to digital conversion.
+ * Inputs: None 
+ * Outputs: Changes the registers listed below.
+ *    
  *  Configure ADC module  
  ----- Set the Registers below::
  * 1. Set ADC CONTROL REGISTER 1 to 0 
@@ -98,8 +108,8 @@
  * 9. Set ADC Clock 
  * 10 Set ADC positive and negative references
  * 11. ADC channel - Analog Input
- * 12. Set ADC result alignment, Enable ADC module, Clock Selection Bit, Disable ADC Continuous Operation, Keep ADC inactive
- 
+ * 12. Set ADC result alignment, Enable ADC module, Clock Selection Bit, Disable ADC Continuous Operation, Keep ADC inactive.
+ * 
   */ 
   
   void ADC_Init(void) {
@@ -129,21 +139,21 @@
     //ADCON0bits.VCFG = 0;
     ADREFbits.ADNREF = 0;
     ADREFbits.ADPREF0 = 0;
-    ADREFbits.ADPREF1 = 0;     //V references
-
+    ADREFbits.ADPREF1 = 0;          //V references
+    
     ADSTATbits.ADSTAT0 = 1;
-    ADSTATbits.ADSTAT1 = 1;    //ADC conversion module
+    ADSTATbits.ADSTAT1 = 1;         //ADC conversion module
     ADSTATbits.ADSTAT2 = 0;
 
     ADPCHbits.ADPCH0 = 1;
-    ADPCHbits.ADPCH1 = 0;       //ADC positive channel select
+    ADPCHbits.ADPCH1 = 0;           //ADC positive channel select
     ADPCHbits.ADPCH2 = 0;
     ADPCHbits.ADPCH3 = 0;
     ADPCHbits.ADPCH4 = 0;
     ADPCHbits.ADPCH5 = 0;
 }
 
-
+/* ============================= PWM OUTPUT MODULES ============================*/
 
 /*
  PWM_signal_out() prototype function 
@@ -152,14 +162,7 @@
  *- Set the appropriate Registers in the right sequence
  */
 
-/* PWN_signal_out_X()
- Will write the PWM signal to determine either the left or the right directions,
- based on the duty cycle instructed by the CCPR1L and CCP1CON registers.
- To use: Call PWM_signal_out_LEFT() to move the servo to the left by changing the duty cycle to 10%,
- Call PWN_signal_out_RIGHT() to move the servo to the right by changing the duty cycle to 10%.
- A duty cycle of ~15% would call for a middle-aligned servo.
- *
- */
+  
 void PWM_signal_out_LEFT() // 10% duty cycle, set CCPR1L and CCP1CON registers.
 {
     CCPR1L = 0b00001111;
@@ -173,17 +176,7 @@ void PWM_signal_out_RIGHT() // 20% duty cycle, set CCPR1L and CCP1CON registers.
     CCP1CON = 0b00001100;
 }
 
-/*
- ADC_conversion_results() prototype function
- * 
- * - set your ADC channel , activate the ADC module , and get the ADC result to a value , then deactivate again the ADC module
- * - Set the appropriate Registers in the right sequence
- */
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
+/* ========================== MAIN PROGRAM CODING ==============================*/
 
 /*
 Develop your Application logic below
@@ -202,13 +195,15 @@ void main(void)
 {
     // Initialize PIC device
     SYSTEM_Initialize();
-    ADC_Init();
-    //Timer2_Init();
-    //PWM_Init();
-    //OSCCON1 = 0x38;                   // 500khz clock speed
     OSCCON1 = 0xFF;
     
+    // Initialize the required modules
+    ADC_Init();
     
+    // Timer2_Init();                       // UNUSED TIMER MODULE, SAVED FOR POTENTIAL USE LATER
+    // PWM_Init();                          // UNUSED PWM MODULE, SAVED FOR POTENTIAL USE LATER
+    
+    // Initialize the required variables for the function of the circuit.
     int led_counter;
     long pwm_counter;
     int direction;
@@ -217,14 +212,12 @@ void main(void)
     pwm_counter = 0;
     direction = 0;
 
-    // Initialize the required modules
 
-    // set up conversion parameters
+    // Set up the required pins for the function, inputs and outputs.
 
 	TRISAbits.TRISA0 = 0;			// TRISC bit0 is output
 	TRISAbits.TRISA1 = 1;			// PORTC bit1 is input
-	ANSELAbits.ANSA1 = 1;				// bit 1 is analog input
-    
+	ANSELAbits.ANSA1 = 1;			// bit 1 is analog input
     TRISAbits.TRISA3 = 0;
     
 
@@ -238,8 +231,13 @@ duty_counter = pwm_counter = 0;
 /*START TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 
 direction = RIGHT;
+    
+
+/*END TEST!!!!!!!!!!!!!!!!!!!*/
+
+
 while (1) {
-    if (pwm_counter >= PWM_ROLLOVER) {
+if (pwm_counter >= PWM_ROLLOVER) {
 		// change direction
 		switch (direction) {
 		case LEFT:
@@ -281,13 +279,31 @@ while (1) {
 		}
         pwm_counter++;
 	}
+        /*START LIGHT SENSOR AND LED PART*/
+        if (led_counter < 0) {
+            // adc conversion is running - check if done
+            if (ADCON0bits.GO == 0) {
+                // conversion = done
+
+                // update led
+                if (ADRESH < LED_THRESHOLD) {
+                    LATAbits.LATA0 = 0;
+                } else {
+                    LATAbits.LATA0 = 1;
+                }
+
+                led_counter = 0;        // start counter over again
+            }   // else, just keep checking every iteration
+        } else if (led_counter >= LED_ROLLOVER) {
+            // it is time to start an adc conversion
+            ADCON0bits.GO = 1;   // start conversion
+            led_counter = -1;   // indicates that conversion is running
+        } else {
+            // neither so just update counter
+            ++led_counter;
+        }
+        /*END LIGHT SENSOR AND LED PART*/
 }
-
-/*END TEST!!!!!!!!!!!!!!!!!!!*/
-
-
-while (1) {
-
 	/*
 	READ ME
 	
@@ -342,48 +358,7 @@ while (1) {
 		}
         pwm_counter++;
 	}
-    
-    if (led_counter < 0) {
-            // adc conversion is running - check if done
-            if (ADCON0bits.GO == 0) {
-                // conversion = done
 
-                // update led
-                if (ADRESH < LED_THRESHOLD) {
-                    LATAbits.LATA0 = 0;
-                } else {
-                    LATAbits.LATA0 = 1;
-                }
-
-                led_counter = 0;        // start counter over again
-            }   // else, just keep checking every iteration
-        } else if (led_counter >= LED_ROLLOVER) {
-            // it is time to start an adc conversion
-            ADCON0bits.GO = 1;   // start conversion
-            led_counter = -1;   // indicates that conversion is running
-        } else {
-            // neither so just update counter
-            ++led_counter;
-        }
-}
-
-    
-    while (1) // keep your application in a loop
-    {
-        PWM_signal_out_LEFT();
-        /*START PWM SECTION*/
-        /* if (pwm_counter >= PWM_ROLLOVER) {
-            direction = !direction;
-            if (direction == 0) {
-                PWM_signal_out_LEFT();
-            } else {
-                PWM_signal_out_RIGHT();
-            }
-            pwm_counter = 0;
-        } else {
-            pwm_counter++;
-        } */
-        /*END PWM SECTION*/ 
         
         /*START LIGHT SENSOR AND LED PART*/
         if (led_counter < 0) {
@@ -410,7 +385,7 @@ while (1) {
         }
         /*END LIGHT SENSOR AND LED PART*/
 
-    }
+    
 }
 
 /**
