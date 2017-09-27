@@ -3,8 +3,13 @@
 
 #define _XTAL_FREQ 500000            //500khz speed for delay in microseconds
 #define LED_THRESHOLD 125
-#define LED_ROLLOVER 1500
-#define PWM_ROLLOVER 1500
+#define LED_ROLLOVER 1
+#define PWM_ROLLOVER 10000
+
+#define LEFT 10
+#define CENTER 15
+#define RIGHT 20
+
 
     
 // ++++++++++++ Helpful Notes ++++++++++++++++
@@ -34,47 +39,20 @@
  * 
  * ----------------------
  */
- 
- void me1() {
- 	// p. 286 setup??????
- 	// p.287 pwmxcon
- 	
- 	//1 ?
- 	T2CLKCON.CS = 0b0100;//2
- 	
- 	//3
- 	T2HLT.PSYNC = 0; // t2psync not snchronized
- 	T2HLT.MODE = 0b00000; // t2mode software control (period pulse, software gate, p.442 and p.424)
- 	T2HLT.CKPOL = 0;
- 	T2HLT.CKSYNC = 0;
- 	// timer mode?
- 	
- 	// 4
- 	T2RST.RSEL = 0b00001;   // p.443 (ccp1?)
- 	//T2CON.CKPS = T2CKIPPS pin?
- 	// reset source? i think done with rsel
- 	
- 	// 5
- 	PR2 = 255; // maybe?
- 	
- 	// 6 ?
- 	
- 	/// 7
- 	PIR1bitsTMR2IF = 0;
- 	PIR4.TRM2IF = 0;			//?
- 	
- 	// 8
- 	
- 	
- }
  void Timer2_Init(void)
 {
-
+    //RC2PPS = 0x09;
+    T2HLTbits.PSYNC = 0b0;            // PSYNC Not Synchronized
+    T2HLTbits.MODE = 0b00000;             // T2MODE Software Controlled
+    T2HLTbits.CKPOL = 0b0;            // T2CKPOL Rising Edge
+    T2HLTbits.CKSYNC = 0b0;           // T2CKSYNC Not Synchronized
+    T2RSTbits.RSEL = 0b10001;       // See page 443
     PR2 = 255;                      // Preset PR2. Changing the value of PR2 changes the period and the cycle.
-    T2CONbits.T2CKPS = 16;          // TMR2 Prescale = 16;
-    PIR4bits.TMR2IF = 0x00;         // Clear "IF" flag
-    T2CON = 0b00000111;             // Activate T2CON.
-    T2CONbits.T2ON = 1;             // Turn Timer 2 on
+    T2CONbits.T2CKPS = 0b0000;      // TMR2 Prescale = 16;
+    T2CLKCONbits.T2CS = 0b0001;
+    PIR4bits.TMR2IF = 0b0;         // Clear "IF" flag
+    T2CONbits.TMR2ON = 1;             // Turn Timer 2 on
+    
 }
 
 
@@ -94,18 +72,20 @@
   */
   void PWM_Init(void)
 {
+    CCP1PPS = 0;
+    CCP1CON = 0b10001111;           // Set CCP1 to PWM output
+    PR2 =  255; //0b10011011;               // Set PR2 to ~155
 
-    PR2 = 0b10011011;               // Set PR2 to ~155
-    CCP1CON = 0b00111100;           // Set CCP1 to PWM output
     CCPR1H = 0;                     // CCPR register set to 0.
     CCPR1L = 0;
-    CCPTMRS0bits.C1TSEL = 0b01;      // Select timer 2 for PWM CCP1 Module
+    CCPTMRS0bits.C1TSEL = 0b01;     // Select timer 2 for PWM CCP1 Module
+    CCP1CONbits.EN = 1;
+    TRISCbits.TRISC2 = 0;
 }
 
 
 /*  example: void ADC_Init(void)  {}   
  *  Configure ADC module  
-
  ----- Set the Registers below::
  * 1. Set ADC CONTROL REGISTER 1 to 0 
  * 2. Set ADC CONTROL REGISTER 2 to 0 
@@ -175,7 +155,6 @@
 /* PWN_signal_out_X()
  Will write the PWM signal to determine either the left or the right directions,
  based on the duty cycle instructed by the CCPR1L and CCP1CON registers.
-
  To use: Call PWM_signal_out_LEFT() to move the servo to the left by changing the duty cycle to 10%,
  Call PWN_signal_out_RIGHT() to move the servo to the right by changing the duty cycle to 10%.
  A duty cycle of ~15% would call for a middle-aligned servo.
@@ -213,12 +192,10 @@ Develop your Application logic below
 /*
  * Read Me -- Hans
  * Light-sensor/LED controller
-
  * <<led_counter>> holds an integer.  Every infinite loop iteration, led_counter will increment.
  * Once it is equal to LED_ROLLOVER (defined above), led_counter will be set to -1 and the adc conversion will begin.
  * While it is -1, check to see if conversion is done.  If so, set led_counter back to 0 and allow it to increment again, and update the led
  * This method, although complex, saves interrupts for more important things, and it saves clock cycles.
-
  */
 
 void main(void)
@@ -226,12 +203,13 @@ void main(void)
     // Initialize PIC device
     SYSTEM_Initialize();
     ADC_Init();
-    PWM_Init();
+    //Timer2_Init();
+    //PWM_Init();
+    //OSCCON1 = 0x38;                   // 500khz clock speed
+    OSCCON1 = 0xFF;
     
-    OSCCON1 = 0x38;            // 500khz clock speed
-    //__CONFIG(FOSC_INTOSC);          // Clock source is the internal oscillator.
     
-	int led_counter;
+    int led_counter;
     long pwm_counter;
     int direction;
     
@@ -246,13 +224,108 @@ void main(void)
 	TRISAbits.TRISA0 = 0;			// TRISC bit0 is output
 	TRISAbits.TRISA1 = 1;			// PORTC bit1 is input
 	ANSELAbits.ANSA1 = 1;				// bit 1 is analog input
-    // TRISCAbits.TRISCA[something] = 0;   // output    HOW???????????????
+    
+    TRISAbits.TRISA3 = 0;
+    
 
+
+int direction;
+int duty_counter;
+
+direction = LEFT;
+duty_counter = pwm_counter = 0;
+
+while (1) {
+
+	/*
+	READ ME
+	
+	If moving right, duty=20%
+	Stay on for 1 cycle, turn off for 4 cycles
+	
+	Center
+	on for 3 cycles, off for 17
+
+	Left
+	on for 1 cycles, off for 9
+	*/
+
+	if (pwm_counter >= PWM_ROLLOVER) {
+		// change direction
+		switch (direction) {
+		case LEFT:
+			direction = RIGHT;
+			break;
+		default:
+			direction = LEFT;
+		}
+
+		pwm_counter = 0;
+	} else {
+
+		/*switch (direction) {
+			case LEFT:
+				if (TRISAbits.TRISA3 == 1 && duty_counter == 1) {
+					TRISAbits.TRISA3 = 0;
+					duty_counter = 0;
+				} else {
+
+				}
+		}*/
+
+
+		if (LATAbits.LATA3 == 0b1) {	// if on
+			if ((duty_counter >= 1 && direction != CENTER) ||
+				(duty_counter >= 3 && direction == CENTER)) {
+				LATAbits.LATA3 = 0b0;			// if left or right, then shut off when duty counter reaches 1
+												// if center, shut off when duty counter reaches 3
+				duty_counter = 0;				// reset counter
+			} else {
+				duty_counter++;
+			}
+		} else {	// if off
+			if ((duty_counter >= 9 && direction == LEFT) ||
+				(duty_counter >= 4 && direction == RIGHT) ||
+				(duty_counter >= 17)) {
+				LATAbits.LATA3 = 0b1;
+				duty_counter = 0;
+			} else {
+				duty_counter++;
+			}
+		}
+        pwm_counter++;
+	}
+    
+    if (led_counter < 0) {
+            // adc conversion is running - check if done
+            if (ADCON0bits.GO == 0) {
+                // conversion = done
+
+                // update led
+                if (ADRESH < LED_THRESHOLD) {
+                    LATAbits.LATA0 = 0;
+                } else {
+                    LATAbits.LATA0 = 1;
+                }
+
+                led_counter = 0;        // start counter over again
+            }   // else, just keep checking every iteration
+        } else if (led_counter >= LED_ROLLOVER) {
+            // it is time to start an adc conversion
+            ADCON0bits.GO = 1;   // start conversion
+            led_counter = -1;   // indicates that conversion is running
+        } else {
+            // neither so just update counter
+            ++led_counter;
+        }
+}
+
+    
     while (1) // keep your application in a loop
     {
-        
+        PWM_signal_out_LEFT();
         /*START PWM SECTION*/
-        if (pwm_counter >= PWM_ROLLOVER) {
+        /* if (pwm_counter >= PWM_ROLLOVER) {
             direction = !direction;
             if (direction == 0) {
                 PWM_signal_out_LEFT();
@@ -262,8 +335,8 @@ void main(void)
             pwm_counter = 0;
         } else {
             pwm_counter++;
-        }
-        /*END PWM SECTION*/
+        } */
+        /*END PWM SECTION*/ 
         
         /*START LIGHT SENSOR AND LED PART*/
         if (led_counter < 0) {
