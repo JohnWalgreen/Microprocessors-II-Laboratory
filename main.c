@@ -6,6 +6,10 @@
 #define LED_ROLLOVER 1
 #define PWM_ROLLOVER 10000
 
+#define LEFT 10
+#define CENTER 15
+#define RIGHT 20
+
 
     
 // ++++++++++++ Helpful Notes ++++++++++++++++
@@ -199,20 +203,14 @@ void main(void)
     // Initialize PIC device
     SYSTEM_Initialize();
     ADC_Init();
+    //Timer2_Init();
+    //PWM_Init();
+    //OSCCON1 = 0x38;                   // 500khz clock speed
+    OSCCON1 = 0xFF;
     
     
-	OSCCON1 = 0b00111000;                            //500KHz clock speed
-													// IF THIS GIVES YOU AN ERROR: Try adjusting it to OSCCON1, but this should be 'okay' to set on its own.
-    
-    
-    int led_counter;								// Counter for the LED loop
-    int pwm_counter;								// Counter for the PWM Output loop. 
-    												// Goes from 0 to 200, in 0.1milliseconds. A 200 on this indicates a 20ms time pass.
-    												
-	int iteration_counter;							// Goes from 0 to 20. Once it reaches 20, 2 seconds will have passed. Operation of 20ms * 
-    												
-    												
-    												
+    int led_counter;
+    long pwm_counter;
     int direction;
     
     led_counter = 0;
@@ -225,163 +223,145 @@ void main(void)
 
 	TRISAbits.TRISA0 = 0;			// TRISC bit0 is output
 	TRISAbits.TRISA1 = 1;			// PORTC bit1 is input
-	ANSELAbits.ANSA1 = 1;			// bit 1 is analog input
-	
-	
-	
-	/* ************************** ******************************* */
-	// TRISC adjustment to set bit three of C register as an output, then initialize it be default zero.
-	
-	TRISCbits.TRISC3 = 0; 			// TRISC bit3 is output, AKA Pin RC3
-	LATCbits.LATC3 = 0; 			// Initialize output for PWM as default zero.
-	/* ************************** ******************************* */
+	ANSELAbits.ANSA1 = 1;				// bit 1 is analog input
+    
+    TRISAbits.TRISA3 = 0;
     
 
 
 int direction;
 int duty_counter;
 
-//direction = LEFT;
+direction = LEFT;
 duty_counter = pwm_counter = 0;
 
-/* ********************************************************************************************************** */
-		
-// BEGIN LED INITIALIZATION 
-    
-	    if (led_counter < 0) {
-	            // adc conversion is running - check if done
-	            if (ADCON0bits.GO == 0) {
-	                // conversion = done
+while (1) {
+
+	/*
+	READ ME
 	
-	                // update led
-	                if (ADRESH < LED_THRESHOLD) {
-	                    LATAbits.LATA0 = 0;
-	                } else {
-	                    LATAbits.LATA0 = 1;
-	                }
+	If moving right, duty=20%
+	Stay on for 1 cycle, turn off for 4 cycles
 	
-	                led_counter = 0;        // start counter over again
-	            }   // else, just keep checking every iteration
-	    } 
-		else if (led_counter >= LED_ROLLOVER) {
-	            // it is time to start an adc conversion
-	            ADCON0bits.GO = 1;   // start conversion
-	            led_counter = -1;   // indicates that conversion is running
-	    } 
-		else {
-	            // neither so just update counter
-	            ++led_counter;
-	    }
-	    
-// END LED INITIALIZATION
+	Center
+	on for 3 cycles, off for 17
+	Left
+	on for 1 cycles, off for 9
+	*/
 
-/* ********************************************************************************************************** */
-
-
-
-// BEGIN A WHILE LOOP TO KEEP THE CIRCUIT OPERATING INFINITELY
-while (1) {		
-
-
-		/* ********************************************************************************************************** */
-		
-		// BEGIN LED UPDATE
-    
-	    if (led_counter < 0) {
-	            // adc conversion is running - check if done
-	            if (ADCON0bits.GO == 0) {
-	                // conversion = done
-	
-	                // update led
-	                if (ADRESH < LED_THRESHOLD) {
-	                    LATAbits.LATA0 = 0;
-	                } else {
-	                    LATAbits.LATA0 = 1;
-	                }
-	
-	                led_counter = 0;        // start counter over again
-	            }   // else, just keep checking every iteration
-	    } 
-		else if (led_counter >= LED_ROLLOVER) {
-	            // it is time to start an adc conversion
-	            ADCON0bits.GO = 1;   // start conversion
-	            led_counter = -1;   // indicates that conversion is running
-	    } 
-		else {
-	            // neither so just update counter
-	            ++led_counter;
-	    }
-	    
-		// END LED UPDATE
-
-		/* ********************************************************************************************************** */
-		
-		// START PWM OUTPUT ON PIN 3 OF PORT C.
-		
-		for (pwm_counter = 0; pwm_counter < 200; pwm_counter++ )		// Every LOOP of this represents a 200millisecond cycle.
-		{
-			if ((pwm_counter < 10) && (iteration_counter < 10) )		// Output a HIGH pulse for 1ms.
-																		// This represents a 10% duty cycle @ 50Hz, over the course of 2 seconds. 
-			{
-				LATCbits.LATC3 = HIGH;
-			}
-			else if ((pwm_counter < 20 ) && (iteration_counter > 10))	// OUTPUT a HIGH pulse for 2ms.
-																		// This represents a 20% duty cycle @ 50Hz.
-			{
-				LATCbits.LATC3 = HIGH;
-			}
-			else 														// Any other time, output a LOW pulse. This completes the PWM output representation.
-			{
-				LATCbits.LATC3 = LOW;
-			}
-
-
-		
-		
-		// END PWM OUTPUT ON PIN 3 OF PORT C
-		
-		/* *********************************************************************************************************** */
-				        
-		/*START LIGHT SENSOR AND LED PART*/
-				        
-				        if (led_counter < 0) {
-				            // adc conversion is running - check if done
-				            if (ADCON0bits.GO == 0) {
-				                // conversion = done
-				
-				                // update led
-				                if (ADRESH < LED_THRESHOLD) {
-				                    LATAbits.LATA0 = 0;
-				                } else {
-				                    LATAbits.LATA0 = 1;
-				                }
-				
-				                led_counter = 0;        // start counter over again
-				            }   // else, just keep checking every iteration
-				        } else if (led_counter >= LED_ROLLOVER) {
-				            // it is time to start an adc conversion
-				            ADCON0bits.GO = 1;   // start conversion
-				            led_counter = -1;   // indicates that conversion is running
-				        } else {
-				            // neither so just update counter
-				            ++led_counter;
-				        }
-		
-		/*END LIGHT SENSOR AND LED PART*/
-				
-		/* ************************************************************************************************************* */
-		
-		__delay_ms(0.1);												// Delay 0.1milliseconds.
+	if (pwm_counter >= PWM_ROLLOVER) {
+		// change direction
+		switch (direction) {
+		case LEFT:
+			direction = RIGHT;
+			break;
+		default:
+			direction = LEFT;
 		}
-		iteration_counter++;											// Update iteration_counter;
-		if (iteration_counter > 20)										// Every 20 iterations of a 200 millisecond loop (AKA every four seconds) reset to zero.
-		{
-			iteration_counter = 0;
+
+		pwm_counter = 0;
+	} else {
+
+		/*switch (direction) {
+			case LEFT:
+				if (TRISAbits.TRISA3 == 1 && duty_counter == 1) {
+					TRISAbits.TRISA3 = 0;
+					duty_counter = 0;
+				} else {
+				}
+		}*/
+
+
+		if (LATAbits.LATA3 == 0b1) {	// if off
+            // keep LED on for direction duty cycles
+			if (duty_counter >= direction) {
+				LATAbits.LATA3 = 0b0;
+			}
+            
+            duty_counter++;
+            
+		} else {	// if off
+            // keep LED off for remainder of cycles (everything out of 100)
+			if (duty_counter >= 100) {
+				LATAbits.LATA3 = 0b1;
+				duty_counter = 0;
+			} else {
+				duty_counter++;
+			}
 		}
+        pwm_counter++;
+	}
+    
+    if (led_counter < 0) {
+            // adc conversion is running - check if done
+            if (ADCON0bits.GO == 0) {
+                // conversion = done
+
+                // update led
+                if (ADRESH < LED_THRESHOLD) {
+                    LATAbits.LATA0 = 0;
+                } else {
+                    LATAbits.LATA0 = 1;
+                }
+
+                led_counter = 0;        // start counter over again
+            }   // else, just keep checking every iteration
+        } else if (led_counter >= LED_ROLLOVER) {
+            // it is time to start an adc conversion
+            ADCON0bits.GO = 1;   // start conversion
+            led_counter = -1;   // indicates that conversion is running
+        } else {
+            // neither so just update counter
+            ++led_counter;
+        }
+}
+
+    
+    while (1) // keep your application in a loop
+    {
+        PWM_signal_out_LEFT();
+        /*START PWM SECTION*/
+        /* if (pwm_counter >= PWM_ROLLOVER) {
+            direction = !direction;
+            if (direction == 0) {
+                PWM_signal_out_LEFT();
+            } else {
+                PWM_signal_out_RIGHT();
+            }
+            pwm_counter = 0;
+        } else {
+            pwm_counter++;
+        } */
+        /*END PWM SECTION*/ 
+        
+        /*START LIGHT SENSOR AND LED PART*/
+        if (led_counter < 0) {
+            // adc conversion is running - check if done
+            if (ADCON0bits.GO == 0) {
+                // conversion = done
+
+                // update led
+                if (ADRESH < LED_THRESHOLD) {
+                    LATAbits.LATA0 = 0;
+                } else {
+                    LATAbits.LATA0 = 1;
+                }
+
+                led_counter = 0;        // start counter over again
+            }   // else, just keep checking every iteration
+        } else if (led_counter >= LED_ROLLOVER) {
+            // it is time to start an adc conversion
+            ADCON0bits.GO = 1;   // start conversion
+            led_counter = -1;   // indicates that conversion is running
+        } else {
+            // neither so just update counter
+            ++led_counter;
+        }
+        /*END LIGHT SENSOR AND LED PART*/
 
     }
 }
 
 /**
  End of File
-*/	
+*/
