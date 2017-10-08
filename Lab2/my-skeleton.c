@@ -106,6 +106,8 @@ void main() {
 	PWM_Init();
 	GPIO_Init();
 	
+	// initialise other variables such as counters and other crap
+	
 	while (1) {
 	
 		/*LED stuff*/
