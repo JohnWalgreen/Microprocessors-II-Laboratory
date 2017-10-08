@@ -97,6 +97,9 @@ void movePWM(unsigned int dest, unsigned int source);
 // find a way to keep the damn senso-motor still when we are not moving it.
 // As a side note, this thing must be quick.
 
+/*Interrupt function for messages from computer*/
+void interrupt();	// change name of this function, you fucking dumbass
+// read, execute, and respond (write) accordingly
 
 void main() {
 
@@ -111,8 +114,14 @@ void main() {
 	while (1) {
 	
 		/*LED stuff*/
+		// from old code
 		
 		/*Check for and send messages?*/
+		/*
+		pseudo-code:
+			if strobe=low
+				write msg_ack	[if high, interrupt is triggered]
+		*/
 		
 	} // end infinite loop
 	
