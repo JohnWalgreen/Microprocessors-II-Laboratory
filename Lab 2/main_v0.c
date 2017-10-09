@@ -11,10 +11,17 @@ layed out in the <<provided materials>> folder, and this
 program will most likely resemble the skeleton code in 
 <<my-skeleton.c>>.
 	
-Edits: (format= Name: [name of coder making changes]\nDate: [Today's Date]\nDescription: [description of all changes]\n\n)
+Edits: (format= Name: [name of coder making changes]\nDate: [Today's Date or date range]\nTime: [time range]\nDescription: [description of all changes]\n\n)
+
+Example of Entry!!!
+Name: Joe Schmo
+Date: 04-July-1977
+Time: 0200 - 1523
+Description: ... everything that was accomplished ...
 
 Name: Hans-Edward Hoene
 Date: 09-Oct-2017
+Time: 1520 - ...
 Description: File created from skeleton; <<ADC_LED_Init>> function coded
 
 */
