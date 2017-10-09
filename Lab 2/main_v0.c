@@ -21,7 +21,7 @@ Description: ... everything that was accomplished ...
 
 Name: Hans-Edward Hoene
 Date: 09-Oct-2017
-Time: 1520 - ...
+Time: 1520 - 1546
 Description: File created from skeleton; <<ADC_LED_Init>> function coded
 
 */
