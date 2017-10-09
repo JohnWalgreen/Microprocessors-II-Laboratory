@@ -198,10 +198,10 @@ void ADC_LED_Init() {
 	ADCON2 = 0;
 	ADCON3 = 0;				// set adc threshold reg to 0
 	ADACT = 0;				// disable adc auto conversion trigger (is this how????????????)
-							// 5 already disabled, genius
+						// 5 already disabled, genius
 	ADSTATbits.ADAOV = 0;	// I hope this works?
-    ADCAP = 0;				// 7
-    ADPRE = 0;				// 8
+	ADCAP = 0;		// 7
+	ADPRE = 0;		// 8
 	ADCON0bits.ADFM = 0;	// left justified alignment?
 	
 	ADCON0bits.ADON = 1;	// adc enable
