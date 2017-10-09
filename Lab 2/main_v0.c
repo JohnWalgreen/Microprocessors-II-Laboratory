@@ -21,8 +21,10 @@ Description: ... everything that was accomplished ...
 
 Name: Hans-Edward Hoene
 Date: 09-Oct-2017
-Time: 1520 - 1546
-Description: File created from skeleton; <<ADC_LED_Init>> function coded
+Time: 1520 - 1555
+Description: File created from skeleton; <<ADC_LED_Init>> 
+function coded from Lab 1; LED and ADC code in infinite 
+while loop copied from Lab 1 main code.
 
 */
 
@@ -155,11 +157,58 @@ void main() {
 	GPIO_Init();
 	
 	// initialise other variables such as counters and other crap
+	int led_counter;
+	
+	led_counter = 0;
 	
 	while (1) {
-	
-		/*LED stuff*/
-		// from old code
+		
+		/*START LIGHT SENSOR AND LED PART*/
+		/*
+		Read me:
+		For every iiteration...
+		
+		if <<led_counter>> is less than zero, a conversion
+		is running.  Check if it is done.  If it is done,
+		use results to update LED output and set counter
+		back to zero.  Otherwise, just leave and check in
+		the next iteration.
+		
+		When <<led_counter>> reaches LED_ROLLOVER (pre-defined),
+		start the ADC conversion and set counter to a number
+		less than zero.
+		
+		Otherwise, increment the counter.
+		
+		This method saves clock cycles by not waiting for conversions
+		and by adc converting once once every rollover.  This method also saves interrupts for more important shit.
+ 		*/
+		if (led_counter < 0) {
+			// adc conversion is running
+			// only if conversion is done,
+			// update LED based on LED_THRESHOLD (pre-defined)
+			if (ADCON0bits.GO == 0) {
+				// conversion = done
+				
+				// update led
+				if (ADRESH < LED_THRESHOLD) {
+					// light is high, photoresistor is low, analog input voltage is low, LED goes off
+					LATAbits.LATA0 = 0;
+				} else {
+					LATAbits.LATA0 = 1;
+				}
+				
+				led_counter = 0;        // start counter over again
+			}
+		} else if (led_counter >= LED_ROLLOVER) {
+			// it is time to start an adc conversion
+			ADCON0bits.GO = 1;   // start conversion
+			led_counter = -1;   // indicates that conversion is running
+		} else {
+			// neither so just update counter
+			++led_counter;
+		}
+		/*END LIGHT SENSOR AND LED PART*/
 		
 		/*Check for and send messages?*/
 		/*
