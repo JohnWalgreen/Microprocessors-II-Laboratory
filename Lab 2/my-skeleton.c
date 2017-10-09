@@ -10,6 +10,7 @@ ORDER OF CONTENTS
 	4) Reading procedure
 	5) Safety note to avoid damaging devices
 	6) Idea
+	7) GPIO Strobe Signal Implementation Uncertainty
 
 1) Note: When I say <<computer>>, I am referring to Intel 
 Galileo board running Linux Yocto.  And when I say <<PIC>>, 
@@ -62,6 +63,14 @@ One idea for if we are feeling like going above and beyond to to add
 instructions a queue and remove them and execute in the main loop.  
 I have taken a look though, abnd I am not sure if this is possible 
 because some insyrcutions require immediate responses.
+
+7) GPIO Strobe Signal Implementation Uncertainty
+The GPIO signal seems to always be low when not writing, so how does the PIC know 
+when a read procedure has begun?  Two ideas to solve this problem: the two-pin method 
+and the toggle method.  The two-pin method involves each piece of hardware outputting 
+a GPIO signal used to indicate when to write.  The toggle method involves 
+enabling/disabling interrupts costantly; when write is done, GPIO stays high and when 
+write is done, GPIO stays low.  Interrupts are triggered by GPIO signal changes.
 */
 
 /*ADC Constants*/
