@@ -40,10 +40,13 @@ Description: 	1) included files from Lab 1 main.c
 				track of the latest ADC vaue that was read for the LED.
 				5) Coded GPIO_Init function; basically enables interrupts and
 					sets inputs and outputs
-				6) Changed name of interrupt function and started coded it
+				6) Changed name of interrupt function and coded it
 				7) Added <<bits>> to end of register names
 				8) Added DEBOUNCE_DELAY for on-change debouncing
-				9) added HIGH LOW constants
+				9) added HIGH and LOW constants
+				10) added and coded read and write functions
+				TO DO: Finish handling commands in switch-statement inside interrupt function
+				TO DO: make adc right justified, but put entire 10-bit in int and always update global variable
 
 */
 
@@ -171,13 +174,20 @@ void movePWM(unsigned int dest, unsigned int source);
 // As a side note, this thing must be quick.
 
 /*Interrupt function for messages from computer*/
-void interrupt ISR();	// change name of this function, you fucking dumbass
+void interrupt ISR();
 // read, execute, and respond (write) accordingly
+
+int read();                 // set GPIO pins to inputs and read their value
+
+void write(int);            // set GPIO pins to outputs and write value
 
 void main() {
 
-	// initialise system
-	System_Init();		// is this function right?
+	// initialise system w/ given functions
+	SYSTEM_Initialize();
+    OSCILLATOR_Initialize();
+    
+    // finish initialising with our own functions
 	ADC_LED_Init();
 	PWM_Init();
 	GPIO_Init();
@@ -193,7 +203,7 @@ void main() {
 		/*START LIGHT SENSOR AND LED PART*/
 		/*
 		Read me:
-		For every iiteration...
+		For every iteration...
 
 		if <<led_counter>> is less than zero, a conversion
 		is running.  Check if it is done.  If it is done,
@@ -236,13 +246,6 @@ void main() {
 			++led_counter;
 		}
 		/*END LIGHT SENSOR AND LED PART*/
-
-		/*Check for and send messages?*/
-		/*
-		pseudo-code:
-			if strobe=low
-				write msg_ack	[if high, interrupt is triggered]
-		*/
 
 	} // end infinite loop
 
@@ -340,13 +343,116 @@ void interrupt ISR() {
 		__delay_ms(DEBOUNCE_DELAY);
 		if (PORTBbits.RB0 == HIGH) {
 			// interrupt is legit, so handle it, dumbass
-
+			
+			int instruction;
+			
 			/*HANDLE COMMUNICATION HERE*/
-
+			// read command, which should already be being outputted
+   			instruction = read();
+			
+			// wait for GPIO to go low again
+			do {
+				while (PORTBbits.RB0 == HIGH) {continue;}       // wait for low
+				__delay_ms(DEBOUNCE_DELAY);                 	// debounce
+			} while (PORTBbits.RB0 == HIGH);
+			
+			// READING OVER
+			switch (instruction) {
+				case MSG_RESET:
+					// reset sensor?
+					break;
+				case MSG_PING:
+					write(MSG_ACK);
+					break;
+				case MSG_GET:
+					/* write last adc result (3 times) !!!!!!!!!!!!!!!!!!!!*/
+					write(MSG_ACK);
+					break;
+				case MSG_TURN30:
+					/*KYLE'S FUNCTIONS*/
+					break;
+				case MSG_TURN90:
+					/*KYLE'S FUNCTIONS*/
+					break;
+				case MSG_TURN120:
+					/*KYLE'S FUNCTIONS*/
+					break;		
+			}
+			
+			// wait for GPIO to go high again
+			do {
+				while (PORTBbits.RB0 == LOW) {continue;}       // wait for high
+				__delay_ms(DEBOUNCE_DELAY);                 // debounce
+			} while (PORTBbits.RB0 == LOW);
+			
+			// wait for GPIO to go low again
+			do {
+				while (PORTBbits.RB0 == HIGH) {continue;}       // wait for low
+				__delay_ms(DEBOUNCE_DELAY);                 // debounce
+			} while (PORTBbits.RB0 == HIGH);
+			
+			PORTB = PORTB | 0x78;   // back to inputs
 		}
 
 	}   // else if other flags to determine other sources of interrupt
 
 	// re-enable interrupts
 	INTCONbits.GIE = 1;
+}
+
+void PWM_Init() {
+    // CODE THIS, KYLE!!!
+}
+
+int read() {
+	int instruction;
+	PORTB = PORTB | 0x78;       // set up inputs just in case
+	
+	instruction = 0;
+	if (PORTBbits.RB1 == HIGH) {
+		instruction += 1;
+	}
+	if (PORTBbits.RB2 == HIGH) {
+		instruction += 2;
+	}
+	if (PORTBbits.RB3 == HIGH) {
+		instruction += 4;
+	}
+	if (PORTBbits.RB4 == HIGH) {
+		instruction += 8;
+	}
+	
+	return instruction;
+}
+
+void write(int instruction) {
+	PORTB = PORTB & 0x87;   // set up outputs
+	
+	if (instruction > 8) {
+		LATBbits.LATB4 = HIGH;
+		instruction -= 8;
+	} else {
+		LATBbits.LATB4 = LOW;
+	}
+	
+	if (instruction > 4) {
+		LATBbits.LATB3 = HIGH;
+		instruction -= 4;
+	} else {
+		LATBbits.LATB3 = LOW;
+	}
+	
+	if (instruction > 2) {
+		LATBbits.LATB2 = HIGH;
+		instruction -= 2;
+	} else {
+		LATBbits.LATB2 = LOW;
+	}
+	
+	if (instruction > 1) {
+		LATBbits.LATB1 = HIGH;
+		instruction -= 1;
+	} else {
+		LATBbits.LATB1 = LOW;
+	}
 }
