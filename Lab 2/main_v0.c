@@ -28,7 +28,7 @@ while loop copied from Lab 1 main code.
 
 Name: Hans-Edward Hoene
 Date: 10-Oct-2017
-Time: 1050 - ...
+Time: 1050 - 1315
 Description: 	1) included files from Lab 1 main.c
 				2) learned how the communication GPIO strobe signal is
 					supposed to work.  Updated comments by removing
