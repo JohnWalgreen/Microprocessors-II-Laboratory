@@ -185,7 +185,7 @@ void main() {
 
 	// initialise system w/ given functions
 	SYSTEM_Initialize();
-    OSCILLATOR_Initialize();
+	OSCILLATOR_Initialize();
     
     // finish initialising with our own functions
 	ADC_LED_Init();
