@@ -50,10 +50,10 @@ Description: 	1) included files from Lab 1 main.c
 
 Name: Hans-Edward Hoene
 Date: 11-Oct-2017
-Time: 1030-1050 & 1230 - 1500 & 1715 - 1725
+Time: 1030-1050 & 1230 - 1500 & 1715 - 1748
 Description: Worked on testing interrupt-on-change (in test interrupt.c program).  I have not been able to automatically 
 trigger interrupts, but I have been able to manually start an interrupt by setting an interrupt flag.  Still same TO DOs 
-as yesterday, and fix interrupt iniitialisations.
+as yesterday, and fix interrupt iniitialisations.  Also tried to get PWM stuff together.
 */
 
 /*
