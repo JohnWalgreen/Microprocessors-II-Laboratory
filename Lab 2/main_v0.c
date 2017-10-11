@@ -30,24 +30,30 @@ Name: Hans-Edward Hoene
 Date: 10-Oct-2017
 Time: 1050 - 1315
 Description: 	1) included files from Lab 1 main.c
-				2) learned how the communication GPIO strobe signal is
-					supposed to work.  Updated comments by removing
-					<<7) GPIO Strobe Signal Implementation Uncertainty>>
-					from the order of contents in the large opening comment.
-				3) added in order of contents in large comment:
-					<<7) How to implement GPIO stobe signal>>
-				4) Added global variable, <<int last_ADC_value>> to keep
-				track of the latest ADC vaue that was read for the LED.
-				5) Coded GPIO_Init function; basically enables interrupts and
-					sets inputs and outputs
-				6) Changed name of interrupt function and coded it
-				7) Added <<bits>> to end of register names
-				8) Added DEBOUNCE_DELAY for on-change debouncing
-				9) added HIGH and LOW constants
-				10) added and coded read and write functions
-				TO DO: Finish handling commands in switch-statement inside interrupt function
-				TO DO: make adc right justified, but put entire 10-bit in int and always update global variable
+		2) learned how the communication GPIO strobe signal is
+			supposed to work.  Updated comments by removing
+			<<7) GPIO Strobe Signal Implementation Uncertainty>>
+			from the order of contents in the large opening comment.
+		3) added in order of contents in large comment:
+			<<7) How to implement GPIO stobe signal>>
+		4) Added global variable, <<int last_ADC_value>> to keep
+			track of the latest ADC vaue that was read for the LED.
+		5) Coded GPIO_Init function; basically enables interrupts and
+			sets inputs and outputs
+		6) Changed name of interrupt function and coded it
+		7) Added <<bits>> to end of register names
+		8) Added DEBOUNCE_DELAY for on-change debouncing
+		9) added HIGH and LOW constants
+		10) added and coded read and write functions
+			TO DO: Finish handling commands in switch-statement inside interrupt function
+			TO DO: make adc right justified, but put entire 10-bit in int and always update global variable
 
+Name: Hans-Edward Hoene
+Date: 11-Oct-2017
+Time: 1030-1050 & 1230 - 1500 & 1715 - 1725
+Description: Worked on testing interrupt-on-change (in test interrupt.c program).  I have not been able to automatically 
+trigger interrupts, but I have been able to manually start an interrupt by setting an interrupt flag.  Still same TO DOs 
+as yesterday, and fix interrupt iniitialisations.
 */
 
 /*
