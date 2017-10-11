@@ -52,46 +52,38 @@ void main() {
 	OSCILLATOR_Initialize();
 	
 	/*START GPIO_Init FUNCTION*/
-    TRISAbits.TRISA6 = 1;                  // everything in PORTB is a digital input
+	TRISAbits.TRISA6 = 1;                  // everything in PORTB is a digital input
 	TRISAbits.TRISA0 = 0;           // LED output
 	TRISAbits.TRISA7 = 0;           // trigger interrupt - connect to port c0
-
 	PIE0bits.IOCIE = 1;
-    PIE0bits.INTE = 1; // do I need this?
-    IOCAPbits.IOCAP6 = 1;
-    INTCONbits.PEIE = 1;
-    INTCONbits.GIE = 1;
-    /*END GPIO_Init FUNCTION*/
-
+	PIE0bits.INTE = 1; // do I need this?
+	IOCAPbits.IOCAP6 = 1;
+	INTCONbits.PEIE = 1;
+	INTCONbits.GIE = 1;
+	/*END GPIO_Init FUNCTION*/
+	
 	// declare other variables such as counters and other crap
-	int counter;
-
-	// initialisations
-	counter = 0;
-
+	int counter = 0;
 	while (1) {
 		switch (counter) {
 			case 0:
 				LATAbits.LATA7 = HIGH;
-                IOCAFbits.IOCAF6 = 1;   // ARTIFICIALLY GENERATE INTERRUPT - it should be dooing it on its own
+				IOCAFbits.IOCAF6 = 1;   // ARTIFICIALLY GENERATE INTERRUPT - it should be dooing it on its own
 				break;
-
+				
 			case 10:
 				LATAbits.LATA7 = LOW;
 				break;
-
+				
 			case 100:
 				counter = -1;
 				break;
-
 		}
-
+		
 		counter++;
-        __delay_ms(10);
-
+		__delay_ms(10);
+		
 	}
-
-
+	
 	return; // it is a void function
-
 } // end main
