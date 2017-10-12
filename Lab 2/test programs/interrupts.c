@@ -68,7 +68,13 @@ void main() {
 		switch (counter) {
 			case 0:
 				LATAbits.LATA7 = HIGH;
-				IOCAFbits.IOCAF6 = 1;   // ARTIFICIALLY GENERATE INTERRUPT - it should be dooing it on its own
+				if (PORTAbits.RA6 == HIGH)	// I just added this if-statement here to see 
+								// if PIC even knows that RA6 is on -
+								// that could be the problem
+								// without this, I know LED flashes. Will it still work?
+					IOCAFbits.IOCAF6 = 1;   // ARTIFICIALLY GENERATE INTERRUPT
+								// it should be doing it on its own tbh, but it isn't.
+								// who the fuck knows why?
 				break;
 				
 			case 10:
