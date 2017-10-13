@@ -57,7 +57,7 @@ as yesterday, and fix interrupt iniitialisations.  Also tried to get PWM stuff t
 
 Name: Hans-Edward Hoene
 Date: 13-Oct-2017
-Time: 1020 - 1250
+Time: 1020 - 1256
 Description: 	1) modified interrupt test program and got it to work.  The problem might have been with ANSELx digital/analog
 					input, but I am not sure.  I changed GPIO strobe interrupt code here to match what  test program has.
 				2) Changed led latest value to adc_value global; changed adc to right justified to get full 10-bits
