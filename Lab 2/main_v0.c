@@ -67,7 +67,7 @@ Description: 	1) modified interrupt test program and got it to work.  The proble
 
 Name: Hans-Edward Hoene
 Date: 14-Oct-2017
-Time: 2210 - 2222
+Time: 2210 - 2226
 Description: Fixed indentation in files, and I removed interrupt handler code that has not been tested (all in a big comment).  Got rid of test 
 files that have not been started.
 
@@ -254,23 +254,19 @@ void main() {
 
 				// update led
 				adc_value = (ADRESH << 8) + ADRESL;
-
-                // debounce
-                if (LATAbits.LATA0 == HIGH) {
-                    /*
-                    LED is off
-                    to turn on, adc_value must go below the lower offset
-                     */
-                    if (adc_value < LED_THRESHOLD + OFFSET) {
-                        LATAbits.LATA0 = LOW;
-                    }
-                } else {
-                    // adc must go below LED_ON_THRESHOLD to turn on
-                    if (adc_value > LED_THRESHOLD - OFFSET) {
-                        LATAbits.LATA0 = HIGH;
-                    }
-                }
-
+				
+				// debounce
+				if (LATAbits.LATA0 == HIGH) {
+					/*LED is off; to turn on, adc_value must go below the lower offset*/
+					if (adc_value < LED_THRESHOLD + OFFSET) {
+						LATAbits.LATA0 = LOW;
+					}
+				} else {
+					if (adc_value > LED_THRESHOLD - OFFSET) {
+						LATAbits.LATA0 = HIGH;
+					}
+				}
+				
 				led_counter = 0;        // start counter over again
 			}
 		} else if (led_counter >= LED_ROLLOVER) {
