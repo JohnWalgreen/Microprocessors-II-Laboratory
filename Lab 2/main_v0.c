@@ -67,8 +67,9 @@ Description: 	1) modified interrupt test program and got it to work.  The proble
 
 Name: Hans-Edward Hoene
 Date: 14-Oct-2017
-Time: 2210 - 2217
-Description: Fixed indentation in files, and I removed interrupt handler code that has not been tested (all in a big comment).
+Time: 2210 - 2222
+Description: Fixed indentation in files, and I removed interrupt handler code that has not been tested (all in a big comment).  Got rid of test 
+files that have not been started.
 
 */
 
