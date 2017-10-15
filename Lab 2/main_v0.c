@@ -64,6 +64,12 @@ Description: 	1) modified interrupt test program and got it to work.  The proble
 				3) Debounced ADC conversion by adding lower/upper thresholds for the LED enable.  Implemented via
 					threshold+offset and threshold-offset.  Larger offsets allow for larger swings in light without LED
 					flickers.
+
+Name: Hans-Edward Hoene
+Date: 14-Oct-2017
+Time: 2210 - 2217
+Description: Fixed indentation in files, and I removed interrupt handler code that has not been tested (all in a big comment).
+
 */
 
 /*
@@ -341,7 +347,7 @@ void ADC_LED_Init() {
 
 void GPIO_Init() {
 	TRISBbits.TRISB0 = 1;				// RB0 is input
-    ANSELBbits.ANSB0 = 0;				// RB0 is digital
+	ANSELBbits.ANSB0 = 0;				// RB0 is digital
 
 	TRISBbits.TRISB1 = 1;
 	TRISBbits.TRISB2 = 1;
@@ -368,14 +374,13 @@ void interrupt ISR() {
 		__delay_ms(DEBOUNCE_DELAY);
 		if (PORTBbits.RB0 == HIGH) {
 			// interrupt is legit, so handle it, dumbass
-
-			/*DO NOTHING IN THIS INTERRUPT!!!!!!!!!!!!!  LATER, DO SOMETHING*/
-            IOCBFbits.IOCBF0 = 0;
-            return;
-
+			
 			int instruction;
 
 			/*HANDLE COMMUNICATION HERE*/
+			/*
+			// IN THIS COMMENT IS POSSIBLE CODE, BUT IT HAS NEVER BEEN TESTED!!!
+			// SO... DO NOTHING
 			// read command, which should already be being outputted
    			instruction = read();
 
@@ -394,17 +399,17 @@ void interrupt ISR() {
 					write(MSG_ACK);
 					break;
 				case MSG_GET:
-					/* write last adc result (3 times) !!!!!!!!!!!!!!!!!!!!*/
+					// write last adc result (3 times) !!!!!!!!!!!!!!!!!!!!
 					write(MSG_ACK);
 					break;
 				case MSG_TURN30:
-					/*KYLE'S FUNCTIONS*/
+					// KYLE'S FUNCTIONS
 					break;
 				case MSG_TURN90:
-					/*KYLE'S FUNCTIONS*/
+					// KYLE'S FUNCTIONS
 					break;
 				case MSG_TURN120:
-					/*KYLE'S FUNCTIONS*/
+					// KYLE'S FUNCTIONS
 					break;
 			}
 
@@ -421,6 +426,8 @@ void interrupt ISR() {
 			} while (PORTBbits.RB0 == HIGH);
 
 			PORTB = PORTB | 0x78;   // back to inputs
+		
+		*/
 		}
 
 		IOCBFbits.IOCBF0 = LOW;     // clear flag
