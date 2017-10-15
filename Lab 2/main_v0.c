@@ -30,23 +30,46 @@ Name: Hans-Edward Hoene
 Date: 10-Oct-2017
 Time: 1050 - 1315
 Description: 	1) included files from Lab 1 main.c
-				2) learned how the communication GPIO strobe signal is
-					supposed to work.  Updated comments by removing
-					<<7) GPIO Strobe Signal Implementation Uncertainty>>
-					from the order of contents in the large opening comment.
-				3) added in order of contents in large comment:
-					<<7) How to implement GPIO stobe signal>>
-				4) Added global variable, <<int last_ADC_value>> to keep
-				track of the latest ADC vaue that was read for the LED.
-				5) Coded GPIO_Init function; basically enables interrupts and
-					sets inputs and outputs
-				6) Changed name of interrupt function and coded it
-				7) Added <<bits>> to end of register names
-				8) Added DEBOUNCE_DELAY for on-change debouncing
-				9) added HIGH and LOW constants
-				10) added and coded read and write functions
-				TO DO: Finish handling commands in switch-statement inside interrupt function
-				TO DO: make adc right justified, but put entire 10-bit in int and always update global variable
+		2) learned how the communication GPIO strobe signal is
+			supposed to work.  Updated comments by removing
+			<<7) GPIO Strobe Signal Implementation Uncertainty>>
+			from the order of contents in the large opening comment.
+		3) added in order of contents in large comment:
+			<<7) How to implement GPIO stobe signal>>
+		4) Added global variable, <<int last_ADC_value>> to keep
+			track of the latest ADC vaue that was read for the LED.
+		5) Coded GPIO_Init function; basically enables interrupts and
+			sets inputs and outputs
+		6) Changed name of interrupt function and coded it
+		7) Added <<bits>> to end of register names
+		8) Added DEBOUNCE_DELAY for on-change debouncing
+		9) added HIGH and LOW constants
+		10) added and coded read and write functions
+			TO DO: Finish handling commands in switch-statement inside interrupt function
+			TO DO: make adc right justified, but put entire 10-bit in int and always update global variable
+
+Name: Hans-Edward Hoene
+Date: 11-Oct-2017
+Time: 1030-1050 & 1230 - 1500 & 1715 - 1748
+Description: Worked on testing interrupt-on-change (in test interrupt.c program).  I have not been able to automatically
+trigger interrupts, but I have been able to manually start an interrupt by setting an interrupt flag.  Still same TO DOs
+as yesterday, and fix interrupt iniitialisations.  Also tried to get PWM stuff together.
+
+Name: Hans-Edward Hoene
+Date: 13-Oct-2017
+Time: 1020 - 1256
+Description: 	1) modified interrupt test program and got it to work.  The problem might have been with ANSELx digital/analog
+					input, but I am not sure.  I changed GPIO strobe interrupt code here to match what  test program has.
+				2) Changed led latest value to adc_value global; changed adc to right justified to get full 10-bits
+				3) Debounced ADC conversion by adding lower/upper thresholds for the LED enable.  Implemented via
+					threshold+offset and threshold-offset.  Larger offsets allow for larger swings in light without LED
+					flickers.
+
+Name: Hans-Edward Hoene
+Date: 14-Oct-2017
+Time: 2210 - 2226
+Description: Fixed indentation in files, and I removed interrupt handler code that has not been tested (all in a big comment).  Got rid of test 
+files that have not been started.
 
 */
 
@@ -84,8 +107,8 @@ I am referring to PIC microcontroller, <<PIC16F18857>>.
 		3: GPIO data 2
 		4: GPIO data 3
 		5:
-		6:
-		7:
+		6: NEVER USE!
+		7: NEVER USE!
 
 3) Writing Procedure (from computer to PIC)
 	a) computer outputs 4-bit command
@@ -122,8 +145,10 @@ before the PIC continues normal operation again.
 */
 
 /*ADC Constants*/
-#define LED_ROLLOVER 1000			// counter value, which triggers adc conversion to update LED
-#define LED_THRESHOLD 150			// adc threshold, which determines the value required to enable LED
+#define LED_ROLLOVER 10			// counter value, which triggers adc conversion to update LED
+// high threshold = hard to turn on, low threshold = easy to turn on
+#define LED_THRESHOLD 250    // adc value must go below this to turn on
+#define OFFSET 20
 
 /*PWM Constants*/
 // Kyle - help me out here
@@ -141,7 +166,7 @@ before the PIC continues normal operation again.
 #define MSG_ACK 0xE				// acknowledgement to the commands
 #define MSG_NOTHING 0xF			// reserved
 // other
-#define DEBOUNCE_DELAY 3        // amount to delay during iterrupt in order to debounce
+#define DEBOUNCE_DELAY 5        // amount to delay during iterrupt in order to debounce
 
 /*Include files and other shit here*/
 #define HIGH 0b1
@@ -150,7 +175,7 @@ before the PIC continues normal operation again.
 #include <htc.h>
 
 /*Add Global Variables Here*/
-int last_ADC_value;
+int adc_value;
 
 /*Initialise ADC*/
 void ADC_LED_Init();    // also make LED port an output
@@ -186,7 +211,7 @@ void main() {
 	// initialise system w/ given functions
 	SYSTEM_Initialize();
 	OSCILLATOR_Initialize();
-	
+
 	// finish initialising with our own functions
 	ADC_LED_Init();
 	PWM_Init();
@@ -228,18 +253,25 @@ void main() {
 				// conversion = done
 
 				// update led
-				if (ADRESH < LED_THRESHOLD) {
-					// light is high, photoresistor is low, analog input voltage is low, LED goes off
-					LATAbits.LATA0 = LOW;
+				adc_value = (ADRESH << 8) + ADRESL;
+				
+				// debounce
+				if (LATAbits.LATA0 == HIGH) {
+					/*LED is off; to turn on, adc_value must go below the lower offset*/
+					if (adc_value < LED_THRESHOLD + OFFSET) {
+						LATAbits.LATA0 = LOW;
+					}
 				} else {
-					LATAbits.LATA0 = HIGH;
+					if (adc_value > LED_THRESHOLD - OFFSET) {
+						LATAbits.LATA0 = HIGH;
+					}
 				}
-
+				
 				led_counter = 0;        // start counter over again
 			}
 		} else if (led_counter >= LED_ROLLOVER) {
 			// it is time to start an adc conversion
-			ADCON0bits.GO = LOW;   // start conversion
+			ADCON0bits.GO = HIGH;   // start conversion
 			led_counter = -1;   // indicates that conversion is running
 		} else {
 			// neither so just update counter
@@ -273,6 +305,8 @@ void ADC_LED_Init() {
 	+ set up pins
 	*/
 
+	adc_value = 0;          // latest adc value
+
 	ADCON1 = 1;
 	ADCON2 = 0;
 	ADCON3 = 0;				// set adc threshold reg to 0
@@ -281,7 +315,7 @@ void ADC_LED_Init() {
 	ADSTATbits.ADAOV = 0;	// I hope this works?
 	ADCAP = 0;		// 7
 	ADPRE = 0;		// 8
-	ADCON0bits.ADFM = 0;	// left justified alignment?
+	ADCON0bits.ADFM = 1;	// right justifed!
 
 	ADCON0bits.ADON = 1;	// adc enable
 	ADCON0bits.ADCS = 0b101;// Clock supplied by FOSC, divided according to ADCLK register? (0) vs. Clock supplied from FRC dedicated oscillator
@@ -309,25 +343,19 @@ void ADC_LED_Init() {
 } // end of ADC_LED_Init
 
 void GPIO_Init() {
-	/*
-	1) GIE bit of INTCON
-	2) Interrupt enable bits for specific event
-	3) PEIE bit of INTCON register if #2 inside a PIEx register
+	TRISBbits.TRISB0 = 1;				// RB0 is input
+	ANSELBbits.ANSB0 = 0;				// RB0 is digital
 
-	GIE bit must be set after every interrupt.
+	TRISBbits.TRISB1 = 1;
+	TRISBbits.TRISB2 = 1;
+	TRISBbits.TRISB3 = 1;
+	TRISBbits.TRISB4 = 1;               // GPIO input set up
 
-	What I found at http://www.microcontrollerboard.com/pic_interrupt.html
-	INTF=0; // Reset the external interrupt flag
-	INTE=1; // Enable external interrupts from RB0
-	*/
-
-	IOCBPbits.IOCBP0 = 1;         	// interrupt on positive-edge change for RB0 (the GPIO strobe signal input); p.261
-	PIE0bits.IOCIE = 1;             // enables <<interrupt-on-change>>; p. 133
-	// INTCONbits.PEIE = 1;         // enable all peripherel active interrupts; p. 132 - edit: according to p.133 note, this is not necessary
-	// INTCONbits.INTEDG = 1;      	// rising edge if INT interrupt; applicable?
-	INTCONbits.GIE = 1;             // enable all active interrupts
-
-	TRISB = 0xFF;                  // everything in PORTB is a digital input
+	PIE0bits.IOCIE = 1;
+	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
+	IOCBPbits.IOCBP0 = 1;               // enable positive-edge on-change interrupt for RB0, which will always be digital input
+	INTCONbits.PEIE = 1;                // I think this is enable peripherel interrupts?
+	INTCONbits.GIE = 1;                 // enable global interrupts
 } // end of GPIO_Init
 
 void interrupt ISR() {
@@ -345,17 +373,20 @@ void interrupt ISR() {
 			// interrupt is legit, so handle it, dumbass
 			
 			int instruction;
-			
+
 			/*HANDLE COMMUNICATION HERE*/
+			/*
+			// IN THIS COMMENT IS POSSIBLE CODE, BUT IT HAS NEVER BEEN TESTED!!!
+			// SO... DO NOTHING
 			// read command, which should already be being outputted
    			instruction = read();
-			
+
 			// wait for GPIO to go low again
 			do {
 				while (PORTBbits.RB0 == HIGH) {continue;}       // wait for low
 				__delay_ms(DEBOUNCE_DELAY);                 	// debounce
 			} while (PORTBbits.RB0 == HIGH);
-			
+
 			// READING OVER
 			switch (instruction) {
 				case MSG_RESET:
@@ -365,39 +396,41 @@ void interrupt ISR() {
 					write(MSG_ACK);
 					break;
 				case MSG_GET:
-					/* write last adc result (3 times) !!!!!!!!!!!!!!!!!!!!*/
+					// write last adc result (3 times) !!!!!!!!!!!!!!!!!!!!
 					write(MSG_ACK);
 					break;
 				case MSG_TURN30:
-					/*KYLE'S FUNCTIONS*/
+					// KYLE'S FUNCTIONS
 					break;
 				case MSG_TURN90:
-					/*KYLE'S FUNCTIONS*/
+					// KYLE'S FUNCTIONS
 					break;
 				case MSG_TURN120:
-					/*KYLE'S FUNCTIONS*/
-					break;		
+					// KYLE'S FUNCTIONS
+					break;
 			}
-			
+
 			// wait for GPIO to go high again
 			do {
 				while (PORTBbits.RB0 == LOW) {continue;}       // wait for high
 				__delay_ms(DEBOUNCE_DELAY);                 // debounce
 			} while (PORTBbits.RB0 == LOW);
-			
+
 			// wait for GPIO to go low again
 			do {
 				while (PORTBbits.RB0 == HIGH) {continue;}       // wait for low
 				__delay_ms(DEBOUNCE_DELAY);                 // debounce
 			} while (PORTBbits.RB0 == HIGH);
-			
+
 			PORTB = PORTB | 0x78;   // back to inputs
+		
+		*/
 		}
+
+		IOCBFbits.IOCBF0 = LOW;     // clear flag
 
 	}   // else if other flags to determine other sources of interrupt
 
-	// re-enable interrupts
-	INTCONbits.GIE = 1;
 }
 
 void PWM_Init() {
@@ -407,7 +440,7 @@ void PWM_Init() {
 int read() {
 	int instruction;
 	PORTB = PORTB | 0x78;       // set up inputs just in case
-	
+
 	instruction = 0;
 	if (PORTBbits.RB1 == HIGH) {
 		instruction += 1;
@@ -421,34 +454,34 @@ int read() {
 	if (PORTBbits.RB4 == HIGH) {
 		instruction += 8;
 	}
-	
+
 	return instruction;
 }
 
 void write(int instruction) {
 	PORTB = PORTB & 0x87;   // set up outputs
-	
+
 	if (instruction > 8) {
 		LATBbits.LATB4 = HIGH;
 		instruction -= 8;
 	} else {
 		LATBbits.LATB4 = LOW;
 	}
-	
+
 	if (instruction > 4) {
 		LATBbits.LATB3 = HIGH;
 		instruction -= 4;
 	} else {
 		LATBbits.LATB3 = LOW;
 	}
-	
+
 	if (instruction > 2) {
 		LATBbits.LATB2 = HIGH;
 		instruction -= 2;
 	} else {
 		LATBbits.LATB2 = LOW;
 	}
-	
+
 	if (instruction > 1) {
 		LATBbits.LATB1 = HIGH;
 		instruction -= 1;
