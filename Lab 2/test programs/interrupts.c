@@ -41,10 +41,10 @@ void main() {
 	// initialise system w/ given functions
 	SYSTEM_Initialize();
 	OSCILLATOR_Initialize();
-
-    TRISAbits.TRISA0 = 0;           // LED output
-    TRISCbits.TRISC6 = 0;           // trigger interrupt - connect to port c0
-    ANSELCbits.ANSC6 = 0;
+	
+	TRISAbits.TRISA0 = 0;           // LED output
+	TRISCbits.TRISC6 = 0;           // trigger interrupt - connect to port c0
+	ANSELCbits.ANSC6 = 0;
 
 	/*START GPIO_Init FUNCTION*/
 	GPIO_Init();
@@ -76,8 +76,8 @@ void main() {
 } // end main
 
 void GPIO_Init() {
-    TRISBbits.TRISB0 = 1;                  // everything in PORTB is a digital input
-    ANSELBbits.ANSB0 = 0;              // everything in PORTB is digital input
+	TRISBbits.TRISB0 = 1;                  // everything in PORTB is a digital input
+	ANSELBbits.ANSB0 = 0;              // everything in PORTB is digital input
 
 	PIE0bits.IOCIE = 1;
 	//PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
@@ -98,20 +98,16 @@ void interrupt ISR() {
 		__delay_ms(DEBOUNCE_DELAY);
 		if (PORTBbits.RB0 == HIGH) {
 			// interrupt is legit, so handle it, dumbass
-
-            // toggle
-            if (LATAbits.LATA0 == LOW) {
-                LATAbits.LATA0 = HIGH;
-            } else {
-                LATAbits.LATA0 = LOW;
-            }
-        }
-
-        IOCBFbits.IOCBF0 = LOW;     // clear flag
-
-
+			
+			// toggle
+			if (LATAbits.LATA0 == LOW) {
+				LATAbits.LATA0 = HIGH;
+			} else {
+				LATAbits.LATA0 = LOW;
+			}
+		}
+		
+		IOCBFbits.IOCBF0 = LOW;     // clear flag
 	}   // else if other flags to determine other sources of interrupt
-
-
-    return;
+	return;
 }
