@@ -56,19 +56,19 @@ void main() {
 		switch (counter) {
 			case 0:
 				LATCbits.LATC6 = HIGH;
-
+				++counter;
 				break;
 
 			case 50:
 				LATCbits.LATC6 = LOW;
+				++counter;
 				break;
 
 			case 100:
-				counter = -1;
+				counter = 0;
 				break;
 		}
 
-		counter++;
 		__delay_ms(10);
 	}
 
