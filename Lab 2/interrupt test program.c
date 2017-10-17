@@ -82,6 +82,7 @@ void GPIO_Init() {
 	PIE0bits.IOCIE = 1;
 	//PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
 	IOCBPbits.IOCBP0 = 1;
+	IOCBNbits.IOCBN0 = 1;
 	INTCONbits.PEIE = 1;
 	INTCONbits.GIE = 1;
 }
