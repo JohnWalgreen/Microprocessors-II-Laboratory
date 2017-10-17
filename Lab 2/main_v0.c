@@ -71,6 +71,18 @@ Time: 2210 - 2226
 Description: Fixed indentation in files, and I removed interrupt handler code that has not been tested (all in a big comment).  Got rid of test 
 files that have not been started.
 
+Name: Hans-Edward Hoene
+Date: 17-Oct-2017
+Time: 1247 - 1319
+Description:    ALL) Started working on communication.  Interrupt every time GPIO changes!
+				1) Added negative-edge interrupt for GPIO RB0
+				2) Added communication_counter global to handle what this particular interrupt is for
+				3) Added instruction as global variable to maintain instruction in between interrupts
+				4) ISSUE: debouncing properly involves distinguishing postive and negative interrupts
+				5) Issue at bullet 4 fixed by looking at counter % 2
+				6) write and read no longer change TRISB for GPIO pins
+				7) FIX: write out proper values for adc in large switch statement
+
 */
 
 /*
@@ -176,6 +188,8 @@ before the PIC continues normal operation again.
 
 /*Add Global Variables Here*/
 int adc_value;
+int communication_counter;
+int instruction;
 
 /*Initialise ADC*/
 void ADC_LED_Init();    // also make LED port an output
@@ -354,6 +368,7 @@ void GPIO_Init() {
 	PIE0bits.IOCIE = 1;
 	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
 	IOCBPbits.IOCBP0 = 1;               // enable positive-edge on-change interrupt for RB0, which will always be digital input
+	IOCBNbits.IOCBN0 = 1;               // enable negative-edge
 	INTCONbits.PEIE = 1;                // I think this is enable peripherel interrupts?
 	INTCONbits.GIE = 1;                 // enable global interrupts
 } // end of GPIO_Init
@@ -366,13 +381,71 @@ void interrupt ISR() {
 		// indicates that interrupt-on-change caused interrupt
 		// check if RB0 was the on-change interrupt (p. 261)
 		// by design, only positive-edge change is enabled
-
+		
 		// debounce
 		__delay_ms(DEBOUNCE_DELAY);
-		if (PORTBbits.RB0 == HIGH) {
+		if (PORTBbits.RB0 == (communication_counter % 2 ? LOW : HIGH)) {
 			// interrupt is legit, so handle it, dumbass
 			
-			int instruction;
+			switch (communication_counter) {
+				case 0:
+					// first interrupt, read value from GPIO bus
+					// GPIO bus pins should already be set as inputs
+					instruction = read();
+					++comunication_counter;
+					break;
+				case 1:
+					// computer is done outputting signal
+					// start processing and set up outputs already
+					if (instruction == MSG_GET) {
+						write(adc_value / 256);
+					} else {
+						write(MSG_ACK);
+					}
+					TRISB &= 0x87;          // set up outputs
+					++comunication_counter;
+					break;
+				case 2:
+					// computer raises signal
+					// reading has begun
+					++comunication_counter;
+					break;
+				case 3:
+					// computer done reading value
+					if (instruction == MSG_GET) {
+						// write bit again
+						write((adc_value - (adc_value / 256)) / 16);
+						++comunication_counter;
+					} else {
+						PORTB |= 0x78;  // back to inputs (high impedance)
+						communication_counter = 0;      // next edge will be new command
+					}
+					break;
+				case 4:
+					// only get will come this far
+					// reading has begun
+					++communication_counter;
+					break;
+				case 5:
+					// computer done reading
+					// write one more value!
+					write((adc_value - (adc_value / 16)));
+					++communication_counter;
+				case 6:
+					// reading has begun
+					++communication_counter;
+					break;
+				case 7:
+					// reading done
+					// all over
+					PORTB |= 0x78;
+					communication_counter = 0;      // next edge is new instruction
+					break;
+				default:
+					// handle error
+					communication_counter = 0;      // next edge is new instruction
+					break;
+			} // end of switch statement
 
 			/*HANDLE COMMUNICATION HERE*/
 			/*
@@ -439,7 +512,6 @@ void PWM_Init() {
 
 int read() {
 	int instruction;
-	PORTB = PORTB | 0x78;       // set up inputs just in case
 
 	instruction = 0;
 	if (PORTBbits.RB1 == HIGH) {
@@ -459,7 +531,6 @@ int read() {
 }
 
 void write(int instruction) {
-	PORTB = PORTB & 0x87;   // set up outputs
 
 	if (instruction > 8) {
 		LATBbits.LATB4 = HIGH;
