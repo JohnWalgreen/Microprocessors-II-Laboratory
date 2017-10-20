@@ -92,6 +92,8 @@ Name: Hans-Edward Hoene
 Date: 20-Oct-2017
 Time: 1030 - ...
 Description:    1) Merge Kyle's PWM code with mine.
+				2) fixed adc value 4-bit conversion for writing (used shift + and)
+				3) initialise communication_counter global variable in gpio init
 
 */
 
@@ -116,7 +118,7 @@ I am referring to PIC microcontroller, <<PIC16F18857>>.
 		0: LED output
 		1: ADC (light-sesnor) input
 		2: PWM signal output
-		3:
+		3: PWM Power Supply (on and off)
 		4:
 		5:
 		6:
@@ -196,10 +198,25 @@ before the PIC continues normal operation again.
 #include "mcc_generated_files/mcc.h" //default library
 #include <htc.h>
 
+#define BUFFER 5
+
+typedef struct {
+	unsigned int vals [BUFFER + 1];
+
+	unsigned int front;			// index of first item to be removed from queue
+	unsigned int back;			// index - 1 is last item in queue
+} Queue;
+
+int isFull(Queue);
+int isEmpty(Queue);
+void enqueue(Queue, unsigned int);
+unsigned dequeue(Queue);
+
 /*Add Global Variables Here*/
 int adc_value;
 int communication_counter;
 int instruction;
+Queue execution_queue;
 
 /*Initialise ADC*/
 void ADC_LED_Init();    // also make LED port an output
@@ -223,6 +240,7 @@ void PWM_Turn120();
 void interrupt ISR();
 // read, execute, and respond (write) accordingly
 
+void execute(unsigned int instr);
 int read();                 // set GPIO pins to inputs and read their value
 void write(int);            // set GPIO pins to outputs and write value
 
@@ -298,6 +316,11 @@ void main() {
 			++led_counter;
 		}
 		/*END LIGHT SENSOR AND LED PART*/
+		
+		/*Queue execution*/
+		if (!isEmpty(execution_queue)) {
+			execute(dequeue(execution_queue));
+		}
 
 	} // end infinite loop
 
@@ -363,6 +386,8 @@ void ADC_LED_Init() {
 } // end of ADC_LED_Init
 
 void GPIO_Init() {
+	communication_counter = 0;
+	
 	TRISBbits.TRISB0 = 1;				// RB0 is input
 	ANSELBbits.ANSB0 = 0;				// RB0 is digital
 
@@ -398,42 +423,34 @@ void interrupt ISR() {
 					// first interrupt, read value from GPIO bus
 					// GPIO bus pins should already be set as inputs
 					instruction = read();
-					++comunication_counter;
+					++communication_counter;
 					break;
 				case 1:
 					// computer is done outputting signal
 					// start processing and set up outputs already
 					if (instruction == MSG_GET) {
-						write(adc_value / 256);
+						write((adc_value >> 8) & 0x3);
 					} else {
+						enqueue(execution_queue, instruction);
 						write(MSG_ACK);
 					}
 					TRISB &= 0x87;          // set up outputs
-					++comunication_counter;
+					++communication_counter;
 					break;
 				case 2:
 					// computer raises signal
 					// reading has begun
-					++comunication_counter;
+					++communication_counter;
 					break;
 				case 3:
 					// computer done reading value
 					if (instruction == MSG_GET) {
 						// write bit again
-						write((adc_value - (adc_value / 256)) / 16);
-						++comunication_counter;
+						write(adc_value >> 4 & 0xF);
+						++communication_counter;
 					} else {
 						PORTB |= 0x78;  // back to inputs (high impedance)
 						communication_counter = 0;      // next edge will be new command
-						
-						// this is done inside interrupt, which means instruction cannot be sent while here
-						if (instruction == MSG_TURN30) {
-							PWM_Turn30();
-						} else if (istruction == MSG_TURN90) {
-							PWM_Turn90();
-						} else if (instruction == MSG_TURN120) {
-							PWM_Turn120();
-						}
 					}
 					break;
 				case 4:
@@ -444,7 +461,7 @@ void interrupt ISR() {
 				case 5:
 					// computer done reading
 					// write one more value!
-					write((adc_value - (adc_value / 16)));
+					write(adc_value & 0xF);
 					++communication_counter;
 				case 6:
 					// reading has begun
@@ -461,58 +478,7 @@ void interrupt ISR() {
 					communication_counter = 0;      // next edge is new instruction
 					break;
 			} // end of switch statement
-
-			/*HANDLE COMMUNICATION HERE*/
-			/*
-			// IN THIS COMMENT IS POSSIBLE CODE, BUT IT HAS NEVER BEEN TESTED!!!
-			// SO... DO NOTHING
-			// read command, which should already be being outputted
-   			instruction = read();
-
-			// wait for GPIO to go low again
-			do {
-				while (PORTBbits.RB0 == HIGH) {continue;}       // wait for low
-				__delay_ms(DEBOUNCE_DELAY);                 	// debounce
-			} while (PORTBbits.RB0 == HIGH);
-
-			// READING OVER
-			switch (instruction) {
-				case MSG_RESET:
-					// reset sensor?
-					break;
-				case MSG_PING:
-					write(MSG_ACK);
-					break;
-				case MSG_GET:
-					// write last adc result (3 times) !!!!!!!!!!!!!!!!!!!!
-					write(MSG_ACK);
-					break;
-				case MSG_TURN30:
-					// KYLE'S FUNCTIONS
-					break;
-				case MSG_TURN90:
-					// KYLE'S FUNCTIONS
-					break;
-				case MSG_TURN120:
-					// KYLE'S FUNCTIONS
-					break;
-			}
-
-			// wait for GPIO to go high again
-			do {
-				while (PORTBbits.RB0 == LOW) {continue;}       // wait for high
-				__delay_ms(DEBOUNCE_DELAY);                 // debounce
-			} while (PORTBbits.RB0 == LOW);
-
-			// wait for GPIO to go low again
-			do {
-				while (PORTBbits.RB0 == HIGH) {continue;}       // wait for low
-				__delay_ms(DEBOUNCE_DELAY);                 // debounce
-			} while (PORTBbits.RB0 == HIGH);
-
-			PORTB = PORTB | 0x78;   // back to inputs
-		
-		*/
+			
 		}
 
 		IOCBFbits.IOCBF0 = LOW;     // clear flag
@@ -532,43 +498,42 @@ void PWM_Init()
 };
 void PWM_Turn30()
 {
-	SwitchPWM(PWM_SETTING);	// Switch PWM on.
+	SwitchPWM(LOW);	// Switch PWM on.
 	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
 	__delay_ms(1.16);
 	LATAbits.LATA2 = 0;
-	SwitchPWM(PWM_SETTING);
+	SwitchPWM(HIGH);
 };
 void PWM_Turn90()
 {
-	SwitchPWM(PWM_SETTING);
+	SwitchPWM(LOW);
 	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.5 ms, for a 90* angle.
 	__delay_ms(1.5);
 	LATAbits.LATA2 = 0;
-	SwitchPWM(PWM_SETTING);
+	SwitchPWM(HIGH);
 };
 void PWM_Turn120()
 {
-	SwitchPWM(PWM_SETTING);
+	SwitchPWM(LOW);
 	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.66ms, for a 120* angle.
 	__delay_ms(1.66);
 	LATAbits.LATA2 = 0;
-	SwitchPWM(PWM_SETTING);
+	SwitchPWM(HIGH);
 };
 void SwitchPWM(unsigned int PWM_SETTING)
 {
-	switch (PWM_SETTING)
-		case: HIGH
+	switch (PWM_SETTING) {
+		case HIGH:
 		{
 			LATAbits.LATA3 = LOW;
-			PWM_SWITCH = LOW;
 			break;
 		}
-		case: LOW
+		case LOW:
 		{
 			LATAbits.LATA3 = HIGH;
-			PWM_SWITCH = HIGH;
 			break;
 		}
+	}
 
 }
 
@@ -619,5 +584,42 @@ void write(int instruction) {
 		instruction -= 1;
 	} else {
 		LATBbits.LATB1 = LOW;
+	}
+}
+
+int isFull(Queue data) {
+	return (
+		((data.back + 1) % (BUFFER + 1))
+			== data.front);
+}
+int isEmpty(Queue data) {
+	return (data.back == data.front);
+}
+void enqueue(Queue data, unsigned int item) {
+	if (!isFull(data)) {
+		data.vals[data.back] = item;
+		data.back = (data.back + 1) % (BUFFER + 1);
+	}
+}
+unsigned int dequeue(Queue data) {
+	unsigned int ret;
+	if (!isEmpty(data)) {
+		ret = data.vals[data.front];
+		data.front = (data.front + 1) % (BUFFER + 1);
+	}
+	return ret;
+}
+
+void execute(unsigned int instr) {
+	switch (instr) {
+		case MSG_TURN30:
+			PWM_Turn30();
+			break;
+		case MSG_TURN90:
+			PWM_Turn90();
+			break;
+		case MSG_TURN120:
+			PWM_Turn120();
+			break;
 	}
 }
