@@ -126,12 +126,12 @@ I am referring to PIC microcontroller, <<PIC16F18857>>.
 		7:
 
 	PORTB:
-		0: GPIO strobe input from computer
+		0: BROKEN PORT!!!!!!! RIP - will be missed (shoutout to Derek)
 		1: GPIO data 0
 		2: GPIO data 1
 		3: GPIO data 2
 		4: GPIO data 3
-		5:
+		5: GPIO strobe input
 		6: NEVER USE!
 		7: NEVER USE!
 
@@ -172,7 +172,7 @@ before the PIC continues normal operation again.
 /*ADC Constants*/
 #define LED_ROLLOVER 10			// counter value, which triggers adc conversion to update LED
 // high threshold = hard to turn on, low threshold = easy to turn on
-#define LED_THRESHOLD 250    // adc value must go below this to turn on
+#define LED_THRESHOLD 350    // adc value must go below this to turn on
 #define OFFSET 20
 
 /*PWM Constants*/
@@ -389,8 +389,8 @@ void ADC_LED_Init() {
 void GPIO_Init() {
 	communication_counter = 0;
 	
-	TRISBbits.TRISB0 = 1;				// RB0 is input
-	ANSELBbits.ANSB0 = 0;				// RB0 is digital
+	TRISBbits.TRISB5 = 1;				// RB5 is input
+	ANSELBbits.ANSB5 = 0;				// RB5 is digital
 
 	TRISBbits.TRISB1 = 1;
 	TRISBbits.TRISB2 = 1;
@@ -399,8 +399,8 @@ void GPIO_Init() {
 
 	PIE0bits.IOCIE = 1;
 	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
-	IOCBPbits.IOCBP0 = 1;               // enable positive-edge on-change interrupt for RB0, which will always be digital input
-	IOCBNbits.IOCBN0 = 1;               // enable negative-edge
+	IOCBPbits.IOCBP5 = 1;               // enable positive-edge on-change interrupt for RB5, which will always be digital input
+	IOCBNbits.IOCBN5 = 1;               // enable negative-edge
 	INTCONbits.PEIE = 1;                // I think this is enable peripherel interrupts?
 	INTCONbits.GIE = 1;                 // enable global interrupts
 } // end of GPIO_Init
@@ -408,7 +408,7 @@ void GPIO_Init() {
 void interrupt ISR() {
 
 	// check source
-	if (PIR0bits.IOCIF == HIGH && IOCBFbits.IOCBF0 == HIGH) {
+	if (PIR0bits.IOCIF == HIGH && IOCBFbits.IOCBF5 == HIGH) {
 		// check if <<Interrupt-on-Change Interrupt Flag bit (read-only); p. 142>> is HIGH
 		// indicates that interrupt-on-change caused interrupt
 		// check if RB0 was the on-change interrupt (p. 261)
@@ -416,7 +416,7 @@ void interrupt ISR() {
 		
 		// debounce
 		__delay_ms(DEBOUNCE_DELAY);
-		if (PORTBbits.RB0 == (communication_counter % 2 ? LOW : HIGH)) {
+		if (PORTBbits.RB5 == (communication_counter % 2 ? LOW : HIGH)) {
 			// interrupt is legit, so handle it, dumbass
 			
 			switch (communication_counter) {
@@ -482,7 +482,7 @@ void interrupt ISR() {
 			
 		}
 
-		IOCBFbits.IOCBF0 = LOW;     // clear flag
+		IOCBFbits.IOCBF5 = LOW;     // clear flag
 
 	}   // else if other flags to determine other sources of interrupt
 
