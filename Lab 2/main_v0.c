@@ -94,6 +94,7 @@ Time: 1030 - ...
 Description:    1) Merge Kyle's PWM code with mine.
 				2) fixed adc value 4-bit conversion for writing (used shift + and)
 				3) initialise communication_counter global variable in gpio init
+				4) TO DO: add more support for other instructions in execute
 
 */
 
