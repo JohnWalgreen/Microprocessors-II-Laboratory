@@ -65,11 +65,36 @@ Description: 	1) modified interrupt test program and got it to work.  The proble
 					threshold+offset and threshold-offset.  Larger offsets allow for larger swings in light without LED
 					flickers.
 
+Name: Kyle Marescalchi
+Date: 14-October-2017
+Time: 19:00 - 20:00
+Description: Implemented the required functions for the functions MSG_TURN[XXX], updated the required code for the 'PWM' delay output.
+
 Name: Hans-Edward Hoene
 Date: 14-Oct-2017
 Time: 2210 - 2226
 Description: Fixed indentation in files, and I removed interrupt handler code that has not been tested (all in a big comment).  Got rid of test 
 files that have not been started.
+
+Name: Hans-Edward Hoene
+Date: 17-Oct-2017
+Time: 1247 - 1319
+Description:    ALL) Started working on communication.  Interrupt every time GPIO changes!
+				1) Added negative-edge interrupt for GPIO RB0
+				2) Added communication_counter global to handle what this particular interrupt is for
+				3) Added instruction as global variable to maintain instruction in between interrupts
+				4) ISSUE: debouncing properly involves distinguishing postive and negative interrupts
+				5) Issue at bullet 4 fixed by looking at counter % 2
+				6) write and read no longer change TRISB for GPIO pins
+				7) FIX: write out proper values for adc in large switch statement
+				
+Name: Hans-Edward Hoene
+Date: 20-Oct-2017
+Time: 1030 - ...
+Description:    1) Merge Kyle's PWM code with mine.
+				2) fixed adc value 4-bit conversion for writing (used shift + and)
+				3) initialise communication_counter global variable in gpio init
+				4) TO DO: add more support for other instructions in execute
 
 */
 
@@ -94,19 +119,19 @@ I am referring to PIC microcontroller, <<PIC16F18857>>.
 		0: LED output
 		1: ADC (light-sesnor) input
 		2: PWM signal output
-		3:
+		3: PWM Power Supply (on and off)
 		4:
 		5:
 		6:
 		7:
 
 	PORTB:
-		0: GPIO strobe input from computer
+		0: BROKEN PORT!!!!!!! RIP - will be missed (shoutout to Derek)
 		1: GPIO data 0
 		2: GPIO data 1
 		3: GPIO data 2
 		4: GPIO data 3
-		5:
+		5: GPIO strobe input
 		6: NEVER USE!
 		7: NEVER USE!
 
@@ -147,7 +172,7 @@ before the PIC continues normal operation again.
 /*ADC Constants*/
 #define LED_ROLLOVER 10			// counter value, which triggers adc conversion to update LED
 // high threshold = hard to turn on, low threshold = easy to turn on
-#define LED_THRESHOLD 250    // adc value must go below this to turn on
+#define LED_THRESHOLD 350    // adc value must go below this to turn on
 #define OFFSET 20
 
 /*PWM Constants*/
@@ -174,8 +199,25 @@ before the PIC continues normal operation again.
 #include "mcc_generated_files/mcc.h" //default library
 #include <htc.h>
 
+#define BUFFER 5
+
+typedef struct {
+	unsigned int vals [BUFFER + 1];
+
+	unsigned int front;			// index of first item to be removed from queue
+	unsigned int back;			// index - 1 is last item in queue
+} Queue;
+
+int isFull(Queue);
+int isEmpty(Queue);
+void enqueue(Queue, unsigned int);
+unsigned dequeue(Queue);
+
 /*Add Global Variables Here*/
 int adc_value;
+int communication_counter;
+int instruction;
+Queue execution_queue;
 
 /*Initialise ADC*/
 void ADC_LED_Init();    // also make LED port an output
@@ -188,22 +230,19 @@ void GPIO_Init();
 // set up interrupt for messages
 
 /*Move senso-motor (via PWM signals)*/
-void movePWM(unsigned int dest, unsigned int source);
-// senso-motor might move if you are not currently generating
-// PWM signals, so in implementation, you may need to always enable
-// and disable PWM.  You can maybe do this by plugging the PWM vin to a
-// port in the PIC, which will turn on and off.
-// THINK THIS THROUGH! We don't have timer thing (we are allegedly using
-// delays), so we can't be constantly generating PWM signals.  We must
-// find a way to keep the damn senso-motor still when we are not moving it.
-// As a side note, this thing must be quick.
+
+/* Switch the PWM signal between on/OFF. Used to turn the LATA_bits high and low.*/
+void SwitchPWM(unsigned int PWM_SETTING);
+void PWM_Turn30();
+void PWM_Turn90();
+void PWM_Turn120();
 
 /*Interrupt function for messages from computer*/
 void interrupt ISR();
 // read, execute, and respond (write) accordingly
 
+void execute(unsigned int instr);
 int read();                 // set GPIO pins to inputs and read their value
-
 void write(int);            // set GPIO pins to outputs and write value
 
 void main() {
@@ -278,6 +317,11 @@ void main() {
 			++led_counter;
 		}
 		/*END LIGHT SENSOR AND LED PART*/
+		
+		/*Queue execution*/
+		if (!isEmpty(execution_queue)) {
+			execute(dequeue(execution_queue));
+		}
 
 	} // end infinite loop
 
@@ -343,8 +387,10 @@ void ADC_LED_Init() {
 } // end of ADC_LED_Init
 
 void GPIO_Init() {
-	TRISBbits.TRISB0 = 1;				// RB0 is input
-	ANSELBbits.ANSB0 = 0;				// RB0 is digital
+	communication_counter = 0;
+	
+	TRISBbits.TRISB5 = 1;				// RB5 is input
+	ANSELBbits.ANSB5 = 0;				// RB5 is digital
 
 	TRISBbits.TRISB1 = 1;
 	TRISBbits.TRISB2 = 1;
@@ -353,7 +399,8 @@ void GPIO_Init() {
 
 	PIE0bits.IOCIE = 1;
 	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
-	IOCBPbits.IOCBP0 = 1;               // enable positive-edge on-change interrupt for RB0, which will always be digital input
+	IOCBPbits.IOCBP5 = 1;               // enable positive-edge on-change interrupt for RB5, which will always be digital input
+	IOCBNbits.IOCBN5 = 1;               // enable negative-edge
 	INTCONbits.PEIE = 1;                // I think this is enable peripherel interrupts?
 	INTCONbits.GIE = 1;                 // enable global interrupts
 } // end of GPIO_Init
@@ -361,85 +408,138 @@ void GPIO_Init() {
 void interrupt ISR() {
 
 	// check source
-	if (PIR0bits.IOCIF == HIGH && IOCBFbits.IOCBF0 == HIGH) {
+	if (PIR0bits.IOCIF == HIGH && IOCBFbits.IOCBF5 == HIGH) {
 		// check if <<Interrupt-on-Change Interrupt Flag bit (read-only); p. 142>> is HIGH
 		// indicates that interrupt-on-change caused interrupt
 		// check if RB0 was the on-change interrupt (p. 261)
 		// by design, only positive-edge change is enabled
-
+		
 		// debounce
 		__delay_ms(DEBOUNCE_DELAY);
-		if (PORTBbits.RB0 == HIGH) {
+		if (PORTBbits.RB5 == (communication_counter % 2 ? LOW : HIGH)) {
 			// interrupt is legit, so handle it, dumbass
 			
-			int instruction;
-
-			/*HANDLE COMMUNICATION HERE*/
-			/*
-			// IN THIS COMMENT IS POSSIBLE CODE, BUT IT HAS NEVER BEEN TESTED!!!
-			// SO... DO NOTHING
-			// read command, which should already be being outputted
-   			instruction = read();
-
-			// wait for GPIO to go low again
-			do {
-				while (PORTBbits.RB0 == HIGH) {continue;}       // wait for low
-				__delay_ms(DEBOUNCE_DELAY);                 	// debounce
-			} while (PORTBbits.RB0 == HIGH);
-
-			// READING OVER
-			switch (instruction) {
-				case MSG_RESET:
-					// reset sensor?
+			switch (communication_counter) {
+				case 0:
+					// first interrupt, read value from GPIO bus
+					// GPIO bus pins should already be set as inputs
+					instruction = read();
+					++communication_counter;
 					break;
-				case MSG_PING:
-					write(MSG_ACK);
+				case 1:
+					// computer is done outputting signal
+					// start processing and set up outputs already
+					if (instruction == MSG_GET) {
+						write((adc_value >> 8) & 0x3);
+					} else {
+						enqueue(execution_queue, instruction);
+						write(MSG_ACK);
+					}
+					TRISB &= 0x87;          // set up outputs
+					++communication_counter;
 					break;
-				case MSG_GET:
-					// write last adc result (3 times) !!!!!!!!!!!!!!!!!!!!
-					write(MSG_ACK);
+				case 2:
+					// computer raises signal
+					// reading has begun
+					++communication_counter;
 					break;
-				case MSG_TURN30:
-					// KYLE'S FUNCTIONS
+				case 3:
+					// computer done reading value
+					if (instruction == MSG_GET) {
+						// write bit again
+						write(adc_value >> 4 & 0xF);
+						++communication_counter;
+					} else {
+						PORTB |= 0x78;  // back to inputs (high impedance)
+						communication_counter = 0;      // next edge will be new command
+					}
 					break;
-				case MSG_TURN90:
-					// KYLE'S FUNCTIONS
+				case 4:
+					// only get will come this far
+					// reading has begun
+					++communication_counter;
 					break;
-				case MSG_TURN120:
-					// KYLE'S FUNCTIONS
+				case 5:
+					// computer done reading
+					// write one more value!
+					write(adc_value & 0xF);
+					++communication_counter;
+				case 6:
+					// reading has begun
+					++communication_counter;
 					break;
-			}
-
-			// wait for GPIO to go high again
-			do {
-				while (PORTBbits.RB0 == LOW) {continue;}       // wait for high
-				__delay_ms(DEBOUNCE_DELAY);                 // debounce
-			} while (PORTBbits.RB0 == LOW);
-
-			// wait for GPIO to go low again
-			do {
-				while (PORTBbits.RB0 == HIGH) {continue;}       // wait for low
-				__delay_ms(DEBOUNCE_DELAY);                 // debounce
-			} while (PORTBbits.RB0 == HIGH);
-
-			PORTB = PORTB | 0x78;   // back to inputs
-		
-		*/
+				case 7:
+					// reading done
+					// all over
+					PORTB |= 0x78;
+					communication_counter = 0;      // next edge is new instruction
+					break;
+				default:
+					// handle error
+					communication_counter = 0;      // next edge is new instruction
+					break;
+			} // end of switch statement
+			
 		}
 
-		IOCBFbits.IOCBF0 = LOW;     // clear flag
+		IOCBFbits.IOCBF5 = LOW;     // clear flag
 
 	}   // else if other flags to determine other sources of interrupt
 
 }
 
-void PWM_Init() {
-    // CODE THIS, KYLE!!!
+void PWM_Init()
+{
+	TRISAbits.TRISA2 = 0; 	// TRISC pin 2 is output.
+							// Will control the PWM of the servo motor.
+	TRISAbits.TRISA3 = 0; 	// TRISC pin 3 is output
+							// Will be the on/off switch of the PWM.
+	LATAbits.LATA2 = 0;		//
+	LATAbits.LATA3 = 0;		// Both TRISC Pin 2 & 3 default off.
+};
+void PWM_Turn30()
+{
+	SwitchPWM(LOW);	// Switch PWM on.
+	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
+	__delay_ms(1.16);
+	LATAbits.LATA2 = 0;
+	SwitchPWM(HIGH);
+};
+void PWM_Turn90()
+{
+	SwitchPWM(LOW);
+	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.5 ms, for a 90* angle.
+	__delay_ms(1.5);
+	LATAbits.LATA2 = 0;
+	SwitchPWM(HIGH);
+};
+void PWM_Turn120()
+{
+	SwitchPWM(LOW);
+	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.66ms, for a 120* angle.
+	__delay_ms(1.66);
+	LATAbits.LATA2 = 0;
+	SwitchPWM(HIGH);
+};
+void SwitchPWM(unsigned int PWM_SETTING)
+{
+	switch (PWM_SETTING) {
+		case HIGH:
+		{
+			LATAbits.LATA3 = LOW;
+			break;
+		}
+		case LOW:
+		{
+			LATAbits.LATA3 = HIGH;
+			break;
+		}
+	}
+
 }
 
 int read() {
 	int instruction;
-	PORTB = PORTB | 0x78;       // set up inputs just in case
 
 	instruction = 0;
 	if (PORTBbits.RB1 == HIGH) {
@@ -457,9 +557,7 @@ int read() {
 
 	return instruction;
 }
-
 void write(int instruction) {
-	PORTB = PORTB & 0x87;   // set up outputs
 
 	if (instruction > 8) {
 		LATBbits.LATB4 = HIGH;
@@ -487,5 +585,42 @@ void write(int instruction) {
 		instruction -= 1;
 	} else {
 		LATBbits.LATB1 = LOW;
+	}
+}
+
+int isFull(Queue data) {
+	return (
+		((data.back + 1) % (BUFFER + 1))
+			== data.front);
+}
+int isEmpty(Queue data) {
+	return (data.back == data.front);
+}
+void enqueue(Queue data, unsigned int item) {
+	if (!isFull(data)) {
+		data.vals[data.back] = item;
+		data.back = (data.back + 1) % (BUFFER + 1);
+	}
+}
+unsigned int dequeue(Queue data) {
+	unsigned int ret;
+	if (!isEmpty(data)) {
+		ret = data.vals[data.front];
+		data.front = (data.front + 1) % (BUFFER + 1);
+	}
+	return ret;
+}
+
+void execute(unsigned int instr) {
+	switch (instr) {
+		case MSG_TURN30:
+			PWM_Turn30();
+			break;
+		case MSG_TURN90:
+			PWM_Turn90();
+			break;
+		case MSG_TURN120:
+			PWM_Turn120();
+			break;
 	}
 }
