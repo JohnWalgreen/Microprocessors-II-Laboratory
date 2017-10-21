@@ -90,12 +90,24 @@ Description:    ALL) Started working on communication.  Interrupt every time GPI
 				
 Name: Hans-Edward Hoene
 Date: 20-Oct-2017
-Time: 1030 - ...
+Time: 1030 - 1320 & night
 Description:    1) Merge Kyle's PWM code with mine.
 				2) fixed adc value 4-bit conversion for writing (used shift + and)
 				3) initialise communication_counter global variable in gpio init
-				4) TO DO: add more support for other instructions in execute
-
+				4) TO DO:	- add more support for other instructions in execute
+						- add file structure tree to help find what you are loking for
+						- better comments for all prototypes
+						- eliminate redundancy in PWM code
+						- test
+						- eliminate led_threshold and offset
+							- instead, use min and max range variables that update.  They determine threshold.
+						- is adc_value unsigned? it should be
+						- average variable for adc? influence starts at 1
+							- next influence = 1 / ((1 / influence) + 1)
+							- next average = avg + influence * (new_value - avg)
+						- can average vs. range/2 determine offset? Maybe offset is directly proportional to range?
+						- does PWM need multiple square wave peaks? Does no signal move PWM to 0 degrees? If yes to last question, 
+							how do we turn PWM on/off?
 */
 
 /*
