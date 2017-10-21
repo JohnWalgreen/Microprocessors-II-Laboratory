@@ -108,6 +108,7 @@ Description:    1) Merge Kyle's PWM code with mine.
 						- can average vs. range/2 determine offset? Maybe offset is directly proportional to range?
 						- does PWM need multiple square wave peaks? Does no signal move PWM to 0 degrees? If yes to last question, 
 							how do we turn PWM on/off?
+						- fix led +/-offset in code for proper debounce (< is fine)(< + offset is not fine)
 */
 
 /*
