@@ -114,6 +114,18 @@ Name: Hans-Edward Hoene
 Date: 22-Oct-2017
 Time: 1600 - ...
 Description:	1) Made threshold dynamic
+				2) Got rid of execute function and just put it in main
+				3) Eliminated redundant PWM code
+				4) Referenced ANSELA in PWM init to select digital output
+				5) RA3 no longer needed to disable/enable PWM motor.
+				6) Fixed communication error. I forgot to write back MSG_ACK when adc bits were done sending.
+
+Name: Kyle Marescalchi
+Date: 22-Oct-2017
+Time: 1715 - 1750
+Description:	1) Got PWM functios to work.
+				2) Discovered that PWM requires +6V for power supply.
+				3) Discovered that 0% duty cycle triggers no movement, so RA3 was no longer needed.
 */
 
 /*
@@ -137,7 +149,7 @@ I am referring to PIC microcontroller, <<PIC16F18857>>.
 		0: LED output
 		1: ADC (light-sesnor) input
 		2: PWM signal output
-		3: PWM Power Supply (on and off)
+		3: 
 		4:
 		5:
 		6:
@@ -249,8 +261,6 @@ void GPIO_Init();
 
 /*Move senso-motor (via PWM signals)*/
 
-/* Switch the PWM signal between on/OFF. Used to turn the LATA_bits high and low.*/
-void SwitchPWM(unsigned int PWM_SETTING);
 void PWM_Turn30();
 void PWM_Turn90();
 void PWM_Turn120();
@@ -259,7 +269,6 @@ void PWM_Turn120();
 void interrupt ISR();
 // read, execute, and respond (write) accordingly
 
-void execute(unsigned int instr);
 int read();                 // set GPIO pins to inputs and read their value
 void write(int);            // set GPIO pins to outputs and write value
 
@@ -318,7 +327,7 @@ void main() {
 				// update led
 				adc_value = (ADRESH << 8) + ADRESL;
 				if (adc_value > max) {
-					max = adc_vaue;
+					max = adc_value;
 					threshold = (max + min) >> 1;
 				}
 				if (adc_value < min) {
@@ -352,7 +361,22 @@ void main() {
 		
 		/*Queue execution*/
 		if (!isEmpty(execution_queue)) {
-			execute(dequeue(execution_queue));
+			switch (dequeue(execution_queue)) {
+				case MSG_RESET:
+					min = 1023;
+					max = 0;
+					threshold = 0;
+					break;
+				case MSG_TURN30:
+					PWM_Turn30();
+					break;
+				case MSG_TURN90:
+					PWM_Turn90();
+					break;
+				case MSG_TURN120:
+					PWM_Turn120();
+					break;
+			}
 		}
 
 	} // end infinite loop
@@ -502,7 +526,15 @@ void interrupt ISR() {
 					break;
 				case 7:
 					// reading done
-					// all over
+					write(MSG_ACK);
+					++communication_counter;
+					break;
+				case 8:
+					++communication_counter;
+					// reading
+					break;
+				case 9:
+					// all done w/ everything
 					PORTB |= 0x78;
 					communication_counter = 0;      // next edge is new instruction
 					break;
@@ -524,51 +556,39 @@ void PWM_Init()
 {
 	TRISAbits.TRISA2 = 0; 	// TRISC pin 2 is output.
 							// Will control the PWM of the servo motor.
-	TRISAbits.TRISA3 = 0; 	// TRISC pin 3 is output
-							// Will be the on/off switch of the PWM.
-	LATAbits.LATA2 = 0;		//
-	LATAbits.LATA3 = 0;		// Both TRISC Pin 2 & 3 default off.
+	ANSELAbits.ANSA2 = LOW;
+	LATAbits.LATA2 = 0;
 };
 void PWM_Turn30()
 {
-	SwitchPWM(LOW);	// Switch PWM on.
-	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
-	__delay_ms(1.16);
-	LATAbits.LATA2 = 0;
-	SwitchPWM(HIGH);
+	int i;
+	for (i = 0; i<15; i++) {
+		LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
+		__delay_ms(0.9);
+		LATAbits.LATA2 = 0;
+		__delay_ms(18.2);
+	}
 };
 void PWM_Turn90()
 {
-	SwitchPWM(LOW);
-	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.5 ms, for a 90* angle.
-	__delay_ms(1.5);
-	LATAbits.LATA2 = 0;
-	SwitchPWM(HIGH);
+	int i;
+	for (i = 0; i<15; i++) {
+		LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
+		__delay_ms(1.5);
+		LATAbits.LATA2 = 0;
+		__delay_ms(18.5);
+	}
 };
 void PWM_Turn120()
 {
-	SwitchPWM(LOW);
-	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.66ms, for a 120* angle.
-	__delay_ms(1.66);
-	LATAbits.LATA2 = 0;
-	SwitchPWM(HIGH);
-};
-void SwitchPWM(unsigned int PWM_SETTING)
-{
-	switch (PWM_SETTING) {
-		case HIGH:
-		{
-			LATAbits.LATA3 = LOW;
-			break;
-		}
-		case LOW:
-		{
-			LATAbits.LATA3 = HIGH;
-			break;
-		}
+	int i;
+	for (i = 0; i<15; i++) {
+		LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
+		__delay_ms(2.1);
+		LATAbits.LATA2 = 0;
+		__delay_ms(17.9);
 	}
-
-}
+};
 
 int read() {
 	int instruction;
@@ -641,18 +661,4 @@ unsigned int dequeue(Queue data) {
 		data.front = (data.front + 1) % (BUFFER + 1);
 	}
 	return ret;
-}
-
-void execute(unsigned int instr) {
-	switch (instr) {
-		case MSG_TURN30:
-			PWM_Turn30();
-			break;
-		case MSG_TURN90:
-			PWM_Turn90();
-			break;
-		case MSG_TURN120:
-			PWM_Turn120();
-			break;
-	}
 }
