@@ -6,7 +6,7 @@
 #include <htc.h>
 
 /*FILE SPECIFIC DEFINES*/
-#define ON 10000
+#define ON 1000
 #define OFF 200
 #define PAUSE 1000
 
@@ -18,7 +18,6 @@ void main() {
 
 	GPIO_Init();
 
-	TRISB = 0xFF;
 	TRISAbits.TRISA0 = 0;
 	ANSELAbits.ANSA0 = 0;
 
@@ -35,13 +34,8 @@ int read() {
 /*NOT REAL*/
 void GPIO_Init() {
 
-	TRISBbits.TRISB5 = 1;				// RB5 is input
-	ANSELBbits.ANSB5 = 0;				// RB5 is digital
-
-	TRISBbits.TRISB1 = 1;
-	TRISBbits.TRISB2 = 1;
-	TRISBbits.TRISB3 = 1;
-	TRISBbits.TRISB4 = 1;               // GPIO input set up
+	TRISB = 0xFF;
+	ANSELB = 0x00;
 
 	PIE0bits.IOCIE = 1;
 	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
