@@ -109,6 +109,11 @@ Description:    1) Merge Kyle's PWM code with mine.
 						- does PWM need multiple square wave peaks? Does no signal move PWM to 0 degrees? If yes to last question, 
 							how do we turn PWM on/off?
 						- fix led +/-offset in code for proper debounce (< is fine)(< + offset is not fine)
+
+Name: Hans-Edward Hoene
+Date: 22-Oct-2017
+Time: 1600 - ...
+Description:	1) Made threshold dynamic
 */
 
 /*
@@ -271,9 +276,15 @@ void main() {
 
 	// declare other variables such as counters and other crap
 	int led_counter;
+	int max, min;
+	int threshold;
 
 	// initialisations
 	led_counter = 0;
+	max = 0;
+	min = 1023;
+	threshold = 0;
+
 
 	while (1) {
 
@@ -306,15 +317,23 @@ void main() {
 
 				// update led
 				adc_value = (ADRESH << 8) + ADRESL;
+				if (adc_value > max) {
+					max = adc_vaue;
+					threshold = (max + min) >> 1;
+				}
+				if (adc_value < min) {
+					min = adc_value;
+					threshold = (max + min) >> 1;
+				}
 				
 				// debounce
 				if (LATAbits.LATA0 == HIGH) {
 					/*LED is off; to turn on, adc_value must go below the lower offset*/
-					if (adc_value < LED_THRESHOLD + OFFSET) {
+					if (adc_value < threshold - OFFSET) {
 						LATAbits.LATA0 = LOW;
 					}
 				} else {
-					if (adc_value > LED_THRESHOLD - OFFSET) {
+					if (adc_value > threshold + OFFSET) {
 						LATAbits.LATA0 = HIGH;
 					}
 				}
