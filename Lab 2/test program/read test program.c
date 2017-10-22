@@ -28,7 +28,7 @@ void main() {
 }
 
 int read() {
-	return PORTB >> 1;
+	return (PORTB >> 1) & 0xF;
 }
 
 /*NOT REAL*/

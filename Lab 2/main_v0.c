@@ -445,13 +445,8 @@ void ADC_LED_Init() {
 void GPIO_Init() {
 	communication_counter = 0;
 	
-	TRISBbits.TRISB5 = 1;				// RB5 is input
-	ANSELBbits.ANSB5 = 0;				// RB5 is digital
-
-	TRISBbits.TRISB1 = 1;
-	TRISBbits.TRISB2 = 1;
-	TRISBbits.TRISB3 = 1;
-	TRISBbits.TRISB4 = 1;               // GPIO input set up
+	TRISB = 0xFF;
+	ANSELB = 0x00;						// PORT B is digital input
 
 	PIE0bits.IOCIE = 1;
 	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
@@ -591,23 +586,7 @@ void PWM_Turn120()
 };
 
 int read() {
-	int instruction;
-
-	instruction = 0;
-	if (PORTBbits.RB1 == HIGH) {
-		instruction += 1;
-	}
-	if (PORTBbits.RB2 == HIGH) {
-		instruction += 2;
-	}
-	if (PORTBbits.RB3 == HIGH) {
-		instruction += 4;
-	}
-	if (PORTBbits.RB4 == HIGH) {
-		instruction += 8;
-	}
-
-	return instruction;
+	return (PORTB >> 1) & 0xF;
 }
 void write(int instruction) {
 
