@@ -112,7 +112,7 @@ Description:    1) Merge Kyle's PWM code with mine.
 
 Name: Hans-Edward Hoene
 Date: 22-Oct-2017
-Time: 1600 - ...
+Time: 1600 - 1959
 Description:	1) Made threshold dynamic
 				2) Got rid of execute function and just put it in main
 				3) Eliminated redundant PWM code
