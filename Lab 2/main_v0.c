@@ -109,6 +109,29 @@ Description:    1) Merge Kyle's PWM code with mine.
 						- does PWM need multiple square wave peaks? Does no signal move PWM to 0 degrees? If yes to last question, 
 							how do we turn PWM on/off?
 						- fix led +/-offset in code for proper debounce (< is fine)(< + offset is not fine)
+
+Name: Hans-Edward Hoene
+Date: 22-Oct-2017
+Time: 1600 - 1959
+Description:	1) Made threshold dynamic
+				2) Got rid of execute function and just put it in main
+				3) Eliminated redundant PWM code
+				4) Referenced ANSELA in PWM init to select digital output
+				5) RA3 no longer needed to disable/enable PWM motor.
+				6) Fixed communication error. I forgot to write back MSG_ACK when adc bits were done sending.
+
+Name: Kyle Marescalchi
+Date: 22-Oct-2017
+Time: 1715 - 1750
+Description:	1) Got PWM functios to work.
+				2) Discovered that PWM requires +6V for power supply.
+				3) Discovered that 0% duty cycle triggers no movement, so RA3 was no longer needed.
+
+Name: Hans-Edward Hoene
+Date: 23-Oct-2017
+Time: 1350 - 1430
+Description:	1) fixed PORTB for TRISB in interrupt ISR
+				2) Tested write function (all test programs are functional!)
 */
 
 /*
@@ -132,7 +155,7 @@ I am referring to PIC microcontroller, <<PIC16F18857>>.
 		0: LED output
 		1: ADC (light-sesnor) input
 		2: PWM signal output
-		3: PWM Power Supply (on and off)
+		3: 
 		4:
 		5:
 		6:
@@ -181,6 +204,8 @@ When the GPIO signal goes high, an interrupt is triggered and a read operation i
 performed.  The PIC processes the command and responds the correct number of times
 before the PIC continues normal operation again.
 */
+
+
 
 /*ADC Constants*/
 #define LED_ROLLOVER 10			// counter value, which triggers adc conversion to update LED
@@ -244,8 +269,6 @@ void GPIO_Init();
 
 /*Move senso-motor (via PWM signals)*/
 
-/* Switch the PWM signal between on/OFF. Used to turn the LATA_bits high and low.*/
-void SwitchPWM(unsigned int PWM_SETTING);
 void PWM_Turn30();
 void PWM_Turn90();
 void PWM_Turn120();
@@ -254,7 +277,6 @@ void PWM_Turn120();
 void interrupt ISR();
 // read, execute, and respond (write) accordingly
 
-void execute(unsigned int instr);
 int read();                 // set GPIO pins to inputs and read their value
 void write(int);            // set GPIO pins to outputs and write value
 
@@ -271,9 +293,15 @@ void main() {
 
 	// declare other variables such as counters and other crap
 	int led_counter;
+	int max, min;
+	int threshold;
 
 	// initialisations
 	led_counter = 0;
+	max = 0;
+	min = 1023;
+	threshold = 0;
+
 
 	while (1) {
 
@@ -306,15 +334,23 @@ void main() {
 
 				// update led
 				adc_value = (ADRESH << 8) + ADRESL;
+				if (adc_value > max) {
+					max = adc_value;
+					threshold = (max + min) >> 1;
+				}
+				if (adc_value < min) {
+					min = adc_value;
+					threshold = (max + min) >> 1;
+				}
 				
 				// debounce
 				if (LATAbits.LATA0 == HIGH) {
 					/*LED is off; to turn on, adc_value must go below the lower offset*/
-					if (adc_value < LED_THRESHOLD + OFFSET) {
+					if (adc_value < threshold - OFFSET) {
 						LATAbits.LATA0 = LOW;
 					}
 				} else {
-					if (adc_value > LED_THRESHOLD - OFFSET) {
+					if (adc_value > threshold + OFFSET) {
 						LATAbits.LATA0 = HIGH;
 					}
 				}
@@ -333,7 +369,22 @@ void main() {
 		
 		/*Queue execution*/
 		if (!isEmpty(execution_queue)) {
-			execute(dequeue(execution_queue));
+			switch (dequeue(execution_queue)) {
+				case MSG_RESET:
+					min = 1023;
+					max = 0;
+					threshold = 0;
+					break;
+				case MSG_TURN30:
+					PWM_Turn30();
+					break;
+				case MSG_TURN90:
+					PWM_Turn90();
+					break;
+				case MSG_TURN120:
+					PWM_Turn120();
+					break;
+			}
 		}
 
 	} // end infinite loop
@@ -402,13 +453,8 @@ void ADC_LED_Init() {
 void GPIO_Init() {
 	communication_counter = 0;
 	
-	TRISBbits.TRISB5 = 1;				// RB5 is input
-	ANSELBbits.ANSB5 = 0;				// RB5 is digital
-
-	TRISBbits.TRISB1 = 1;
-	TRISBbits.TRISB2 = 1;
-	TRISBbits.TRISB3 = 1;
-	TRISBbits.TRISB4 = 1;               // GPIO input set up
+	TRISB = 0xFF;
+	ANSELB = 0x00;						// PORT B is digital input
 
 	PIE0bits.IOCIE = 1;
 	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
@@ -448,7 +494,7 @@ void interrupt ISR() {
 						enqueue(execution_queue, instruction);
 						write(MSG_ACK);
 					}
-					TRISB &= 0x87;          // set up outputs
+					TRISB &= 0xE1;          // set up outputs
 					++communication_counter;
 					break;
 				case 2:
@@ -463,7 +509,7 @@ void interrupt ISR() {
 						write(adc_value >> 4 & 0xF);
 						++communication_counter;
 					} else {
-						PORTB |= 0x78;  // back to inputs (high impedance)
+						TRISB |= 0x1E;  // back to inputs (high impedance)
 						communication_counter = 0;      // next edge will be new command
 					}
 					break;
@@ -483,8 +529,16 @@ void interrupt ISR() {
 					break;
 				case 7:
 					// reading done
-					// all over
-					PORTB |= 0x78;
+					write(MSG_ACK);
+					++communication_counter;
+					break;
+				case 8:
+					++communication_counter;
+					// reading
+					break;
+				case 9:
+					// all done w/ everything
+					TRISB |= 0x1E;
 					communication_counter = 0;      // next edge is new instruction
 					break;
 				default:
@@ -505,100 +559,46 @@ void PWM_Init()
 {
 	TRISAbits.TRISA2 = 0; 	// TRISC pin 2 is output.
 							// Will control the PWM of the servo motor.
-	TRISAbits.TRISA3 = 0; 	// TRISC pin 3 is output
-							// Will be the on/off switch of the PWM.
-	LATAbits.LATA2 = 0;		//
-	LATAbits.LATA3 = 0;		// Both TRISC Pin 2 & 3 default off.
+	ANSELAbits.ANSA2 = LOW;
+	LATAbits.LATA2 = 0;
 };
 void PWM_Turn30()
 {
-	SwitchPWM(LOW);	// Switch PWM on.
-	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
-	__delay_ms(1.16);
-	LATAbits.LATA2 = 0;
-	SwitchPWM(HIGH);
+	int i;
+	for (i = 0; i<15; i++) {
+		LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
+		__delay_ms(0.9);
+		LATAbits.LATA2 = 0;
+		__delay_ms(18.2);
+	}
 };
 void PWM_Turn90()
 {
-	SwitchPWM(LOW);
-	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.5 ms, for a 90* angle.
-	__delay_ms(1.5);
-	LATAbits.LATA2 = 0;
-	SwitchPWM(HIGH);
+	int i;
+	for (i = 0; i<15; i++) {
+		LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
+		__delay_ms(1.5);
+		LATAbits.LATA2 = 0;
+		__delay_ms(18.5);
+	}
 };
 void PWM_Turn120()
 {
-	SwitchPWM(LOW);
-	LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.66ms, for a 120* angle.
-	__delay_ms(1.66);
-	LATAbits.LATA2 = 0;
-	SwitchPWM(HIGH);
-};
-void SwitchPWM(unsigned int PWM_SETTING)
-{
-	switch (PWM_SETTING) {
-		case HIGH:
-		{
-			LATAbits.LATA3 = LOW;
-			break;
-		}
-		case LOW:
-		{
-			LATAbits.LATA3 = HIGH;
-			break;
-		}
+	int i;
+	for (i = 0; i<15; i++) {
+		LATAbits.LATA2 = 1; 	// Set PWM Signal HIGH for 1.16 ms, for a 30* angle.
+		__delay_ms(2.1);
+		LATAbits.LATA2 = 0;
+		__delay_ms(17.9);
 	}
-
-}
+};
 
 int read() {
-	int instruction;
-
-	instruction = 0;
-	if (PORTBbits.RB1 == HIGH) {
-		instruction += 1;
-	}
-	if (PORTBbits.RB2 == HIGH) {
-		instruction += 2;
-	}
-	if (PORTBbits.RB3 == HIGH) {
-		instruction += 4;
-	}
-	if (PORTBbits.RB4 == HIGH) {
-		instruction += 8;
-	}
-
-	return instruction;
+	return (PORTB >> 1) & 0xF;
 }
 void write(int instruction) {
-
-	if (instruction > 8) {
-		LATBbits.LATB4 = HIGH;
-		instruction -= 8;
-	} else {
-		LATBbits.LATB4 = LOW;
-	}
-
-	if (instruction > 4) {
-		LATBbits.LATB3 = HIGH;
-		instruction -= 4;
-	} else {
-		LATBbits.LATB3 = LOW;
-	}
-
-	if (instruction > 2) {
-		LATBbits.LATB2 = HIGH;
-		instruction -= 2;
-	} else {
-		LATBbits.LATB2 = LOW;
-	}
-
-	if (instruction > 1) {
-		LATBbits.LATB1 = HIGH;
-		instruction -= 1;
-	} else {
-		LATBbits.LATB1 = LOW;
-	}
+	LATB &= 0xE1;
+	LATB |= (instruction & 0xF) << 1;
 }
 
 int isFull(Queue data) {
@@ -622,18 +622,4 @@ unsigned int dequeue(Queue data) {
 		data.front = (data.front + 1) % (BUFFER + 1);
 	}
 	return ret;
-}
-
-void execute(unsigned int instr) {
-	switch (instr) {
-		case MSG_TURN30:
-			PWM_Turn30();
-			break;
-		case MSG_TURN90:
-			PWM_Turn90();
-			break;
-		case MSG_TURN120:
-			PWM_Turn120();
-			break;
-	}
 }

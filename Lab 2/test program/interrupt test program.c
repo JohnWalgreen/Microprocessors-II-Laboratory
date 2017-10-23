@@ -20,6 +20,7 @@ shall occur and the RA0 output will toggle
 NOTE: we could not get square wave out, but
 interrupts seem functional.
 */
+/*THIS WORKED!*/
 
 
 // other
