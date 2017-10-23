@@ -199,6 +199,8 @@ performed.  The PIC processes the command and responds the correct number of tim
 before the PIC continues normal operation again.
 */
 
+
+
 /*ADC Constants*/
 #define LED_ROLLOVER 10			// counter value, which triggers adc conversion to update LED
 // high threshold = hard to turn on, low threshold = easy to turn on
@@ -589,34 +591,8 @@ int read() {
 	return (PORTB >> 1) & 0xF;
 }
 void write(int instruction) {
-
-	if (instruction > 8) {
-		LATBbits.LATB4 = HIGH;
-		instruction -= 8;
-	} else {
-		LATBbits.LATB4 = LOW;
-	}
-
-	if (instruction > 4) {
-		LATBbits.LATB3 = HIGH;
-		instruction -= 4;
-	} else {
-		LATBbits.LATB3 = LOW;
-	}
-
-	if (instruction > 2) {
-		LATBbits.LATB2 = HIGH;
-		instruction -= 2;
-	} else {
-		LATBbits.LATB2 = LOW;
-	}
-
-	if (instruction > 1) {
-		LATBbits.LATB1 = HIGH;
-		instruction -= 1;
-	} else {
-		LATBbits.LATB1 = LOW;
-	}
+	LATB &= 0xE1;
+	LATB |= (instruction & 0xF) << 1;
 }
 
 int isFull(Queue data) {
