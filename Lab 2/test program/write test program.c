@@ -8,12 +8,25 @@ void interrupt ISR();
 
 void main() {
 
+	int i;
+
 	GPIO_Init();
+
+	TRISAbits.TRISA0 = 0;
+	ANSELAbits.ANSA0 = 0;
+
+	TRISAbits.TRISA3 = 0;
 
 	TRISB = 0xFF;
 	TRISB &= 0xE1;
+	ANSELB = 0x00;
 
-	while (1) { continue;}
+	while (1) {
+		for (i = 0; i >= 0; i++) {}
+		LATAbits.LATA3 = 1;
+		for (i = 0; i >= 0; i++) {}
+		LATAbits.LATA3 = 0;
+	}
 
 	return;
 }
@@ -36,6 +49,9 @@ void GPIO_Init() {
 } // end of GPIO_Init
 
 void interrupt ISR() {
-	write(LATB + 1);
+	int x = (LATB >> 1) & 0xF;
+	write(x + 1);
+	LATAbits.LATA0 = (LATAbits.LATA0 == HIGH ? LOW : HIGH);
+	IOCBFbits.IOCBF5 = LOW;
 	return;
 }

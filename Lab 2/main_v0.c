@@ -126,6 +126,12 @@ Time: 1715 - 1750
 Description:	1) Got PWM functios to work.
 				2) Discovered that PWM requires +6V for power supply.
 				3) Discovered that 0% duty cycle triggers no movement, so RA3 was no longer needed.
+
+Name: Hans-Edward Hoene
+Date: 23-Oct-2017
+Time: 1350 - 1430
+Description:	1) fixed PORTB for TRISB in interrupt ISR
+				2) Tested write function (all test programs are functional!)
 */
 
 /*
@@ -488,7 +494,7 @@ void interrupt ISR() {
 						enqueue(execution_queue, instruction);
 						write(MSG_ACK);
 					}
-					TRISB &= 0x87;          // set up outputs
+					TRISB &= 0xE1;          // set up outputs
 					++communication_counter;
 					break;
 				case 2:
@@ -503,7 +509,7 @@ void interrupt ISR() {
 						write(adc_value >> 4 & 0xF);
 						++communication_counter;
 					} else {
-						PORTB |= 0x78;  // back to inputs (high impedance)
+						TRISB |= 0x1E;  // back to inputs (high impedance)
 						communication_counter = 0;      // next edge will be new command
 					}
 					break;
@@ -532,7 +538,7 @@ void interrupt ISR() {
 					break;
 				case 9:
 					// all done w/ everything
-					PORTB |= 0x78;
+					TRISB |= 0x1E;
 					communication_counter = 0;      // next edge is new instruction
 					break;
 				default:
