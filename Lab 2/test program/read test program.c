@@ -16,14 +16,22 @@ void interrupt ISR();
 
 void main() {
 
+    int i;
+
 	GPIO_Init();
 
 	TRISAbits.TRISA0 = 0;
 	ANSELAbits.ANSA0 = 0;
 
+    TRISAbits.TRISA3 = 0;
+
 	while (1) {
-		//LATAbits.LATA0 = PORTBbits.RB5 == HIGH ? HIGH : LOW;
-	}
+
+        for (i = 0; i >= 0; i++) {}
+        LATAbits.LATA3 = 1;
+        for (i = 0; i >= 0; i++) {}
+        LATAbits.LATA3 = 0;
+    }
 	return;
 }
 
