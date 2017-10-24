@@ -101,6 +101,7 @@ int readGPIO(int fd)
     //write value on the GPIO pins
 int writeGPIO(int fd, int status_write)
 {
+	// write(fd, status_write ? "1" : "0", status_write);
     if(status_write==0)
       {
         write(fd, "0", 1);
@@ -126,10 +127,16 @@ int main(void)
       fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
       fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
-      while (1)
-        {
+      
+	  writeGPIO(fileHandleGPIO_S, HIGH);
+      writeGPIO(fileHandleGPIO_6, HIGH);
+        
 
-            writeGPIO(fileHandleGPIO_S, HIGH);
-            writeGPIO(fileHandleGPIO_6, HIGH);
-        }
+	  close(fileHandleGPIO_4);
+	  close(fileHandleGPIO_5);
+	  close(fileHandleGPIO_6);
+	  close(fileHandleGPIO_7);
+	  close(fileHandleGPIO_S);
+
+	  return 0;
 }
