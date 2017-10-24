@@ -45,6 +45,8 @@ Able to get mostly everything started but pwm from Galileo
 
 int openGPIO(int gpio, int direction)
 {
+
+	
     int fd;
     int RW;
     char BUFFER[255];
@@ -59,7 +61,7 @@ int openGPIO(int gpio, int direction)
     //use sprintf to store data in the GPIOS of Galileo
     sprintf(BUFFER, "/sys/class/gpio/gpio%d/direction", gpio);
     fd = open(BUFFER, O_WRONLY);
-    if(direction == GPIO_DIRECTION_OUT)
+    /*if(direction == GPIO_DIRECTION_OUT)
     {
       write(fd, "out", 3);
       RW = O_WRONLY;
@@ -68,11 +70,14 @@ int openGPIO(int gpio, int direction)
     {
       write(fd, "in", 2);
       RW = O_WRONLY;
-    }
+    }*/
+	write(fd, "out", 3);	// replace if-statement
+
+
     close(fd);
     //Now to set the GPIO value
     sprintf(BUFFER, "/sys/class/gpio/gpio%d/value", gpio);
-    fd = open(BUFFER, RW);
+    fd = open(BUFFER, O_WRONLY);							//i TOOK OUT rw PUT IN o_wronly
     return(fd);
 
 
@@ -101,6 +106,7 @@ int readGPIO(int fd)
     //write value on the GPIO pins
 int writeGPIO(int fd, int status_write)
 {
+	// write(fd, status_write ? "1" : "0", status_write);
     if(status_write==0)
       {
         write(fd, "0", 1);
@@ -114,22 +120,28 @@ int writeGPIO(int fd, int status_write)
 //main
 int main(void)
 {
-      int i;
-      int fileHandleGPIO_4;
-      int fileHandleGPIO_5;
-      int fileHandleGPIO_6;
-      int fileHandleGPIO_7;
+      //int i;
+      //int fileHandleGPIO_4;
+      //int fileHandleGPIO_5;
+      //int fileHandleGPIO_6;
+      //int fileHandleGPIO_7;
       int fileHandleGPIO_S;
 
-      fileHandleGPIO_4 = openGPIO(GP_4, GPIO_DIRECTION_OUT);
-      fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
-      fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
-      fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
+      //fileHandleGPIO_4 = openGPIO(GP_4, GPIO_DIRECTION_OUT);
+      //fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
+      //fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
+      //fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
-      for(i = 0; i < 5; i++)
-        {
+      
+	  writeGPIO(fileHandleGPIO_S, HIGH);
+      //writeGPIO(fileHandleGPIO_6, HIGH);
+        
 
-            writeGPIO(fileHandleGPIO_S, HIGH);
-            writeGPIO(fileHandleGPIO_6, HIGH);
-        }
-      }
+	  //close(fileHandleGPIO_4);
+	  //close(fileHandleGPIO_5);
+	  //close(fileHandleGPIO_6);
+	  //close(fileHandleGPIO_7);
+	  close(fileHandleGPIO_S);
+
+	  return 0;
+}
