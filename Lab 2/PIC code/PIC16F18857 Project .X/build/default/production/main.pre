@@ -17425,6 +17425,7 @@ void OSCILLATOR_Initialize(void);
 # 10 "adc_led.h"
 int adc_value;
 
+int max, min, threshold;
 
 void ADC_LED_Init();
 
@@ -17466,6 +17467,7 @@ Queue execution_queue;
 # 224 "main.c"
 void interrupt ISR();
 
+void reset();
 
 void main() {
 
@@ -17479,9 +17481,17 @@ PWM_Init();
 GPIO_Init();
 
 
+TRISC = 0xFF;
+ANSELC = 0x00;
+
+
+
+IOCCPbits.IOCCP0 = 1;
+
+# 252
 int led_counter;
-int max, min;
-int threshold;
+
+
 
 
 led_counter = 0;
@@ -17492,7 +17502,7 @@ threshold = 0;
 
 while (1) {
 
-# 272
+# 285
 if (led_counter < 0) {
 
 
@@ -17539,9 +17549,7 @@ led_counter = -1;
 if (!isEmpty(execution_queue)) {
 switch (dequeue(execution_queue)) {
 case 0x0:
-min = 1023;
-max = 0;
-threshold = 0;
+reset();
 break;
 case 0x3:
 PWM_Turn30();
@@ -17563,10 +17571,14 @@ return;
 
 void interrupt ISR() {
 
+if (IOCCFbits.IOCCF0 == 1) {
+IOCCFbits.IOCCF0 = 0;
+reset();
+}
 
 if (PIR0bits.IOCIF == 1 && IOCBFbits.IOCBF5 == 1) {
 
-# 350
+# 365
 _delay((unsigned long)((5)*(1000000/4000.0)));
 if (PORTBbits.RB5 == (communication_counter % 2 ? 0 : 1)) {
 
@@ -17647,3 +17659,17 @@ IOCBFbits.IOCBF5 = 0;
 }
 
 }
+
+void reset() {
+INTCONbits.GIE = 0;
+min = 1023;
+max = 0;
+threshold = 0;
+communication_counter = 0;
+while (!isEmpty(execution_queue)) {
+dequeue(execution_queue);
+}
+while (PORTBbits.RB5 == 1) { continue; }
+INTCONbits.GIE = 1;
+}
+

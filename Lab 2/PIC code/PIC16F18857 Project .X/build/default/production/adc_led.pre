@@ -4,6 +4,7 @@
 # 10 "adc_led.h"
 int adc_value;
 
+int max, min, threshold;
 
 void ADC_LED_Init();
 

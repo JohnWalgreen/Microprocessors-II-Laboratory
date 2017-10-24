@@ -223,7 +223,7 @@ before the PIC continues normal operation again.
 /*Interrupt function for messages from computer*/
 void interrupt ISR();
 // read, execute, and respond (write) accordingly
-void resetPic();
+void reset();
 
 void main() {
 
@@ -250,8 +250,8 @@ void main() {
 
 	// declare other variables such as counters and other crap
 	int led_counter;
-	int max, min;
-	int threshold;
+	//int max, min;
+	//int threshold;
 
 	// initialisations
 	led_counter = 0;
@@ -443,7 +443,7 @@ void interrupt ISR() {
 
 }
 
-void resetPIC() {
+void reset() {
 	INTCONbits.GIE = 0;
 	min = 1023;
 	max = 0;
