@@ -75,7 +75,7 @@ int openGPIO(int gpio, int direction)
     close(fd);
     //Now to set the GPIO value
     sprintf(BUFFER, "/sys/class/gpio/gpio%d/value", gpio);
-    fd = open(BUFFER, O_WRONLY);							/i TOOK OUT rw PUT IN o_wronly
+    fd = open(BUFFER, O_WRONLY);							//i TOOK OUT rw PUT IN o_wronly
     return(fd);
 
 
