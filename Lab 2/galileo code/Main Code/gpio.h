@@ -40,7 +40,7 @@
 #define LOW 0
 
 /*Open the GPIO*/
-void openGPIO(int gpio, int direction);
+int openGPIO(int gpio, int direction);
 // return handle to output/input
 
 /*Write GPIO output*/

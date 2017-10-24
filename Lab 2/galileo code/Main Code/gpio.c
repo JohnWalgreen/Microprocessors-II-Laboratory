@@ -1,6 +1,6 @@
 #include "gpio.h"
 
-void openGPIO(int gpio, int direction) {
+int openGPIO(int gpio, int direction) {
 	int handle;               //file variable
 	char buf[256];
 	int inout;
