@@ -161,10 +161,7 @@ int main(void)
       //fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
-	  readGPIO(fileHandleGPIO_4);
-	  return 0;
 	  
-
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
 
 	  for (i = 0; i < 10; i++) {
