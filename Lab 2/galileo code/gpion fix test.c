@@ -1,13 +1,6 @@
 /*
-Galileo communication
-Umass Lowell
-Derek Teixeira
-Created 10/14/17 at 11:10 am
-
-
-Second Edit was done on 10/21/2017 at 14:56
-Able to get mostly everything started but pwm from Galileo
-
+Hans
+built from gpion
 */
 
 #include <stdlib.h>
