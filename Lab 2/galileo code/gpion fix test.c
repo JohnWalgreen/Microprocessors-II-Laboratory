@@ -129,9 +129,9 @@ int main(void)
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
 
 	  for (i = 0; i < 10; i++) {
-		  sleep(1);
+		  sleep(4);
 		  writeGPIO(fileHandleGPIO_S, HIGH);
-		  sleep(1);
+		  sleep(4);
 		  writeGPIO(fileHandleGPIO_S, LOW);
 	  }
       
