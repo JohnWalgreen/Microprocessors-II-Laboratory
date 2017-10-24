@@ -80,7 +80,7 @@ int main(void)
 	/*START READ GPIO*/
 	char ret;
 	read(handle, &ret, 1);
-	return (ret - '0');
+	printf("Value that was read: %d", (int)(ret - '0'));
 	/*END READ GPIO*/
 
 
