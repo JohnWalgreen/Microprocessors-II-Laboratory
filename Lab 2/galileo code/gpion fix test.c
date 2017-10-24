@@ -145,6 +145,18 @@ int main(void)
 	  //close(fileHandleGPIO_7);
 	  //close(fileHandleGPIO_S);
 
-	  close(fileHandleGPIO_S);
+	  closeGPIO(Strobe, fileHandleGPIO_S);
 	  return 0;
+}
+
+void closeGPIO(int gpio, int handle) {
+	char BUFFER[255];
+
+	close(handle);
+
+	handle = open("/sys/class/gpio/unexport", O_WRONLY);
+	sprintf(BUFFER, "%d", gpio);
+	write(handle, BUFFER, strlen(BUFFER));
+	close(handle);
+	return;
 }
