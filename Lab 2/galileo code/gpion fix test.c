@@ -157,7 +157,7 @@ int main(void)
       //int fileHandleGPIO_7;
       int fileHandleGPIO_S;
 
-      fileHandleGPIO_4 = openGPIO(GP_4, GPIO_DIRECTION_IN);
+      fileHandleGPIO_4 = openGPIO(GP_5, GPIO_DIRECTION_IN);
       //fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
@@ -192,7 +192,7 @@ int main(void)
 	  //close(fileHandleGPIO_S);
 
 	  closeGPIO(Strobe, fileHandleGPIO_S);
-	  closeGPIO(GP_4, fileHandleGPIO_4);
+	  closeGPIO(GP_5, fileHandleGPIO_4);
 
 
 	  return 0;
