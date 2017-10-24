@@ -45,42 +45,43 @@ Able to get mostly everything started but pwm from Galileo
 
 int openGPIO(int gpio, int direction)
 {
+	int handle;               //file variable
+	char buf[256];
 
-	
-    int fd;
-    int RW;
-    char BUFFER[255];
+						  //simple command to enable pin A0
 
-  //set GPIO will select the GPIO that is to be read from or written to
-    fd = open("/sys/class/gpoio/export", O_WRONLY);
-    //Store and write the GPIO into the buffer
-    sprintf(BUFFER, "%d", gpio);
-    write(fd, BUFFER, strlen(BUFFER));
-    close(fd);
-    //Set direction of GPIO
-    //use sprintf to store data in the GPIOS of Galileo
-    sprintf(BUFFER, "/sys/class/gpio/gpio%d/direction", gpio);
-    fd = open(BUFFER, O_WRONLY);
-    /*if(direction == GPIO_DIRECTION_OUT)
-    {
-      write(fd, "out", 3);
-      RW = O_WRONLY;
-    }
-    else
-    {
-      write(fd, "in", 2);
-      RW = O_WRONLY;
-    }*/
-	write(fd, "out", 3);	// replace if-statement
+	fd = open("/sys/class/gpio/export", O_WRONLY);
+
+	sprintf(buf, "%d", gpio);
+
+	write(handle, buf, strlen(buf));
+
+	close(handle);
+
+	sprintf(buf, "/sys/class/gpio/gpio%d/direction", gpio);
+
+	handle = open(buf, O_WRONLY);
+
+	// Set out direction
+	write(handle, "out", 3);
+	// Set in direction
 
 
-    close(fd);
-    //Now to set the GPIO value
-    sprintf(BUFFER, "/sys/class/gpio/gpio%d/value", gpio);
-    fd = open(BUFFER, O_WRONLY);							//i TOOK OUT rw PUT IN o_wronly
-    return(fd);
+	close(handle);
 
 
+	sprintf(buf, "/sys/class/gpio/gpio%d/value", gpio);
+
+	handle = open(buf, O_WRONLY);
+
+	// Set GPIO high status
+	write(handle, "1", 1);
+	// Set GPIO low status
+
+
+	close(handle);
+
+	return 0;	// return handle instead when output works
 }
 
     //Will close conection of GPIO when the pin is not in use
@@ -133,7 +134,7 @@ int main(void)
       //fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
       
-	  writeGPIO(fileHandleGPIO_S, HIGH);
+	  //writeGPIO(fileHandleGPIO_S, HIGH);
       //writeGPIO(fileHandleGPIO_6, HIGH);
         
 
@@ -141,7 +142,7 @@ int main(void)
 	  //close(fileHandleGPIO_5);
 	  //close(fileHandleGPIO_6);
 	  //close(fileHandleGPIO_7);
-	  close(fileHandleGPIO_S);
+	  //close(fileHandleGPIO_S);
 
 	  return 0;
 }
