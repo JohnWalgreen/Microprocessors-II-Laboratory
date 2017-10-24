@@ -160,13 +160,17 @@ int main(void)
 	  
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
 
+	  // turn output on and off for one minute
+	  puts("turn output on and off for one minute");
 	  for (i = 0; i < 15; i++) {
+		  printf("%d / 14, ", i);
 		  writeGPIO(fileHandleGPIO_S, HIGH);
 		  sleep(2);
 		  writeGPIO(fileHandleGPIO_S, LOW);
 		  sleep(2);
 	  }
 
+	  printf("\n\nNow read and write\n");
 	  for (i = 0; i < 60; i++) {
 		  j = readGPIO(fileHandleGPIO_4);
 		  printf("Value #%d: %d\n", i, j);
