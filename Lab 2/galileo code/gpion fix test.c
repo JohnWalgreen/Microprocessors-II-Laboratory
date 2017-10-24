@@ -74,14 +74,8 @@ int openGPIO(int gpio, int direction)
 
 	handle = open(buf, O_WRONLY);
 
-	// Set GPIO high status
-	write(handle, "1", 1);
-	// Set GPIO low status
+	return handle;
 
-
-	close(handle);
-
-	return 0;	// return handle instead when output works
 }
 
     //Will close conection of GPIO when the pin is not in use
@@ -105,18 +99,17 @@ int readGPIO(int fd)
       return status_read;
 }
     //write value on the GPIO pins
-int writeGPIO(int fd, int status_write)
+int writeGPIO(int handle, int status_write)
 {
-	// write(fd, status_write ? "1" : "0", status_write);
-    if(status_write==0)
-      {
-        write(fd, "0", 1);
-      }
-      else
-      {
-        write(fd, "1", 1);
-      }
-      return 0;
+
+	// Set GPIO high status
+	if (status_write) {
+		write(handle, "1", 1);
+	} else {
+		write(handle, "0", 1);
+	}
+
+	return 0;
 }
 //main
 int main(void)
@@ -144,5 +137,6 @@ int main(void)
 	  //close(fileHandleGPIO_7);
 	  //close(fileHandleGPIO_S);
 
+	  close(fileHandleGPIO_S);
 	  return 0;
 }
