@@ -164,7 +164,7 @@ int main(void)
 	  
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
 
-	  for (i = 0; i < 10; i++) {
+	  for (i = 0; i < 60; i++) {
 		  writeGPIO(fileHandleGPIO_S, readGPIO(fileHandleGPIO_4));
 		  sleep(1);
 		  /*if (readGPIO(fileHandleGPIO_4)) {
