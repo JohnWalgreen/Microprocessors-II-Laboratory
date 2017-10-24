@@ -126,10 +126,10 @@ int main(void)
       fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
       fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
-      for(i = 0; i < 5; i++)
+      while (1)
         {
 
             writeGPIO(fileHandleGPIO_S, HIGH);
             writeGPIO(fileHandleGPIO_6, HIGH);
         }
-      }
+}
