@@ -90,7 +90,7 @@ int main() {
 
 		write(input & 0xF, data);		// 2
 		writeGPIO(strobe, HIGH);		// 3
-		sleep_ms(10);					// 4
+		usleep(10000);					// 4
 
 		/*END STEP 1*/
 
@@ -125,9 +125,9 @@ int main() {
 			data[2] = openGPIO(GP_6, GPIO_DIRECTION_IN);
 			data[3] = openGPIO(GP_7, GPIO_DIRECTION_IN);
 
-			sleep_ms(2);						// 4
+			usleep(2000);						// 4
 			writeGPIO(Strobe, HIGH);			// 5
-			sleep_ms(2);						// 6
+			usleep(2000);						// 6
 			response += (read(data) << flag);	// 7 + extra
 
 			++flag;
