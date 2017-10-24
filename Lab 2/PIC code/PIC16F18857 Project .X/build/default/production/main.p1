@@ -127,12 +127,6 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S45 . . ]
 "922
 [v _LATCbits `VS45 ~T0 @X0 0 e@24 ]
-"25 gpio.h
-[v _write `(v ~T0 @X0 0 ef1`i ]
-"15 Queue.h
-[v _enqueue `(v ~T0 @X0 0 ef2`S1558`ui ]
-"657 C:\Program Files (x86)\Microchip\xc8\v1.42\include\pic16f18857.h
-[v _TRISB `Vuc ~T0 @X0 0 e@18 ]
 "361
 [s S26 :1 `uc 1 :5 `uc 1 :1 `uc 1 :1 `uc 1 ]
 [n S26 . INTEDG . PEIE GIE ]
@@ -141,6 +135,12 @@ Version 3.2 HI-TECH Software Intermediate Code
 [n S25 . . ]
 "368
 [v _INTCONbits `VS25 ~T0 @X0 0 e@11 ]
+"25 gpio.h
+[v _write `(v ~T0 @X0 0 ef1`i ]
+"15 Queue.h
+[v _enqueue `(v ~T0 @X0 0 ef2`S1558`ui ]
+"657 C:\Program Files (x86)\Microchip\xc8\v1.42\include\pic16f18857.h
+[v _TRISB `Vuc ~T0 @X0 0 e@18 ]
 [; ;htc.h: 26: extern const char __xc8_OPTIM_SPEED;
 [; ;htc.h: 28: extern double __fpnormalize(double);
 [; ;xc8debug.h: 14: extern void __builtin_software_breakpoint(void);
@@ -13548,250 +13548,360 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;main.c: 379: LATC |= (instruction << 4);
 "379
 [e =| _LATC -> << _instruction -> 4 `i `uc ]
-[; ;main.c: 380: LATCbits.LATC1 = 1;
+[; ;main.c: 380: ++communication_counter;
 "380
-[e = . . _LATCbits 0 1 -> -> 1 `i `uc ]
-[; ;main.c: 381: _delay((unsigned long)((50000)*(1000000/4000.0)));
-"381
-[e ( __delay (1 -> * -> -> 50000 `l `d / -> -> 1000000 `l `d .4000.0 `ul ]
-[; ;main.c: 382: LATCbits.LATC1 = 0;
-"382
-[e = . . _LATCbits 0 1 -> -> 0 `i `uc ]
-[; ;main.c: 383: ++communication_counter;
-"383
 [e =+ _communication_counter -> 1 `i ]
-[; ;main.c: 384: break;
-"384
+[; ;main.c: 381: break;
+"381
 [e $U 1585  ]
-[; ;main.c: 385: case 1:
-"385
+[; ;main.c: 382: case 1:
+"382
 [e :U 1588 ]
-[; ;main.c: 388: if (instruction == 0x2) {
+[; ;main.c: 388: LATCbits.LATC1 = 1;
 "388
-[e $ ! == _instruction -> 2 `i 1589  ]
-{
-[; ;main.c: 389: write((adc_value >> 8) & 0x3);
+[e = . . _LATCbits 0 1 -> -> 1 `i `uc ]
+[; ;main.c: 389: if ((instruction >> 3) & 0x1) {
 "389
-[e ( _write (1 & >> _adc_value -> 8 `i -> 3 `i ]
+[e $ ! != & >> _instruction -> 3 `i -> 1 `i -> 0 `i 1589  ]
+{
+[; ;main.c: 390: _delay((unsigned long)((5000)*(1000000/4000.0)));
 "390
+[e ( __delay (1 -> * -> -> 5000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
+"391
 }
-[; ;main.c: 390: } else {
+[; ;main.c: 391: } else {
 [e $U 1590  ]
 [e :U 1589 ]
 {
-[; ;main.c: 391: enqueue(execution_queue, instruction);
-"391
-[e ( _enqueue (2 , _execution_queue -> _instruction `ui ]
-[; ;main.c: 392: write(0xE);
+[; ;main.c: 392: _delay((unsigned long)((1000)*(1000000/4000.0)));
 "392
-[e ( _write (1 -> 14 `i ]
+[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
 "393
 }
 [e :U 1590 ]
 [; ;main.c: 393: }
-[; ;main.c: 394: TRISB &= 0xE1;
+[; ;main.c: 394: LATCbits.LATC1 = 0;
 "394
-[e =& _TRISB -> -> 225 `i `uc ]
-[; ;main.c: 395: ++communication_counter;
+[e = . . _LATCbits 0 1 -> -> 0 `i `uc ]
+[; ;main.c: 395: _delay((unsigned long)((3000)*(1000000/4000.0)));
 "395
-[e =+ _communication_counter -> 1 `i ]
-[; ;main.c: 396: break;
-"396
-[e $U 1585  ]
-[; ;main.c: 397: case 2:
+[e ( __delay (1 -> * -> -> 3000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
+[; ;main.c: 397: LATCbits.LATC1 = 1;
 "397
-[e :U 1591 ]
-[; ;main.c: 400: ++communication_counter;
-"400
-[e =+ _communication_counter -> 1 `i ]
-[; ;main.c: 401: break;
-"401
-[e $U 1585  ]
-[; ;main.c: 402: case 3:
-"402
-[e :U 1592 ]
-[; ;main.c: 404: if (instruction == 0x2) {
-"404
-[e $ ! == _instruction -> 2 `i 1593  ]
+[e = . . _LATCbits 0 1 -> -> 1 `i `uc ]
+[; ;main.c: 398: if ((instruction >> 2) & 0x1) {
+"398
+[e $ ! != & >> _instruction -> 2 `i -> 1 `i -> 0 `i 1591  ]
 {
-[; ;main.c: 406: write(adc_value >> 4 & 0xF);
-"406
-[e ( _write (1 & >> _adc_value -> 4 `i -> 15 `i ]
-[; ;main.c: 407: ++communication_counter;
-"407
-[e =+ _communication_counter -> 1 `i ]
-"408
+[; ;main.c: 399: _delay((unsigned long)((5000)*(1000000/4000.0)));
+"399
+[e ( __delay (1 -> * -> -> 5000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
+"400
 }
-[; ;main.c: 408: } else {
+[; ;main.c: 400: } else {
+[e $U 1592  ]
+[e :U 1591 ]
+{
+[; ;main.c: 401: _delay((unsigned long)((1000)*(1000000/4000.0)));
+"401
+[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
+"402
+}
+[e :U 1592 ]
+[; ;main.c: 402: }
+[; ;main.c: 403: LATCbits.LATC1 = 0;
+"403
+[e = . . _LATCbits 0 1 -> -> 0 `i `uc ]
+[; ;main.c: 404: _delay((unsigned long)((3000)*(1000000/4000.0)));
+"404
+[e ( __delay (1 -> * -> -> 3000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
+[; ;main.c: 406: LATCbits.LATC1 = 1;
+"406
+[e = . . _LATCbits 0 1 -> -> 1 `i `uc ]
+[; ;main.c: 407: if ((instruction >> 1) & 0x1) {
+"407
+[e $ ! != & >> _instruction -> 1 `i -> 1 `i -> 0 `i 1593  ]
+{
+[; ;main.c: 408: _delay((unsigned long)((5000)*(1000000/4000.0)));
+"408
+[e ( __delay (1 -> * -> -> 5000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
+"409
+}
+[; ;main.c: 409: } else {
 [e $U 1594  ]
 [e :U 1593 ]
 {
-[; ;main.c: 409: TRISB |= 0x1E;
-"409
-[e =| _TRISB -> -> 30 `i `uc ]
-[; ;main.c: 410: communication_counter = 0;
+[; ;main.c: 410: _delay((unsigned long)((1000)*(1000000/4000.0)));
 "410
-[e = _communication_counter -> 0 `i ]
+[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
 "411
 }
 [e :U 1594 ]
 [; ;main.c: 411: }
-[; ;main.c: 412: break;
+[; ;main.c: 412: LATCbits.LATC1 = 0;
 "412
-[e $U 1585  ]
-[; ;main.c: 413: case 4:
+[e = . . _LATCbits 0 1 -> -> 0 `i `uc ]
+[; ;main.c: 413: _delay((unsigned long)((3000)*(1000000/4000.0)));
 "413
-[e :U 1595 ]
-[; ;main.c: 416: ++communication_counter;
+[e ( __delay (1 -> * -> -> 3000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
+[; ;main.c: 415: LATCbits.LATC1 = 1;
+"415
+[e = . . _LATCbits 0 1 -> -> 1 `i `uc ]
+[; ;main.c: 416: if (instruction & 0x1) {
 "416
-[e =+ _communication_counter -> 1 `i ]
-[; ;main.c: 417: break;
+[e $ ! != & _instruction -> 1 `i -> 0 `i 1595  ]
+{
+[; ;main.c: 417: _delay((unsigned long)((5000)*(1000000/4000.0)));
 "417
-[e $U 1585  ]
-[; ;main.c: 418: case 5:
+[e ( __delay (1 -> * -> -> 5000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
 "418
-[e :U 1596 ]
-[; ;main.c: 421: write(adc_value & 0xF);
-"421
-[e ( _write (1 & _adc_value -> 15 `i ]
-[; ;main.c: 422: ++communication_counter;
-"422
-[e =+ _communication_counter -> 1 `i ]
-[; ;main.c: 423: case 6:
-"423
-[e :U 1597 ]
-[; ;main.c: 425: ++communication_counter;
-"425
-[e =+ _communication_counter -> 1 `i ]
-[; ;main.c: 426: break;
-"426
-[e $U 1585  ]
-[; ;main.c: 427: case 7:
-"427
-[e :U 1598 ]
-[; ;main.c: 429: write(0xE);
-"429
-[e ( _write (1 -> 14 `i ]
-[; ;main.c: 430: ++communication_counter;
-"430
-[e =+ _communication_counter -> 1 `i ]
-[; ;main.c: 431: break;
-"431
-[e $U 1585  ]
-[; ;main.c: 432: case 8:
-"432
-[e :U 1599 ]
-[; ;main.c: 433: ++communication_counter;
-"433
-[e =+ _communication_counter -> 1 `i ]
-[; ;main.c: 435: break;
-"435
-[e $U 1585  ]
-[; ;main.c: 436: case 9:
-"436
-[e :U 1600 ]
-[; ;main.c: 438: TRISB |= 0x1E;
-"438
-[e =| _TRISB -> -> 30 `i `uc ]
-[; ;main.c: 439: communication_counter = 0;
-"439
-[e = _communication_counter -> 0 `i ]
-[; ;main.c: 440: break;
-"440
-[e $U 1585  ]
-[; ;main.c: 441: default:
-"441
-[e :U 1601 ]
-[; ;main.c: 443: communication_counter = 0;
-"443
-[e = _communication_counter -> 0 `i ]
-[; ;main.c: 444: break;
-"444
-[e $U 1585  ]
-"445
 }
-[; ;main.c: 445: }
+[; ;main.c: 418: } else {
+[e $U 1596  ]
+[e :U 1595 ]
+{
+[; ;main.c: 419: _delay((unsigned long)((1000)*(1000000/4000.0)));
+"419
+[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
+"420
+}
+[e :U 1596 ]
+[; ;main.c: 420: }
+[; ;main.c: 421: LATCbits.LATC1 = 0;
+"421
+[e = . . _LATCbits 0 1 -> -> 0 `i `uc ]
+[; ;main.c: 422: _delay((unsigned long)((3000)*(1000000/4000.0)));
+"422
+[e ( __delay (1 -> * -> -> 3000 `i `d / -> -> 1000000 `l `d .4000.0 `ul ]
+[; ;main.c: 430: INTCONbits.GIE = 0;
+"430
+[e = . . _INTCONbits 0 3 -> -> 0 `i `uc ]
+[; ;main.c: 433: if (instruction == 0x2) {
+"433
+[e $ ! == _instruction -> 2 `i 1597  ]
+{
+[; ;main.c: 434: write((adc_value >> 8) & 0x3);
+"434
+[e ( _write (1 & >> _adc_value -> 8 `i -> 3 `i ]
+"435
+}
+[; ;main.c: 435: } else {
+[e $U 1598  ]
+[e :U 1597 ]
+{
+[; ;main.c: 436: enqueue(execution_queue, instruction);
+"436
+[e ( _enqueue (2 , _execution_queue -> _instruction `ui ]
+[; ;main.c: 437: write(0xE);
+"437
+[e ( _write (1 -> 14 `i ]
+"438
+}
+[e :U 1598 ]
+[; ;main.c: 438: }
+[; ;main.c: 439: TRISB &= 0xE1;
+"439
+[e =& _TRISB -> -> 225 `i `uc ]
+[; ;main.c: 440: ++communication_counter;
+"440
+[e =+ _communication_counter -> 1 `i ]
+[; ;main.c: 441: break;
+"441
+[e $U 1585  ]
+[; ;main.c: 442: case 2:
+"442
+[e :U 1599 ]
+[; ;main.c: 445: ++communication_counter;
+"445
+[e =+ _communication_counter -> 1 `i ]
+[; ;main.c: 446: break;
+"446
+[e $U 1585  ]
+[; ;main.c: 447: case 3:
+"447
+[e :U 1600 ]
+[; ;main.c: 449: if (instruction == 0x2) {
+"449
+[e $ ! == _instruction -> 2 `i 1601  ]
+{
+[; ;main.c: 451: write(adc_value >> 4 & 0xF);
+"451
+[e ( _write (1 & >> _adc_value -> 4 `i -> 15 `i ]
+[; ;main.c: 452: ++communication_counter;
+"452
+[e =+ _communication_counter -> 1 `i ]
+"453
+}
+[; ;main.c: 453: } else {
+[e $U 1602  ]
+[e :U 1601 ]
+{
+[; ;main.c: 454: TRISB |= 0x1E;
+"454
+[e =| _TRISB -> -> 30 `i `uc ]
+[; ;main.c: 455: communication_counter = 0;
+"455
+[e = _communication_counter -> 0 `i ]
+"456
+}
+[e :U 1602 ]
+[; ;main.c: 456: }
+[; ;main.c: 457: break;
+"457
+[e $U 1585  ]
+[; ;main.c: 458: case 4:
+"458
+[e :U 1603 ]
+[; ;main.c: 461: ++communication_counter;
+"461
+[e =+ _communication_counter -> 1 `i ]
+[; ;main.c: 462: break;
+"462
+[e $U 1585  ]
+[; ;main.c: 463: case 5:
+"463
+[e :U 1604 ]
+[; ;main.c: 466: write(adc_value & 0xF);
+"466
+[e ( _write (1 & _adc_value -> 15 `i ]
+[; ;main.c: 467: ++communication_counter;
+"467
+[e =+ _communication_counter -> 1 `i ]
+[; ;main.c: 468: case 6:
+"468
+[e :U 1605 ]
+[; ;main.c: 470: ++communication_counter;
+"470
+[e =+ _communication_counter -> 1 `i ]
+[; ;main.c: 471: break;
+"471
+[e $U 1585  ]
+[; ;main.c: 472: case 7:
+"472
+[e :U 1606 ]
+[; ;main.c: 474: write(0xE);
+"474
+[e ( _write (1 -> 14 `i ]
+[; ;main.c: 475: ++communication_counter;
+"475
+[e =+ _communication_counter -> 1 `i ]
+[; ;main.c: 476: break;
+"476
+[e $U 1585  ]
+[; ;main.c: 477: case 8:
+"477
+[e :U 1607 ]
+[; ;main.c: 478: ++communication_counter;
+"478
+[e =+ _communication_counter -> 1 `i ]
+[; ;main.c: 480: break;
+"480
+[e $U 1585  ]
+[; ;main.c: 481: case 9:
+"481
+[e :U 1608 ]
+[; ;main.c: 483: TRISB |= 0x1E;
+"483
+[e =| _TRISB -> -> 30 `i `uc ]
+[; ;main.c: 484: communication_counter = 0;
+"484
+[e = _communication_counter -> 0 `i ]
+[; ;main.c: 485: break;
+"485
+[e $U 1585  ]
+[; ;main.c: 486: default:
+"486
+[e :U 1609 ]
+[; ;main.c: 488: communication_counter = 0;
+"488
+[e = _communication_counter -> 0 `i ]
+[; ;main.c: 489: break;
+"489
+[e $U 1585  ]
+"490
+}
+[; ;main.c: 490: }
 [e $U 1585  ]
 "372
 [e :U 1586 ]
 [e [\ _communication_counter , $ -> 0 `i 1587
  , $ -> 1 `i 1588
- , $ -> 2 `i 1591
- , $ -> 3 `i 1592
- , $ -> 4 `i 1595
- , $ -> 5 `i 1596
- , $ -> 6 `i 1597
- , $ -> 7 `i 1598
- , $ -> 8 `i 1599
- , $ -> 9 `i 1600
- 1601 ]
-"445
+ , $ -> 2 `i 1599
+ , $ -> 3 `i 1600
+ , $ -> 4 `i 1603
+ , $ -> 5 `i 1604
+ , $ -> 6 `i 1605
+ , $ -> 7 `i 1606
+ , $ -> 8 `i 1607
+ , $ -> 9 `i 1608
+ 1609 ]
+"490
 [e :U 1585 ]
-"447
+"492
 }
 [e :U 1584 ]
-[; ;main.c: 447: }
-[; ;main.c: 449: IOCBFbits.IOCBF5 = 0;
-"449
+[; ;main.c: 492: }
+[; ;main.c: 494: IOCBFbits.IOCBF5 = 0;
+"494
 [e = . . _IOCBFbits 0 5 -> -> 0 `i `uc ]
-"451
+"496
 }
 [e :U 1583 ]
-[; ;main.c: 451: }
-[; ;main.c: 453: }
-"453
+[; ;main.c: 496: }
+[; ;main.c: 498: }
+"498
 [e :UE 1581 ]
 }
-"455
+"500
 [v _reset `(v ~T0 @X0 1 ef ]
 {
-[; ;main.c: 455: void reset() {
+[; ;main.c: 500: void reset() {
 [e :U _reset ]
 [f ]
-[; ;main.c: 456: INTCONbits.GIE = 0;
-"456
+[; ;main.c: 501: INTCONbits.GIE = 0;
+"501
 [e = . . _INTCONbits 0 3 -> -> 0 `i `uc ]
-[; ;main.c: 457: min = 1023;
-"457
+[; ;main.c: 502: min = 1023;
+"502
 [e = _min -> 1023 `i ]
-[; ;main.c: 458: max = 0;
-"458
+[; ;main.c: 503: max = 0;
+"503
 [e = _max -> 0 `i ]
-[; ;main.c: 459: threshold = 0;
-"459
+[; ;main.c: 504: threshold = 0;
+"504
 [e = _threshold -> 0 `i ]
-[; ;main.c: 460: communication_counter = 0;
-"460
+[; ;main.c: 505: communication_counter = 0;
+"505
 [e = _communication_counter -> 0 `i ]
-[; ;main.c: 461: while (!isEmpty(execution_queue)) {
-"461
-[e $U 1603  ]
-[e :U 1604 ]
+[; ;main.c: 506: while (!isEmpty(execution_queue)) {
+"506
+[e $U 1611  ]
+[e :U 1612 ]
 {
-[; ;main.c: 462: dequeue(execution_queue);
-"462
+[; ;main.c: 507: dequeue(execution_queue);
+"507
 [e ( _dequeue (1 _execution_queue ]
-"463
+"508
 }
-[e :U 1603 ]
-"461
-[e $ ! != ( _isEmpty (1 _execution_queue -> 0 `i 1604  ]
-[e :U 1605 ]
-[; ;main.c: 463: }
-[; ;main.c: 464: while (PORTBbits.RB5 == 1) { continue; }
-"464
-[e $U 1606  ]
-[e :U 1607 ]
+[e :U 1611 ]
+"506
+[e $ ! != ( _isEmpty (1 _execution_queue -> 0 `i 1612  ]
+[e :U 1613 ]
+[; ;main.c: 508: }
+[; ;main.c: 509: while (PORTBbits.RB5 == 1) { continue; }
+"509
+[e $U 1614  ]
+[e :U 1615 ]
 {
-[e $U 1606  ]
+[e $U 1614  ]
 }
-[e :U 1606 ]
-[e $ == -> . . _PORTBbits 0 5 `i -> 1 `i 1607  ]
-[e :U 1608 ]
-[; ;main.c: 465: INTCONbits.GIE = 1;
-"465
+[e :U 1614 ]
+[e $ == -> . . _PORTBbits 0 5 `i -> 1 `i 1615  ]
+[e :U 1616 ]
+[; ;main.c: 510: INTCONbits.GIE = 1;
+"510
 [e = . . _INTCONbits 0 3 -> -> 1 `i `uc ]
-[; ;main.c: 466: }
-"466
-[e :UE 1602 ]
+[; ;main.c: 511: }
+"511
+[e :UE 1610 ]
 }

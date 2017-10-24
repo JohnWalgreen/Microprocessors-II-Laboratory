@@ -17594,12 +17594,49 @@ instruction = read();
 PORTC &= 0x0F;
 LATC &= 0x0F;
 LATC |= (instruction << 4);
-LATCbits.LATC1 = 1;
-_delay((unsigned long)((50000)*(1000000/4000.0)));
-LATCbits.LATC1 = 0;
 ++communication_counter;
 break;
 case 1:
+
+# 388
+LATCbits.LATC1 = 1;
+if ((instruction >> 3) & 0x1) {
+_delay((unsigned long)((5000)*(1000000/4000.0)));
+} else {
+_delay((unsigned long)((1000)*(1000000/4000.0)));
+}
+LATCbits.LATC1 = 0;
+_delay((unsigned long)((3000)*(1000000/4000.0)));
+
+LATCbits.LATC1 = 1;
+if ((instruction >> 2) & 0x1) {
+_delay((unsigned long)((5000)*(1000000/4000.0)));
+} else {
+_delay((unsigned long)((1000)*(1000000/4000.0)));
+}
+LATCbits.LATC1 = 0;
+_delay((unsigned long)((3000)*(1000000/4000.0)));
+
+LATCbits.LATC1 = 1;
+if ((instruction >> 1) & 0x1) {
+_delay((unsigned long)((5000)*(1000000/4000.0)));
+} else {
+_delay((unsigned long)((1000)*(1000000/4000.0)));
+}
+LATCbits.LATC1 = 0;
+_delay((unsigned long)((3000)*(1000000/4000.0)));
+
+LATCbits.LATC1 = 1;
+if (instruction & 0x1) {
+_delay((unsigned long)((5000)*(1000000/4000.0)));
+} else {
+_delay((unsigned long)((1000)*(1000000/4000.0)));
+}
+LATCbits.LATC1 = 0;
+_delay((unsigned long)((3000)*(1000000/4000.0)));
+
+# 430
+INTCONbits.GIE = 0;
 
 
 if (instruction == 0x2) {
