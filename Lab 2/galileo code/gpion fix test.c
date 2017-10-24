@@ -162,7 +162,7 @@ int main(void)
       //fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
 
-	  return;
+	  return 0;
 	  
 
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
