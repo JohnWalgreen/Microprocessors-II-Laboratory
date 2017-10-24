@@ -17484,11 +17484,13 @@ GPIO_Init();
 TRISC = 0xFF;
 ANSELC = 0x00;
 
+TRISCbits.TRISC1 = 0;
+
 
 
 IOCCPbits.IOCCP0 = 1;
 
-# 252
+# 254
 int led_counter;
 
 
@@ -17499,10 +17501,11 @@ max = 0;
 min = 1023;
 threshold = 0;
 
+reset();
 
 while (1) {
 
-# 285
+# 288
 if (led_counter < 0) {
 
 
@@ -17578,8 +17581,8 @@ reset();
 
 if (PIR0bits.IOCIF == 1 && IOCBFbits.IOCBF5 == 1) {
 
-# 365
-_delay((unsigned long)((5)*(1000000/4000.0)));
+# 368
+_delay((unsigned long)((1)*(1000000/4000.0)));
 if (PORTBbits.RB5 == (communication_counter % 2 ? 0 : 1)) {
 
 
@@ -17588,6 +17591,12 @@ case 0:
 
 
 instruction = read();
+PORTC &= 0x0F;
+LATC &= 0x0F;
+LATC |= (instruction << 4);
+LATCbits.LATC1 = 1;
+_delay((unsigned long)((50000)*(1000000/4000.0)));
+LATCbits.LATC1 = 0;
 ++communication_counter;
 break;
 case 1:

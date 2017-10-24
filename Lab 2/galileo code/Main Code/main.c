@@ -92,7 +92,6 @@ int main() {
 		writeGPIO(strobe, HIGH);		// 3
 		usleep(10000);					// 4
 
-		sleep(60);
 
 		/*END STEP 1*/
 

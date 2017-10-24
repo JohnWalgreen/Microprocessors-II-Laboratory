@@ -240,6 +240,8 @@ void main() {
 	TRISC = 0xFF;
 	ANSELC = 0x00;
 
+	TRISCbits.TRISC1 = LOW;
+
 	//PIE0bits.IOCIE = 1;
 	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
 	IOCCPbits.IOCCP0 = 1;               // enable positive-edge on-change interrupt for RB5, which will always be digital input
@@ -259,6 +261,7 @@ void main() {
 	min = 1023;
 	threshold = 0;
 
+	reset();
 
 	while (1) {
 
@@ -374,12 +377,53 @@ void interrupt ISR() {
 					PORTC &= 0x0F;//TEMP
 					LATC &= 0x0F;//TEMP
 					LATC |= (instruction << 4);//TEMP
-					__dely_ms(50000);//TEMP
 					++communication_counter;
 					break;
 				case 1:
 					// computer is done outputting signal
 					// start processing and set up outputs already
+
+					/*MAKE SURE THAT PIC READS DATA*/
+
+					LATCbits.LATC1 = HIGH;
+					if (instruction & 0x1) {
+						sleep(5);
+					} else {
+						sleep(1);
+					}
+					LATCbits.LATC1 = LOW;
+					sleep(3);
+
+					LATCbits.LATC1 = HIGH;
+					if ((instruction >> 1) & 0x1) {
+						sleep(5);
+					} else {
+						sleep(1);
+					}
+					LATCbits.LATC1 = LOW;
+					sleep(3);
+
+					LATCbits.LATC1 = HIGH;
+					if ((instruction >> 2) & 0x1) {
+						sleep(5);
+					} else {
+						sleep(1);
+					}
+					LATCbits.LATC1 = LOW;
+					sleep(3);
+
+					LATCbits.LATC1 = HIGH;
+					if ((instruction >> 3) & 0x1) {
+						sleep(5);
+					} else {
+						sleep(1);
+					}
+					LATCbits.LATC1 = LOW;
+					sleep(3);
+
+					INTCONbits.GIE = LOW;	// disable future interrupts
+					/*END TEST*/
+
 					if (instruction == MSG_GET) {
 						write((adc_value >> 8) & 0x3);
 					} else {
