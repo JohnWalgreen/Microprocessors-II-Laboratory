@@ -115,7 +115,7 @@ int writeGPIO(int handle, int status_write)
 int main(void)
 {
       int i;
-	  int j;
+	  int j, k;
       //int fileHandleGPIO_4;
       //int fileHandleGPIO_5;
       //int fileHandleGPIO_6;
@@ -129,9 +129,17 @@ int main(void)
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
 
 	  for (i = 0; i < 10; i++) {
-		  for (j = 1; j > 0; j++) { continue; }
+		  for (j = 1; j > 0; j++) {
+			  for (k = 1; k > 0; k++) {
+				  continue;
+			  }
+		  }
 		  writeGPIO(fileHandleGPIO_S, HIGH);
-		  for (j = 1; j > 0; j++) { continue; }
+		  for (j = 1; j > 0; j++) {
+			  for (k = 1; k > 0; k++) {
+				  continue;
+			  }
+		  }
 		  writeGPIO(fileHandleGPIO_S, LOW);
 	  }
       
