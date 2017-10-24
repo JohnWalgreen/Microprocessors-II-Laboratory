@@ -41,10 +41,11 @@ Able to get mostly everything started but pwm from Galileo
 #define MSG_NOTHING 0XF      //RESERVED
 
 
-//open GPIO and set direction
 
-int openGPIO(int gpio, int direction)
+//main
+int main(void)
 {
+	/*START OPEN GPIO*/
 	int handle;               //file variable
 	char buf[256];
 
@@ -62,18 +63,7 @@ int openGPIO(int gpio, int direction)
 
 	handle = open(buf, O_WRONLY);
 
-	// Set out direction
-	switch (direction) {
-	case GPIO_DIRECTION_OUT:
-		write(handle, "out", 3);
-		break;
-	case GPIO_DIRECTION_IN:
-	default:
-		write(handle, "in", 2);
-		break;
-
-	}
-	// write(handle, "out", 3);
+	write(handle, "in", 2);
 	// Set in direction
 
 
@@ -81,59 +71,20 @@ int openGPIO(int gpio, int direction)
 
 	sprintf(buf, "/sys/class/gpio/gpio%d/value", gpio);
 
-	switch (direction) {
-	case GPIO_DIRECTION_OUT:
-		handle = open(buf, O_WRONLY);
-		break;
-	case GPIO_DIRECTION_IN:
-	default:
-		handle = open(buf, O_RDONLY);
-	}
-	// handle = open(buf, O_WRONLY);
+	handle = open(buf, O_RDONLY);
 
-	return handle;
-
-}
-
-//Will close conection of GPIO when the pin is not in use
+	/*END OF OPEN GPIO*/
 
 
-
-
-//Read value on the GPIO pins
-int readGPIO(int handle)
-{
+	/*START READ GPIO*/
 	char ret;
 	read(handle, &ret, 1);
 	return (ret - '0');
+	/*END READ GPIO*/
+
+
+	/*START CLOSE GPIO*/
 	/*
-	int status_read;
-	read(fd, &status_read, 1);
-	if('0' == status_read)
-	{
-	status_read = 0;
-	}
-	else
-	{
-	status_read = 1;
-	}
-	return status_read;*/
-}
-//write value on the GPIO pins
-int writeGPIO(int handle, int status_write)
-{
-
-	// Set GPIO high status
-	if (status_write) {
-		write(handle, "1", 1);
-	} else {
-		write(handle, "0", 1);
-	}
-
-	return 0;
-}
-
-void closeGPIO(int gpio, int handle) {
 	char BUFFER[255];
 
 	close(handle);
@@ -142,60 +93,8 @@ void closeGPIO(int gpio, int handle) {
 	sprintf(BUFFER, "%d", gpio);
 	write(handle, BUFFER, strlen(BUFFER));
 	close(handle);
-	return;
-}
+	/*
+	/*END CLOSE GPIO*/
 
-
-//main
-int main(void)
-{
-	int handle;               //file variable
-	char buf[256];
-
-	//simple command to enable pin A0
-
-	handle = open("/sys/class/gpio/export", O_WRONLY);
-
-	sprintf(buf, "%d", gpio);
-
-	write(handle, buf, strlen(buf));
-
-	close(handle);
-
-	sprintf(buf, "/sys/class/gpio/gpio%d/direction", gpio);
-
-	handle = open(buf, O_WRONLY);
-
-	// Set out direction
-	switch (direction) {
-	case GPIO_DIRECTION_OUT:
-		write(handle, "out", 3);
-		break;
-	case GPIO_DIRECTION_IN:
-	default:
-		write(handle, "in", 2);
-		break;
-
-	}
-	// write(handle, "out", 3);
-	// Set in direction
-
-
-	close(handle);
-
-	sprintf(buf, "/sys/class/gpio/gpio%d/value", gpio);
-
-	switch (direction) {
-	case GPIO_DIRECTION_OUT:
-		handle = open(buf, O_WRONLY);
-		break;
-	case GPIO_DIRECTION_IN:
-	default:
-		handle = open(buf, O_RDONLY);
-	}
-	// handle = open(buf, O_WRONLY);
-
-	/*END OF OPEN GPIO*/
-
-
+	return 0;
 }
