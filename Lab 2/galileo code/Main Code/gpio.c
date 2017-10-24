@@ -70,7 +70,7 @@ void writeGPIO(int handle, int status_write) {
 		write(handle, "0", 1);
 	}
 
-	return 0;
+	return;
 }
 
 void closeGPIO(int gpio, int handle) {

@@ -171,6 +171,7 @@ int main() {
 			// if last 4 bits of response (the response code) are bad
 			puts("An unexpected error ocurred.");
 		}
+		puts("\n\n");
 		
 	}
 
