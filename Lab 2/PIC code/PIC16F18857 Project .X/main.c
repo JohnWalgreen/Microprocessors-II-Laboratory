@@ -235,6 +235,18 @@ void main() {
 	ADC_LED_Init();
 	PWM_Init();
 	GPIO_Init();
+	
+	/*SET UP INTERRUPTS FOR rc0 to reset*/
+	TRISC = 0xFF;
+	ANSELC = 0x00;
+
+	//PIE0bits.IOCIE = 1;
+	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
+	IOCCPbits.IOCCP0 = 1;               // enable positive-edge on-change interrupt for RB5, which will always be digital input
+	//IOCBNbits.IOCBN5 = 1;               // enable negative-edge
+	//INTCONbits.PEIE = 1;                // I think this is enable peripherel interrupts?
+	//INTCONbits.GIE = 1;                 // enable global interrupts
+	/*end*/
 
 	// declare other variables such as counters and other crap
 	int led_counter;
@@ -316,9 +328,7 @@ void main() {
 		if (!isEmpty(execution_queue)) {
 			switch (dequeue(execution_queue)) {
 				case MSG_RESET:
-					min = 1023;
-					max = 0;
-					threshold = 0;
+					reset();
 					break;
 				case MSG_TURN30:
 					PWM_Turn30();
@@ -340,6 +350,10 @@ void main() {
 
 void interrupt ISR() {
 
+	if (IOCCFbits.IOCCF0 == HIGH) {
+		IOCCFbits.IOCCF0 = LOW;
+		reset();
+	}
 	// check source
 	if (PIR0bits.IOCIF == HIGH && IOCBFbits.IOCBF5 == HIGH) {
 		// check if <<Interrupt-on-Change Interrupt Flag bit (read-only); p. 142>> is HIGH
@@ -433,6 +447,7 @@ void resetPIC() {
 	INTCONbits.GIE = 0;
 	min = 1023;
 	max = 0;
+	threshold = 0;
 	communication_counter = 0;
 	while (!isEmpty(execution_queue)) {
 		dequeue(execution_queue);
