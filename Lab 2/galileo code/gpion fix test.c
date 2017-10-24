@@ -40,6 +40,7 @@ int openGPIO(int gpio, int direction)
 {
 	int handle;               //file variable
 	char buf[256];
+	int inout;
 
 						  //simple command to enable pin A0
 
@@ -59,10 +60,12 @@ int openGPIO(int gpio, int direction)
 	switch (direction) {
 		case GPIO_DIRECTION_OUT:
 			write(handle, "out", 3);
+			inout = O_WRONLY;
 			break;
 		case GPIO_DIRECTION_IN:
 		default:
 			write(handle, "in", 2);
+			inout = O_RDONLY;
 			break;
 
 	}
@@ -76,11 +79,11 @@ int openGPIO(int gpio, int direction)
 
 	switch (direction) {
 		case GPIO_DIRECTION_OUT:
-			handle = open(buf, O_WRONLY);
+			handle = open(buf, inout);
 			break;
 		case GPIO_DIRECTION_IN:
 		default:
-			handle = open(buf, O_RDONLY);
+			handle = open(buf, inout);
 	}
 	// handle = open(buf, O_WRONLY);
 
