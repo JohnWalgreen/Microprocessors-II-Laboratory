@@ -50,7 +50,7 @@ int openGPIO(int gpio, int direction)
 
 						  //simple command to enable pin A0
 
-	fd = open("/sys/class/gpio/export", O_WRONLY);
+	handle = open("/sys/class/gpio/export", O_WRONLY);
 
 	sprintf(buf, "%d", gpio);
 
