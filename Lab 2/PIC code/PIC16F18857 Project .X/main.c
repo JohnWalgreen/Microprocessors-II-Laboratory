@@ -386,40 +386,46 @@ void interrupt ISR() {
 					/*MAKE SURE THAT PIC READS DATA*/
 
 					LATCbits.LATC1 = HIGH;
-					if (instruction & 0x1) {
-						sleep(5);
+					if ((instruction >> 3) & 0x1) {
+						__delay_ms(5000);
 					} else {
-						sleep(1);
+						__delay_ms(1000);
 					}
 					LATCbits.LATC1 = LOW;
-					sleep(3);
-
-					LATCbits.LATC1 = HIGH;
-					if ((instruction >> 1) & 0x1) {
-						sleep(5);
-					} else {
-						sleep(1);
-					}
-					LATCbits.LATC1 = LOW;
-					sleep(3);
+					__delay_ms(3000);
 
 					LATCbits.LATC1 = HIGH;
 					if ((instruction >> 2) & 0x1) {
-						sleep(5);
+						__delay_ms(5000);
 					} else {
-						sleep(1);
+						__delay_ms(1000);
 					}
 					LATCbits.LATC1 = LOW;
-					sleep(3);
+					__delay_ms(3000);
 
 					LATCbits.LATC1 = HIGH;
-					if ((instruction >> 3) & 0x1) {
-						sleep(5);
+					if ((instruction >> 1) & 0x1) {
+						__delay_ms(5000);
 					} else {
-						sleep(1);
+						__delay_ms(1000);
 					}
 					LATCbits.LATC1 = LOW;
-					sleep(3);
+					__delay_ms(3000);
+
+					LATCbits.LATC1 = HIGH;
+					if (instruction & 0x1) {
+						__delay_ms(5000);
+					} else {
+						__delay_ms(1000);
+					}
+					LATCbits.LATC1 = LOW;
+					__delay_ms(3000);
+
+					
+
+					
+
+					
 
 					INTCONbits.GIE = LOW;	// disable future interrupts
 					/*END TEST*/
