@@ -160,6 +160,13 @@ int main(void)
 	  
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
 
+	  for (i = 0; i < 15; i++) {
+		  writeGPIO(fileHandleGPIO_S, HIGH);
+		  sleep(2);
+		  writeGPIO(fileHandleGPIO_S, LOW);
+		  sleep(2);
+	  }
+
 	  for (i = 0; i < 60; i++) {
 		  j = readGPIO(fileHandleGPIO_4);
 		  printf("Value #%d: %d\n", i, j);
