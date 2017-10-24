@@ -26,15 +26,15 @@ int read(int *bus) {
 int main() {
 
 	int input;			// user command input
+	int response;		// response from PIC
+
 	int flag;
 
-	int strobe;
-	int data [4];			// 4 pins
+	int strobe;				// handle for strobe signal
+	int data [4];			// handles for data bus pins (A3-A0)
 
 	strobe = openGPIO(Strobe, GPIO_DIRECTION_OUT);	// always out!
 	writeGPIO(strobe, LOW);
-
-	int response;
 
 	while (1) {
 
@@ -70,6 +70,7 @@ int main() {
 
 		// exit if input = -1
 		if (input < 0) {
+			closeGPIO(Strobe, strobe);
 			return 0;
 		}
 
