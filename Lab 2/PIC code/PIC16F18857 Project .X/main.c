@@ -206,7 +206,7 @@ before the PIC continues normal operation again.
 */
 
 
-#define DEBOUNCE_DELAY 5        // amount to delay during iterrupt in order to debounce
+#define DEBOUNCE_DELAY 1        // amount to delay during iterrupt in order to debounce
 
 /*Include files and other shit here*/
 #define HIGH 0b1
