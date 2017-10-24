@@ -61,7 +61,7 @@ int readGPIO(int handle) {
 	return (ret - '0');
 }
 //write value on the GPIO pins
-int writeGPIO(int handle, int status_write) {
+void writeGPIO(int handle, int status_write) {
 
 	// Set GPIO high status
 	if (status_write) {

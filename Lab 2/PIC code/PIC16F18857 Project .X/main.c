@@ -223,6 +223,7 @@ before the PIC continues normal operation again.
 /*Interrupt function for messages from computer*/
 void interrupt ISR();
 // read, execute, and respond (write) accordingly
+void resetPic();
 
 void main() {
 
@@ -427,3 +428,16 @@ void interrupt ISR() {
 	}   // else if other flags to determine other sources of interrupt
 
 }
+
+void resetPIC() {
+	INTCONbits.GIE = 0;
+	min = 1023;
+	max = 0;
+	communication_counter = 0;
+	while (!isEmpty(execution_queue)) {
+		dequeue(execution_queue);
+	}
+	while (PORTBbits.RB5 == HIGH) { continue; }
+	INTCONbits.GIE = 1;
+}
+	

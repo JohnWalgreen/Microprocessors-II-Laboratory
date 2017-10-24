@@ -6,14 +6,14 @@ GP_4 LSB and GP_7 MSB for data bus (A0-A3)
 
 // Warning: is sleep_ms defined? use <<usleep(unsigned int)>> in unistd.h for microseconds
 
-void write(int data, int *bus) {
+void writeBus(int value, int *bus) {
 	writeGPIO(bus[0], value & 0x1);
 	writeGPIO(bus[1], (value >> 1) & 0x1);
 	writeGPIO(bus[2], (value >> 2) & 0x1);
 	writeGPIO(bus[3], (value >> 3) & 0x1);
 }
 
-int read(int *bus) {
+int readBus(int *bus) {
 	// readGPIO must return 0 or 1 !!!
 	int value = 0;
 	value |= (readGPIO(bus[0]));
@@ -62,7 +62,7 @@ int main() {
 				} while (gahbage != '\n');
 
 			} else if (input < -1 || input > 5) {			// remember that -1 is valid input
-				puts("Error: %d is an invalid option\n", input);
+				printf("Error: %d is an invalid option\n", input);
 				flag = -1;
 			}
 
@@ -88,7 +88,7 @@ int main() {
 		data[2] = openGPIO(GP_6, GPIO_DIRECTION_OUT);
 		data[3] = openGPIO(GP_7, GPIO_DIRECTION_OUT);
 
-		write(input & 0xF, data);		// 2
+		writeBus(input & 0xF, data);		// 2
 		writeGPIO(strobe, HIGH);		// 3
 		usleep(10000);					// 4
 
@@ -113,7 +113,7 @@ int main() {
 			*/
 
 			writeGPIO(Strobe, LOW);				// 1
-			write(0, data);						// 2
+			writeBus(0, data);						// 2
 
 			// 3
 			closeGPIO(GP_4, data[0]);
@@ -128,7 +128,7 @@ int main() {
 			usleep(2000);						// 4
 			writeGPIO(Strobe, HIGH);			// 5
 			usleep(2000);						// 6
-			response += (read(data) << flag);	// 7 + extra
+			response += (readBus(data) << flag);	// 7 + extra
 
 			++flag;
 
