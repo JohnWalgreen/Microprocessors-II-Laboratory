@@ -48,6 +48,7 @@ int main(void)
 	/*START OPEN GPIO*/
 	int handle;               //file variable
 	char buf[256];
+	int gpio = GP_4;
 
 	//simple command to enable pin A0
 
