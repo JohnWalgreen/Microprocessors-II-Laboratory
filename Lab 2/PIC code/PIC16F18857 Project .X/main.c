@@ -371,6 +371,10 @@ void interrupt ISR() {
 					// first interrupt, read value from GPIO bus
 					// GPIO bus pins should already be set as inputs
 					instruction = read();
+					PORTC &= 0x0F;//TEMP
+					LATC &= 0x0F;//TEMP
+					LATC |= (instruction << 4);//TEMP
+					__dely_ms(50000);
 					++communication_counter;
 					break;
 				case 1:
