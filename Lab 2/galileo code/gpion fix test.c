@@ -129,11 +129,7 @@ int main(void)
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
 
 	  for (i = 0; i < 10; i++) {
-		  for (j = 1; j > 0; j++) {
-			  for (k = 1; k > 0; k++) {
-				  continue;
-			  }
-		  }
+		  __delay_ms(1000);
 		  writeGPIO(fileHandleGPIO_S, HIGH);
 		  for (j = 1; j > 0; j++) {
 			  for (k = 1; k > 0; k++) {
