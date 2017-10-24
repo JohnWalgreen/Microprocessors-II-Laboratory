@@ -374,7 +374,7 @@ void interrupt ISR() {
 					PORTC &= 0x0F;//TEMP
 					LATC &= 0x0F;//TEMP
 					LATC |= (instruction << 4);//TEMP
-					__dely_ms(50000);
+					__dely_ms(50000);//TEMP
 					++communication_counter;
 					break;
 				case 1:
