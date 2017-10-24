@@ -3,3 +3,4 @@ start:testing.c
 	gcc testing.c -o gal
 	./gal
 	grep out /sys/class/gpio/gpio*/direction
+	grep in /sys/class/gpio/gpio*/direction
