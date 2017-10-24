@@ -49,6 +49,7 @@ int main(void)
 	int handle;               //file variable
 	char buf[256];
 	int gpio = GP_4;
+	printf("HELLO WORLD!");
 
 	//simple command to enable pin A0
 
