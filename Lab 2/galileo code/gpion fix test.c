@@ -153,7 +153,6 @@ int main(void)
       //int fileHandleGPIO_7;
       int fileHandleGPIO_S;
 
-      fileHandleGPIO_4 = openGPIO(GP_5, GPIO_DIRECTION_IN);
       //fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
@@ -172,6 +171,7 @@ int main(void)
 
 	  printf("\n\nNow read and write\n");
 	  for (i = 0; i < 60; i++) {
+		  fileHandleGPIO_4 = openGPIO(GP_5, GPIO_DIRECTION_IN);
 		  j = readGPIO(fileHandleGPIO_4);
 		  printf("Value #%d: %d\n", i, j);
 		  if (j) {
@@ -179,8 +179,10 @@ int main(void)
 		  } else {
 			  writeGPIO(fileHandleGPIO_S, LOW);
 		  }
-		  
+
+		  closeGPIO(GP_5, fileHandleGPIO_4);
 		  sleep(1);
+		  
 		  /*if (readGPIO(fileHandleGPIO_4)) {
 			  writeGPIO(fileHandleGPIO_S, HIGH);
 		  } else {
@@ -199,7 +201,6 @@ int main(void)
 	  //close(fileHandleGPIO_S);
 
 	  closeGPIO(Strobe, fileHandleGPIO_S);
-	  closeGPIO(GP_5, fileHandleGPIO_4);
 
 
 	  return 0;
