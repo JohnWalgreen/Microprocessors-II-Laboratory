@@ -63,16 +63,33 @@ int openGPIO(int gpio, int direction)
 	handle = open(buf, O_WRONLY);
 
 	// Set out direction
-	write(handle, "out", 3);
+	switch (direction) {
+		case GPIO_DIRECTION_OUT:
+			write(handle, "out", 3);
+			break;
+		case GPIO_DIRECTION_IN:
+		default:
+			write(handle, "in", 2);
+			break;
+
+	}
+	// write(handle, "out", 3);
 	// Set in direction
 
 
 	close(handle);
 
-
 	sprintf(buf, "/sys/class/gpio/gpio%d/value", gpio);
 
-	handle = open(buf, O_WRONLY);
+	switch (direction) {
+		case GPIO_DIRECTION_OUT:
+			handle = open(buf, O_WRONLY);
+			break;
+		case GPIO_DIRECTION_IN:
+		default:
+			handle = open(buf, O_RDONLY);
+	}
+	// handle = open(buf, O_WRONLY);
 
 	return handle;
 
@@ -84,11 +101,15 @@ int openGPIO(int gpio, int direction)
 
 
     //Read value on the GPIO pins
-int readGPIO(int fd)
+int readGPIO(int handle)
 {
+	char ret;
+	read(handle, &ret, 1);
+	return (ret - '0');
+	/*
     int status_read;
     read(fd, &status_read, 1);
-    if('0'==status_read)
+    if('0' == status_read)
       {
         status_read = 0;
       }
@@ -96,7 +117,7 @@ int readGPIO(int fd)
       {
         status_read = 1;
       }
-      return status_read;
+      return status_read;*/
 }
     //write value on the GPIO pins
 int writeGPIO(int handle, int status_write)
@@ -130,26 +151,33 @@ int main(void)
 {
       int i;
 	  int j, k;
-      //int fileHandleGPIO_4;
+      int fileHandleGPIO_4;
       //int fileHandleGPIO_5;
       //int fileHandleGPIO_6;
       //int fileHandleGPIO_7;
       int fileHandleGPIO_S;
 
-      //fileHandleGPIO_4 = openGPIO(GP_4, GPIO_DIRECTION_OUT);
+      fileHandleGPIO_4 = openGPIO(GP_4, GPIO_DIRECTION_IN);
       //fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
+
+	  return;
+	  
+
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
 
 	  for (i = 0; i < 10; i++) {
-		  sleep(4);
-		  writeGPIO(fileHandleGPIO_S, HIGH);
-		  sleep(4);
-		  writeGPIO(fileHandleGPIO_S, LOW);
+		  writeGPIO(fileHandleGPIO_S, readGPIO(fileHandleGPIO_4));
+		  sleep(1);
+		  /*if (readGPIO(fileHandleGPIO_4)) {
+			  writeGPIO(fileHandleGPIO_S, HIGH);
+		  } else {
+			  writeGPIO(fileHandleGPIO_S, LOW);
+		  }*/
 	  }
       
-	  writeGPIO(fileHandleGPIO_S, HIGH);
+	  
       //writeGPIO(fileHandleGPIO_6, HIGH);
         
 
@@ -160,5 +188,8 @@ int main(void)
 	  //close(fileHandleGPIO_S);
 
 	  closeGPIO(Strobe, fileHandleGPIO_S);
+	  closeGPIO(GP_4, fileHandleGPIO_4);
+
+
 	  return 0;
 }
