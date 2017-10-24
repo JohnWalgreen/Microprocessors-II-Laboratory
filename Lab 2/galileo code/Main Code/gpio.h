@@ -51,4 +51,7 @@ void writeGPIO(int handle, int value);
 int readGPIO(int handle);
 // returns input from pin defined by handle
 
+/*Close GPIO*/
+void closeGPIO(int gpio, int handle);
+
 #endif
