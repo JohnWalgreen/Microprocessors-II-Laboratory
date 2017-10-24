@@ -1,5 +1,21 @@
 #include "gpio.h"
-#include 
+
+void write(int data, int *bus) {
+	writeGPIO(bus[0], value & 0x1);
+	writeGPIO(bus[1], (value >> 1) & 0x1);
+	writeGPIO(bus[2], (value >> 2) & 0x1);
+	writeGPIO(bus[3], (value >> 3) & 0x1);
+}
+
+int read(int *bus) {
+	// readGPIO must return 0 or 1 !!!
+	int value = 0;
+	value |= (readGPIO(bus[0]));
+	value |= (readGPIO(bus[1]) << 1);
+	value |= (readGPIO(bus[2]) << 2);
+	value |= (readGPIO(bus[3]) << 3);
+	return value;
+}
 
 int main() {
 
@@ -43,10 +59,29 @@ int main() {
 
 		} while (flag);
 
-		input &= 0xF;		// get last 4 bits (this line is technically unnecessary
+		/*
+		START STEP 1
+			1) open all pins as outputs
+			2) put data on bus
+			3) flip strobe on
+			4) Give pic 10ms to read data
+		*/
 
-		// place data on bus
-		data [0] = openGPIO(GP_4, GPIO_DIRECTION_OUT);
+		// 1
+		data[0] = openGPIO(GP_4, GPIO_DIRECTION_OUT);
+		data[1] = openGPIO(GP_5, GPIO_DIRECTION_OUT);
+		data[2] = openGPIO(GP_6, GPIO_DIRECTION_OUT);
+		data[3] = openGPIO(GP_7, GPIO_DIRECTION_OUT);
+
+		// 2
+		write(input & 0xF, data);
+
+		// 3
+		writeGPIO(strobe, HIGH);
+
+		//4
+		sleep(0.01);
+
 		
 	}
 }
