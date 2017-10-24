@@ -59,7 +59,7 @@ int openGPIO(int gpio, int direction)
     //use sprintf to store data in the GPIOS of Galileo
     sprintf(BUFFER, "/sys/class/gpio/gpio%d/direction", gpio);
     fd = open(BUFFER, O_WRONLY);
-    if(direction == GPIO_DIRECTION_OUT)
+    /*if(direction == GPIO_DIRECTION_OUT)
     {
       write(fd, "out", 3);
       RW = O_WRONLY;
@@ -68,11 +68,14 @@ int openGPIO(int gpio, int direction)
     {
       write(fd, "in", 2);
       RW = O_WRONLY;
-    }
+    }*/
+	write(fd, "out", 3);	// replace if-statement
+
+
     close(fd);
     //Now to set the GPIO value
     sprintf(BUFFER, "/sys/class/gpio/gpio%d/value", gpio);
-    fd = open(BUFFER, RW);
+    fd = open(BUFFER, O_WRONLY);							/i TOOK OUT rw PUT IN o_wronly
     return(fd);
 
 
