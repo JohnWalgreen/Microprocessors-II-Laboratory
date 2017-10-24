@@ -4,7 +4,7 @@ GP_4 LSB and GP_7 MSB for data bus (A0-A3)
 
 #include "gpio.h"
 
-// Warning: is sleep_ms defined?
+// Warning: is sleep_ms defined? use <<usleep(unsigned int)>> in unistd.h for microseconds
 
 void write(int data, int *bus) {
 	writeGPIO(bus[0], value & 0x1);
