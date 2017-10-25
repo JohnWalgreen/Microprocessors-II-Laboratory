@@ -219,15 +219,14 @@ before the PIC continues normal operation again.
 #include "pwm.h"
 #include "Queue.h"
 
-#define on 2000;
- #define off 500;
- #define pause 1000;
-
 
 /*Interrupt function for messages from computer*/
 void interrupt ISR();
 // read, execute, and respond (write) accordingly
+
+/*HARD RESET!*/
 void reset();
+// do not use unless by hand
 
 void main() {
 
@@ -332,10 +331,12 @@ void main() {
 		/*END LIGHT SENSOR AND LED PART*/
 		
 		/*Queue execution*/
-		if (!isEmpty(execution_queue)) {
-			switch (dequeue(execution_queue)) {
+		if (!isEmpty(&execution_queue)) {
+			switch (dequeue(&execution_queue)) {
 				case MSG_RESET:
-					reset();
+					min = 1023;
+					max = 0;
+					threshold = 0;
 					break;
 				case MSG_TURN30:
 					PWM_Turn30();
@@ -431,7 +432,7 @@ void interrupt ISR() {
 					if (instruction == MSG_GET) {
 						write((adc_value >> 8) & 0x3);
 					} else {
-						enqueue(execution_queue, instruction);
+						enqueue(&execution_queue, instruction);
 						write(MSG_ACK);
 					}
 					TRISB &= 0xE1;          // set up outputs
@@ -446,7 +447,7 @@ void interrupt ISR() {
 					// computer done reading value
 					if (instruction == MSG_GET) {
 						// write bit again
-						write(adc_value >> 4 & 0xF);
+						write((adc_value >> 4) & 0xF);
 						++communication_counter;
 					} else {
 						TRISB |= 0x1E;  // back to inputs (high impedance)
@@ -502,8 +503,8 @@ void reset() {
 	max = 0;
 	threshold = 0;
 	communication_counter = 0;
-	while (!isEmpty(execution_queue)) {
-		dequeue(execution_queue);
+	while (!isEmpty(&execution_queue)) {
+		dequeue(&execution_queue);
 	}
 	while (PORTBbits.RB5 == HIGH || PORTCbits.RC0 == HIGH) { continue; }
 	INTCONbits.GIE = 1;

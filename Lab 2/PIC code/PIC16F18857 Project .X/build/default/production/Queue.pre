@@ -9,10 +9,10 @@ unsigned int front;
 unsigned int back;
 } Queue;
 
-int isFull(Queue);
-int isEmpty(Queue);
-void enqueue(Queue, unsigned int);
-unsigned dequeue(Queue);
+int isFull(Queue *);
+int isEmpty(Queue *);
+void enqueue(Queue *, unsigned int);
+unsigned dequeue(Queue *);
 
 
 Queue execution_queue;
@@ -17439,25 +17439,25 @@ void SYSTEM_Initialize(void);
 void OSCILLATOR_Initialize(void);
 
 # 5 "Queue.c"
-int isFull(Queue data) {
+int isFull(Queue *data) {
 return (
-((data.back + 1) % (5 + 1))
-== data.front);
+((data->back + 1) % (5 + 1))
+== data->front);
 }
-int isEmpty(Queue data) {
-return (data.back == data.front);
+int isEmpty(Queue *data) {
+return (data->back == data->front);
 }
-void enqueue(Queue data, unsigned int item) {
+void enqueue(Queue *data, unsigned int item) {
 if (!isFull(data)) {
-data.vals[data.back] = item;
-data.back = (data.back + 1) % (5 + 1);
+data->vals[data->back] = item;
+data->back = (data->back + 1) % (5 + 1);
 }
 }
-unsigned int dequeue(Queue data) {
+unsigned int dequeue(Queue *data) {
 unsigned int ret;
 if (!isEmpty(data)) {
-ret = data.vals[data.front];
-data.front = (data.front + 1) % (5 + 1);
+ret = data->vals[data->front];
+data->front = (data->front + 1) % (5 + 1);
 }
 return ret;
 }

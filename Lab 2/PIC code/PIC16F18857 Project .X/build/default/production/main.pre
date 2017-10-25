@@ -17456,18 +17456,21 @@ unsigned int front;
 unsigned int back;
 } Queue;
 
-int isFull(Queue);
-int isEmpty(Queue);
-void enqueue(Queue, unsigned int);
-unsigned dequeue(Queue);
+int isFull(Queue *);
+int isEmpty(Queue *);
+void enqueue(Queue *, unsigned int);
+unsigned dequeue(Queue *);
 
 
 Queue execution_queue;
 
-# 228 "main.c"
+# 224 "main.c"
 void interrupt ISR();
 
+
+
 void reset();
+
 
 void main() {
 
@@ -17490,7 +17493,7 @@ TRISCbits.TRISC1 = 0;
 
 IOCCPbits.IOCCP0 = 1;
 
-# 258
+# 257
 int led_counter;
 
 
@@ -17505,7 +17508,7 @@ reset();
 
 while (1) {
 
-# 292
+# 291
 if (led_counter < 0) {
 
 
@@ -17549,10 +17552,12 @@ led_counter = -1;
 
 
 
-if (!isEmpty(execution_queue)) {
-switch (dequeue(execution_queue)) {
+if (!isEmpty(&execution_queue)) {
+switch (dequeue(&execution_queue)) {
 case 0x0:
-reset();
+min = 1023;
+max = 0;
+threshold = 0;
 break;
 case 0x3:
 PWM_Turn30();
@@ -17581,7 +17586,7 @@ reset();
 
 if (PIR0bits.IOCIF == 1 && IOCBFbits.IOCBF5 == 1) {
 
-# 372
+# 373
 _delay((unsigned long)((1)*(1000000/4000.0)));
 if (PORTBbits.RB5 == (communication_counter % 2 ? 0 : 1)) {
 
@@ -17596,7 +17601,7 @@ LATC &= 0x0F;
 LATC |= (instruction << 4);
 ++communication_counter;
 
-# 426
+# 427
 break;
 case 1:
 
@@ -17605,7 +17610,7 @@ case 1:
 if (instruction == 0x2) {
 write((adc_value >> 8) & 0x3);
 } else {
-enqueue(execution_queue, instruction);
+enqueue(&execution_queue, instruction);
 write(0xE);
 }
 TRISB &= 0xE1;
@@ -17620,7 +17625,7 @@ case 3:
 
 if (instruction == 0x2) {
 
-write(adc_value >> 4 & 0xF);
+write((adc_value >> 4) & 0xF);
 ++communication_counter;
 } else {
 TRISB |= 0x1E;
@@ -17676,8 +17681,8 @@ min = 1023;
 max = 0;
 threshold = 0;
 communication_counter = 0;
-while (!isEmpty(execution_queue)) {
-dequeue(execution_queue);
+while (!isEmpty(&execution_queue)) {
+dequeue(&execution_queue);
 }
 while (PORTBbits.RB5 == 1 || PORTCbits.RC0 == 1) { continue; }
 INTCONbits.GIE = 1;

@@ -22,11 +22,11 @@
 [v _read read `(i  1 e 2 0 ]
 "23
 [v _write write `(v  1 e 1 0 ]
-"232 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\main.c
+"231 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\main.c
 [v _main main `(v  1 e 1 0 ]
-"358
+"359
 [v _ISR ISR `II(v  1 e 1 0 ]
-"498
+"499
 [v _reset reset `(v  1 e 1 0 ]
 [v i1_reset reset `(v  1 e 1 0 ]
 "55 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\mcc_generated_files/eusart.c
@@ -419,43 +419,49 @@
 [s S132 . 16 `[6]ui 1 vals 12 0 `ui 1 front 2 12 `ui 1 back 2 14 ]
 "19 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\Queue.h
 [v _execution_queue execution_queue `S132  1 e 16 0 ]
-"232 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\main.c
+"231 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\main.c
 [v _main main `(v  1 e 1 0 ]
 {
-"258
-[v main@led_counter led_counter `i  1 a 2 41 ]
-"356
+"257
+[v main@led_counter led_counter `i  1 a 2 29 ]
+"357
 } 0
-"498
+"499
 [v _reset reset `(v  1 e 1 0 ]
 {
-"511
+"512
 } 0
 "19 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\Queue.c
 [v _dequeue dequeue `(ui  1 e 2 0 ]
 {
-"20
-[v dequeue@ret ret `ui  1 a 2 35 ]
 [s S132 . 16 `[6]ui 1 vals 12 0 `ui 1 front 2 12 `ui 1 back 2 14 ]
+[v dequeue@data data `*.4S132  1 a 1 wreg ]
+"20
+[v dequeue@ret ret `ui  1 a 2 23 ]
 "19
-[v dequeue@data data `S132  1 p 16 18 ]
+[v dequeue@data data `*.4S132  1 a 1 wreg ]
+"21
+"19
+[v dequeue@data data `*.4S132  1 a 1 25 ]
 "26
 } 0
 "10
 [v _isEmpty isEmpty `(i  1 e 2 0 ]
 {
 [s S132 . 16 `[6]ui 1 vals 12 0 `ui 1 front 2 12 `ui 1 back 2 14 ]
-[v isEmpty@data data `S132  1 p 16 0 ]
+[v isEmpty@data data `*.4S132  1 a 1 wreg ]
+[v isEmpty@data data `*.4S132  1 a 1 wreg ]
+[v isEmpty@data data `*.4S132  1 a 1 18 ]
 "12
 } 0
 "6 C:\Program Files (x86)\Microchip\xc8\v1.42\sources\common\lwmod.c
 [v ___lwmod __lwmod `(ui  1 e 2 0 ]
 {
 "11
-[v ___lwmod@counter counter `uc  1 a 1 5 ]
+[v ___lwmod@counter counter `uc  1 a 1 15 ]
 "6
-[v ___lwmod@divisor divisor `ui  1 p 2 0 ]
-[v ___lwmod@dividend dividend `ui  1 p 2 2 ]
+[v ___lwmod@divisor divisor `ui  1 p 2 10 ]
+[v ___lwmod@dividend dividend `ui  1 p 2 12 ]
 "26
 } 0
 "82 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\mcc_generated_files/mcc.c
@@ -467,7 +473,7 @@
 [v _PIN_MANAGER_Initialize PIN_MANAGER_Initialize `(v  1 e 1 0 ]
 {
 "68
-[v PIN_MANAGER_Initialize@state state `uc  1 a 1 0 ]
+[v PIN_MANAGER_Initialize@state state `uc  1 a 1 10 ]
 "85
 } 0
 "90 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\mcc_generated_files/mcc.c
@@ -484,21 +490,21 @@
 [v _PWM_Turn90 PWM_Turn90 `(v  1 e 1 0 ]
 {
 "24
-[v PWM_Turn90@i i `i  1 a 2 1 ]
+[v PWM_Turn90@i i `i  1 a 2 11 ]
 "31
 } 0
 "12
 [v _PWM_Turn30 PWM_Turn30 `(v  1 e 1 0 ]
 {
 "14
-[v PWM_Turn30@i i `i  1 a 2 1 ]
+[v PWM_Turn30@i i `i  1 a 2 11 ]
 "21
 } 0
 "32
 [v _PWM_Turn120 PWM_Turn120 `(v  1 e 1 0 ]
 {
 "34
-[v PWM_Turn120@i i `i  1 a 2 1 ]
+[v PWM_Turn120@i i `i  1 a 2 11 ]
 "41
 } 0
 "5
@@ -516,29 +522,35 @@
 {
 "60
 } 0
-"358 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\main.c
+"359 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\main.c
 [v _ISR ISR `II(v  1 e 1 0 ]
 {
-"496
+"497
 } 0
-"498
+"499
 [v i1_reset reset `(v  1 e 1 0 ]
 {
-"511
+"512
 } 0
 "19 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\Queue.c
 [v i1_dequeue dequeue `(ui  1 e 2 0 ]
 {
-[v i1dequeue@ret dequeue `ui  1 a 2 7 ]
 [s S132 . 16 `[6]ui 1 vals 12 0 `ui 1 front 2 12 `ui 1 back 2 14 ]
-[v i1dequeue@data data `S132  1 p 16 16 ]
+[v i1dequeue@data data `*.4S132  1 a 1 wreg ]
+[v i1dequeue@ret dequeue `ui  1 a 2 11 ]
+[v i1dequeue@data data `*.4S132  1 a 1 wreg ]
+"21
+"19
+[v i1dequeue@data data `*.4S132  1 a 1 13 ]
 "26
 } 0
 "10
 [v i1_isEmpty isEmpty `(i  1 e 2 0 ]
 {
 [s S132 . 16 `[6]ui 1 vals 12 0 `ui 1 front 2 12 `ui 1 back 2 14 ]
-[v i1isEmpty@data data `S132  1 p 16 0 ]
+[v i1isEmpty@data data `*.4S132  1 a 1 wreg ]
+[v i1isEmpty@data data `*.4S132  1 a 1 wreg ]
+[v i1isEmpty@data data `*.4S132  1 a 1 8 ]
 "12
 } 0
 "23 C:\Users\hansh\Documents\GitHub\Microprocessors-II-Laboratory\Lab 2\PIC code\PIC16F18857 Project .X\gpio.c
@@ -556,15 +568,21 @@
 [v _enqueue enqueue `(v  1 e 1 0 ]
 {
 [s S132 . 16 `[6]ui 1 vals 12 0 `ui 1 front 2 12 `ui 1 back 2 14 ]
-[v enqueue@data data `S132  1 p 16 16 ]
-[v enqueue@item item `ui  1 p 2 32 ]
+[v enqueue@data data `*.4S132  1 a 1 wreg ]
+[v enqueue@data data `*.4S132  1 a 1 wreg ]
+[v enqueue@item item `ui  1 p 2 1 ]
+[v enqueue@data data `*.4S132  1 a 1 5 ]
 "18
 } 0
 "5
 [v _isFull isFull `(i  1 e 2 0 ]
 {
 [s S132 . 16 `[6]ui 1 vals 12 0 `ui 1 front 2 12 `ui 1 back 2 14 ]
-[v isFull@data data `S132  1 p 16 0 ]
+[v isFull@data data `*.4S132  1 a 1 wreg ]
+[v isFull@data data `*.4S132  1 a 1 wreg ]
+"8
+"5
+[v isFull@data data `*.4S132  1 a 1 0 ]
 "9
 } 0
 "6 C:\Program Files (x86)\Microchip\xc8\v1.42\sources\common\lwmod.c
