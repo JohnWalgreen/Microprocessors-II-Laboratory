@@ -42,7 +42,6 @@ int main() {
 			flag = 1 - scanf("%d", &input);
 
 			if (flag) {
-				char gahbage;
 
 				puts("ERROR: Invalid number input\n");
 
