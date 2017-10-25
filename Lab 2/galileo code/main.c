@@ -2,6 +2,28 @@
 GP_4 LSB and GP_7 MSB for data bus (A0-A3)
 */
 
+/*
+Main Program for galileo
+prints options and accepts command (with error checking)
+command is sent to PIC
+
+Strobe protocol:
+galileo sets bus as output (PIC should be inputs already)
+galileo puts data on bus
+galileo raises strobe
+galileo pauses for 10 ms and gives PIC time to read data on bus
+
+repeat this for every nibble that must be read:
+	galileo lowers strobe signal
+	galileo makes pins inputs
+	galileo pauses for 2 ms so that PIC has time to form response
+	galileo raises strobe signal
+	galileo pauses for 2 ms so that PIC has time to switch pins to outputs
+	galileo reads data on bus
+
+galileo lowers strobe signal
+*/
+
 #include "gpio.h"
 #include "bus_transfer.h"
 
