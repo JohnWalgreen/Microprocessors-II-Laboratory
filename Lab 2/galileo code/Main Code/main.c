@@ -129,7 +129,13 @@ int main() {
 			usleep(2000);						// 4
 			writeGPIO(strobe, HIGH);			// 5
 			usleep(2000);						// 6
-			response += (readBus(data) << flag);	// 7 + extra
+
+			// 7
+			if (input == MSG_GET) {
+				response += readBus(data) << (4 * (3 - flag));	// 7 + extra
+			} else {
+				response = readBus(data);
+			}
 
 			++flag;
 
@@ -156,7 +162,7 @@ int main() {
 					break;
 				case MSG_GET:
 					response = (response >> 4);			// last 4 bits is MSG_ACK, upper 10 bits is data
-					printf("Last ADC value: %d\n", response);
+					printf("Last ADC value: %d\nVoltage across photoresistor: %lf\n", response, 3.3 * (double)response / 1023.0);
 					break;
 				case MSG_TURN30:
 					puts("PIC has queued command to turn senso-motor to 30 degrees");
