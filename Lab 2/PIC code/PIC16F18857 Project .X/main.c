@@ -386,50 +386,7 @@ void interrupt ISR() {
 					// first interrupt, read value from GPIO bus
 					// GPIO bus pins should already be set as inputs
 					instruction = read();
-					TRISC &= 0x0F;//TEMP
-					LATC &= 0x0F;//TEMP
-					LATC |= (instruction << 4);//TEMP
 					++communication_counter;
-
-					/*MAKE SURE THAT PIC READS DATA*/
-                    /*
-                    
-					LATCbits.LATC1 = HIGH;
-					if ((instruction >> 3) & 0x1) {
-						__delay_ms(on);
-					} else {
-						__delay_ms(off);
-					}
-					LATCbits.LATC1 = LOW;
-					__delay_ms(pause);
-
-					LATCbits.LATC1 = HIGH;
-					if ((instruction >> 2) & 0x1) {
-						__delay_ms(on);
-					} else {
-						__delay_ms(off);
-					}
-					LATCbits.LATC1 = LOW;
-					__delay_ms(pause);
-
-					LATCbits.LATC1 = HIGH;
-					if ((instruction >> 1) & 0x1) {
-						__delay_ms(on);
-					} else {
-						__delay_ms(off);
-					}
-					LATCbits.LATC1 = LOW;
-					__delay_ms(pause);
-
-					LATCbits.LATC1 = HIGH;
-					if (instruction & 0x1) {
-						__delay_ms(on);
-					} else {
-						__delay_ms(off);
-					}
-					LATCbits.LATC1 = LOW;
-					__delay_ms(pause);*/
-											/*END TEST*/
 
 					break;
 				case 1:
@@ -442,12 +399,12 @@ void interrupt ISR() {
 						enqueue(&execution_queue, instruction);
 						write(MSG_ACK);
 					}
-					TRISB &= 0xE1;          // set up outputs
 					++communication_counter;
 					break;
 				case 2:
 					// computer raises signal
 					// reading has begun
+					TRISB &= 0xE1;          // set up outputs
 					++communication_counter;
 					break;
 				case 3:
