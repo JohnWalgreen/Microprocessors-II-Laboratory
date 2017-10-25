@@ -129,9 +129,16 @@ Description:	1) Got PWM functios to work.
 
 Name: Hans-Edward Hoene
 Date: 23-Oct-2017
-Time: 1350 - 1430
+Time: 1350 - 1520
 Description:	1) fixed PORTB for TRISB in interrupt ISR
 				2) Tested write function (all test programs are functional!)
+				
+Name: Hans-Edward Hoene & Derek & Kyle
+DATE: 24-Oct-2017
+Time: all fucking day (aka 0900 - 2130)
+Description:    1) fixed all galileo code (read, write, open, close functions)
+				2) made ui for galileo and coded+fixed communication protocol between PIC and galileo
+				3) it all fucking worked, muddafuckas!!!
 */
 
 /*
