@@ -8,6 +8,7 @@ prints options and accepts command (with error checking)
 command is sent to PIC
 
 Strobe protocol:
+
 galileo sets bus as output (PIC should be inputs already)
 galileo puts data on bus
 galileo raises strobe
