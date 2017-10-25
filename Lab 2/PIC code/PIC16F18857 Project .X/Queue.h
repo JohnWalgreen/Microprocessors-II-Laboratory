@@ -10,10 +10,10 @@ typedef struct {
 	unsigned int back;			// index - 1 is last item in queue
 } Queue;
 
-int isFull(Queue);
-int isEmpty(Queue);
-void enqueue(Queue, unsigned int);
-unsigned dequeue(Queue);
+int isFull(Queue *);
+int isEmpty(Queue *);
+void enqueue(Queue *, unsigned int);
+unsigned dequeue(Queue *);
 
 /*Add Global Variables Here*/
 Queue execution_queue;
