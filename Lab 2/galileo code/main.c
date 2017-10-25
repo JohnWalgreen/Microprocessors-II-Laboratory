@@ -23,6 +23,14 @@ int readBus(int *bus) {
 	return value;
 }
 
+void flushLine() {
+	char fuckingGarbage;
+	do {
+		scanf("%c", &fuckingGarbage);
+	} while (fuckingGarbage != '\n');
+	return;
+}
+
 int main() {
 
 	int input;			// user command input
@@ -57,14 +65,13 @@ int main() {
 				puts("ERROR: Invalid number input\n");
 
 				// must flush line!
-				do {
-					scanf("%c", &gahbage);
-				} while (gahbage != '\n');
 
 			} else if (input < -1 || input > 5) {			// remember that -1 is valid input
 				printf("Error: %d is an invalid option\n", input);
 				flag = -1;
 			}
+			
+			flushLine();
 
 		} while (flag);
 
