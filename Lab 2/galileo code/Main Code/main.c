@@ -129,7 +129,13 @@ int main() {
 			usleep(2000);						// 4
 			writeGPIO(strobe, HIGH);			// 5
 			usleep(2000);						// 6
-			response += (readBus(data) << flag);	// 7 + extra
+
+			// 7
+			if (input == MSG_GET) {
+				response += readBus(data) << (4 * (3 - flag));	// 7 + extra
+			} else {
+				response = readBus(data);
+			}
 
 			++flag;
 
