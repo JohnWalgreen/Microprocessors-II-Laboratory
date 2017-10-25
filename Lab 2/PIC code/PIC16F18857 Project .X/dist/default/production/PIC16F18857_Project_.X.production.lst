@@ -1,7 +1,7 @@
 
 
 Microchip Technology PIC LITE Macro Assembler V1.42 build -159332390 
-                                                                                               Tue Oct 24 20:59:07 2017
+                                                                                               Wed Oct 25 11:31:41 2017
 
 Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130522
      1                           	processor	16F18857
@@ -4564,7 +4564,7 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4550 ;;
   4551 ;; *************** function _main *****************
   4552 ;; Defined at:
-  4553 ;;		line 231 in file "main.c"
+  4553 ;;		line 238 in file "main.c"
   4554 ;; Parameters:    Size  Location     Type
   4555 ;;		None
   4556 ;; Auto vars:     Size  Location     Type
@@ -4620,78 +4620,78 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4591                           ;psect for function _main
   4592  00CF                     _main:	
   4593                           
-  4594                           ;main.c: 234: SYSTEM_Initialize();
+  4594                           ;main.c: 241: SYSTEM_Initialize();
   4595                           
   4596                           ;incstack = 0
   4597                           ; Regs used in _main: [wreg-fsr1h+status,2+status,0+pclath+cstack]
   4598  00CF  3184  2487  3180   	fcall	_SYSTEM_Initialize
   4599                           
-  4600                           ;main.c: 235: OSCILLATOR_Initialize();
+  4600                           ;main.c: 242: OSCILLATOR_Initialize();
   4601  00D2  3184  2473  3180   	fcall	_OSCILLATOR_Initialize
   4602                           
-  4603                           ;main.c: 238: ADC_LED_Init();
+  4603                           ;main.c: 245: ADC_LED_Init();
   4604  00D5  3183  231F  3180   	fcall	_ADC_LED_Init
   4605                           
-  4606                           ;main.c: 239: PWM_Init();
+  4606                           ;main.c: 246: PWM_Init();
   4607  00D8  3184  2490  3180   	fcall	_PWM_Init
   4608                           
-  4609                           ;main.c: 240: GPIO_Init();
+  4609                           ;main.c: 247: GPIO_Init();
   4610  00DB  3184  244D  3180   	fcall	_GPIO_Init
   4611                           
-  4612                           ;main.c: 243: TRISC = 0xFF;
+  4612                           ;main.c: 250: TRISC = 0xFF;
   4613  00DE  30FF               	movlw	255
   4614  00DF  0140               	movlb	0	; select bank0
   4615  00E0  0093               	movwf	19	;volatile
   4616                           
-  4617                           ;main.c: 244: ANSELC = 0x00;
+  4617                           ;main.c: 251: ANSELC = 0x00;
   4618  00E1  017E               	movlb	62	; select bank62
   4619  00E2  01CE               	clrf	78	;volatile
   4620                           
-  4621                           ;main.c: 246: TRISCbits.TRISC1 = 0;
+  4621                           ;main.c: 253: TRISCbits.TRISC1 = 0;
   4622  00E3  0140               	movlb	0	; select bank0
   4623  00E4  1093               	bcf	19,1	;volatile
   4624                           
-  4625                           ;main.c: 250: IOCCPbits.IOCCP0 = 1;
+  4625                           ;main.c: 257: IOCCPbits.IOCCP0 = 1;
   4626  00E5  017E               	movlb	62	; select bank62
   4627  00E6  1453               	bsf	83,0	;volatile
   4628                           
-  4629                           ;main.c: 257: int led_counter;
-  4630                           ;main.c: 262: led_counter = 0;
+  4629                           ;main.c: 264: int led_counter;
+  4630                           ;main.c: 269: led_counter = 0;
   4631  00E7  0140               	movlb	0	; select bank0
   4632  00E8  01BD               	clrf	main@led_counter
   4633  00E9  01BE               	clrf	main@led_counter+1
   4634                           
-  4635                           ;main.c: 263: max = 0;
+  4635                           ;main.c: 270: max = 0;
   4636  00EA  01C5               	clrf	_max
   4637  00EB  01C6               	clrf	_max+1
   4638                           
-  4639                           ;main.c: 264: min = 1023;
+  4639                           ;main.c: 271: min = 1023;
   4640  00EC  30FF               	movlw	255
   4641  00ED  00D9               	movwf	_min
   4642  00EE  3003               	movlw	3
   4643  00EF  00DA               	movwf	_min+1
   4644                           
-  4645                           ;main.c: 265: threshold = 0;
+  4645                           ;main.c: 272: threshold = 0;
   4646  00F0  01C3               	clrf	_threshold
   4647  00F1  01C4               	clrf	_threshold+1
   4648                           
-  4649                           ;main.c: 267: reset();
+  4649                           ;main.c: 274: reset();
   4650  00F2  3183  23F7  3180   	fcall	_reset
   4651  00F5                     l1597:	
-  4652                           ;main.c: 269: while (1) {
+  4652                           ;main.c: 276: while (1) {
   4653                           
   4654                           
-  4655                           ;main.c: 291: if (led_counter < 0) {
+  4655                           ;main.c: 298: if (led_counter < 0) {
   4656  00F5  0140               	movlb	0	; select bank0
   4657  00F6  1FBE               	btfss	main@led_counter+1,7
   4658  00F7  296B               	goto	l1625
   4659                           
-  4660                           ;main.c: 295: if (ADCON0bits.GO == 0) {
+  4660                           ;main.c: 302: if (ADCON0bits.GO == 0) {
   4661  00F8  0141               	movlb	1	; select bank1
   4662  00F9  1813               	btfsc	19,0	;volatile
   4663  00FA  2983               	goto	l1633
   4664                           
-  4665                           ;main.c: 299: adc_value = (ADRESH << 8) + ADRESL;
+  4665                           ;main.c: 306: adc_value = (ADRESH << 8) + ADRESL;
   4666  00FB  080D               	movf	13,w	;volatile
   4667  00FC  0140               	movlb	0	; select bank0
   4668  00FD  00C8               	movwf	_adc_value+1
@@ -4700,7 +4700,7 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4671  0100  0140               	movlb	0	; select bank0
   4672  0101  00C7               	movwf	_adc_value
   4673                           
-  4674                           ;main.c: 300: if (adc_value > max) {
+  4674                           ;main.c: 307: if (adc_value > max) {
   4675  0102  0846               	movf	_max+1,w
   4676  0103  3A80               	xorlw	128
   4677  0104  00BA               	movwf	??_main
@@ -4715,14 +4715,14 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4686  010C  1803               	skipnc
   4687  010D  291E               	goto	l1607
   4688                           
-  4689                           ;main.c: 301: max = adc_value;
+  4689                           ;main.c: 308: max = adc_value;
   4690  010E  0140               	movlb	0	; select bank0
   4691  010F  0848               	movf	_adc_value+1,w
   4692  0110  00C6               	movwf	_max+1
   4693  0111  0847               	movf	_adc_value,w
   4694  0112  00C5               	movwf	_max
   4695                           
-  4696                           ;main.c: 302: threshold = (max + min) >> 1;
+  4696                           ;main.c: 309: threshold = (max + min) >> 1;
   4697  0113  0859               	movf	_min,w
   4698  0114  0745               	addwf	_max,w
   4699  0115  00BA               	movwf	??_main
@@ -4736,8 +4736,8 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4707  011D  00C3               	movwf	_threshold
   4708  011E                     l1607:	
   4709                           
-  4710                           ;main.c: 303: }
-  4711                           ;main.c: 304: if (adc_value < min) {
+  4710                           ;main.c: 310: }
+  4711                           ;main.c: 311: if (adc_value < min) {
   4712  011E  0140               	movlb	0	; select bank0
   4713  011F  0848               	movf	_adc_value+1,w
   4714  0120  3A80               	xorlw	128
@@ -4753,14 +4753,14 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4724  0129  1803               	skipnc
   4725  012A  293B               	goto	l1613
   4726                           
-  4727                           ;main.c: 305: min = adc_value;
+  4727                           ;main.c: 312: min = adc_value;
   4728  012B  0140               	movlb	0	; select bank0
   4729  012C  0848               	movf	_adc_value+1,w
   4730  012D  00DA               	movwf	_min+1
   4731  012E  0847               	movf	_adc_value,w
   4732  012F  00D9               	movwf	_min
   4733                           
-  4734                           ;main.c: 306: threshold = (max + min) >> 1;
+  4734                           ;main.c: 313: threshold = (max + min) >> 1;
   4735  0130  0859               	movf	_min,w
   4736  0131  0745               	addwf	_max,w
   4737  0132  00BA               	movwf	??_main
@@ -4774,13 +4774,13 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4745  013A  00C3               	movwf	_threshold
   4746  013B                     l1613:	
   4747                           
-  4748                           ;main.c: 307: }
-  4749                           ;main.c: 310: if (LATAbits.LATA0 == 1) {
+  4748                           ;main.c: 314: }
+  4749                           ;main.c: 317: if (LATAbits.LATA0 == 1) {
   4750  013B  0140               	movlb	0	; select bank0
   4751  013C  1C16               	btfss	22,0	;volatile
   4752  013D  2953               	goto	l1619
   4753                           
-  4754                           ;main.c: 312: if (adc_value < threshold - 20) {
+  4754                           ;main.c: 319: if (adc_value < threshold - 20) {
   4755  013E  0843               	movf	_threshold,w
   4756  013F  3EEC               	addlw	236
   4757  0140  00BA               	movwf	??_main
@@ -4801,16 +4801,16 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4772  014E  1803               	skipnc
   4773  014F  2967               	goto	l1623
   4774                           
-  4775                           ;main.c: 313: LATAbits.LATA0 = 0;
+  4775                           ;main.c: 320: LATAbits.LATA0 = 0;
   4776  0150  0140               	movlb	0	; select bank0
   4777  0151  1016               	bcf	22,0	;volatile
   4778                           
-  4779                           ;main.c: 314: }
-  4780                           ;main.c: 315: } else {
+  4779                           ;main.c: 321: }
+  4780                           ;main.c: 322: } else {
   4781  0152  2967               	goto	l1623
   4782  0153                     l1619:	
   4783                           
-  4784                           ;main.c: 316: if (adc_value > threshold + 20) {
+  4784                           ;main.c: 323: if (adc_value > threshold + 20) {
   4785  0153  0843               	movf	_threshold,w
   4786  0154  3E14               	addlw	20
   4787  0155  00BA               	movwf	??_main
@@ -4831,20 +4831,20 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4802  0163  1803               	skipnc
   4803  0164  2967               	goto	l1623
   4804                           
-  4805                           ;main.c: 317: LATAbits.LATA0 = 1;
+  4805                           ;main.c: 324: LATAbits.LATA0 = 1;
   4806  0165  0140               	movlb	0	; select bank0
   4807  0166  1416               	bsf	22,0	;volatile
   4808  0167                     l1623:	
   4809                           
-  4810                           ;main.c: 318: }
-  4811                           ;main.c: 319: }
-  4812                           ;main.c: 321: led_counter = 0;
+  4810                           ;main.c: 325: }
+  4811                           ;main.c: 326: }
+  4812                           ;main.c: 328: led_counter = 0;
   4813  0167  0140               	movlb	0	; select bank0
   4814  0168  01BD               	clrf	main@led_counter
   4815  0169  01BE               	clrf	main@led_counter+1
   4816                           
-  4817                           ;main.c: 322: }
-  4818                           ;main.c: 323: } else if (led_counter >= 10) {
+  4817                           ;main.c: 329: }
+  4818                           ;main.c: 330: } else if (led_counter >= 10) {
   4819  016A  2983               	goto	l1633
   4820  016B                     l1625:	
   4821  016B  083E               	movf	main@led_counter+1,w
@@ -4860,22 +4860,22 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4831  0174  1C03               	skipc
   4832  0175  297E               	goto	l1631
   4833                           
-  4834                           ;main.c: 325: ADCON0bits.GO = 1;
+  4834                           ;main.c: 332: ADCON0bits.GO = 1;
   4835  0176  0141               	movlb	1	; select bank1
   4836  0177  1413               	bsf	19,0	;volatile
   4837                           
-  4838                           ;main.c: 326: led_counter = -1;
+  4838                           ;main.c: 333: led_counter = -1;
   4839  0178  30FF               	movlw	255
   4840  0179  0140               	movlb	0	; select bank0
   4841  017A  00BD               	movwf	main@led_counter
   4842  017B  30FF               	movlw	255
   4843  017C  00BE               	movwf	main@led_counter+1
   4844                           
-  4845                           ;main.c: 327: } else {
+  4845                           ;main.c: 334: } else {
   4846  017D  2983               	goto	l1633
   4847  017E                     l1631:	
   4848                           
-  4849                           ;main.c: 329: ++led_counter;
+  4849                           ;main.c: 336: ++led_counter;
   4850  017E  3001               	movlw	1
   4851  017F  0140               	movlb	0	; select bank0
   4852  0180  07BD               	addwf	main@led_counter,f
@@ -4883,8 +4883,8 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4854  0182  3DBE               	addwfc	main@led_counter+1,f
   4855  0183                     l1633:	
   4856                           
-  4857                           ;main.c: 330: }
-  4858                           ;main.c: 334: if (!isEmpty(&execution_queue)) {
+  4857                           ;main.c: 337: }
+  4858                           ;main.c: 341: if (!isEmpty(&execution_queue)) {
   4859  0183  3049               	movlw	(low (_execution_queue| 0))& (0+255)
   4860  0184  3183  2344  3180   	fcall	_isEmpty
   4861  0187  0140               	movlb	0	; select bank0
@@ -4894,55 +4894,55 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4865  018B  29A2               	goto	l1651
   4866  018C  28F5               	goto	l1597
   4867  018D                     l1637:	
-  4868                           ;main.c: 336: case 0x0:
+  4868                           ;main.c: 343: case 0x0:
   4869                           
-  4870                           ;main.c: 335: switch (dequeue(&execution_queue)) {
+  4870                           ;main.c: 342: switch (dequeue(&execution_queue)) {
   4871                           
   4872                           
-  4873                           ;main.c: 337: min = 1023;
+  4873                           ;main.c: 344: min = 1023;
   4874  018D  30FF               	movlw	255
   4875  018E  00D9               	movwf	_min
   4876  018F  3003               	movlw	3
   4877  0190  00DA               	movwf	_min+1
   4878                           
-  4879                           ;main.c: 338: max = 0;
+  4879                           ;main.c: 345: max = 0;
   4880  0191  01C5               	clrf	_max
   4881  0192  01C6               	clrf	_max+1
   4882                           
-  4883                           ;main.c: 339: threshold = 0;
+  4883                           ;main.c: 346: threshold = 0;
   4884  0193  01C3               	clrf	_threshold
   4885  0194  01C4               	clrf	_threshold+1
   4886                           
-  4887                           ;main.c: 340: break;
+  4887                           ;main.c: 347: break;
   4888  0195  28F5               	goto	l1597
   4889  0196                     l1643:	
-  4890                           ;main.c: 341: case 0x3:
+  4890                           ;main.c: 348: case 0x3:
   4891                           
   4892                           
-  4893                           ;main.c: 342: PWM_Turn30();
+  4893                           ;main.c: 349: PWM_Turn30();
   4894  0196  3183  238C  3180   	fcall	_PWM_Turn30
   4895                           
-  4896                           ;main.c: 343: break;
+  4896                           ;main.c: 350: break;
   4897  0199  28F5               	goto	l1597
   4898  019A                     l1645:	
-  4899                           ;main.c: 344: case 0x4:
+  4899                           ;main.c: 351: case 0x4:
   4900                           
   4901                           
-  4902                           ;main.c: 345: PWM_Turn90();
+  4902                           ;main.c: 352: PWM_Turn90();
   4903  019A  3183  2368  3180   	fcall	_PWM_Turn90
   4904                           
-  4905                           ;main.c: 346: break;
+  4905                           ;main.c: 353: break;
   4906  019D  28F5               	goto	l1597
   4907  019E                     l1647:	
-  4908                           ;main.c: 347: case 0x5:
+  4908                           ;main.c: 354: case 0x5:
   4909                           
   4910                           
-  4911                           ;main.c: 348: PWM_Turn120();
+  4911                           ;main.c: 355: PWM_Turn120();
   4912  019E  3183  23B0  3180   	fcall	_PWM_Turn120
   4913                           
-  4914                           ;main.c: 350: }
+  4914                           ;main.c: 357: }
   4915                           
-  4916                           ;main.c: 349: break;
+  4916                           ;main.c: 356: break;
   4917  01A1  28F5               	goto	l1597
   4918  01A2                     l1651:	
   4919  01A2  3049               	movlw	(low (_execution_queue| 0))& (0+255)
@@ -4990,16 +4990,16 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   4960  01B9  28F5               	goto	l1597
   4961  01BA  28F5               	goto	l1597
   4962  01BB                     __end_of_main:	
-  4963                           ;main.c: 351: }
-  4964                           ;main.c: 353: }
-  4965                           ;main.c: 355: return;
+  4963                           ;main.c: 358: }
+  4964                           ;main.c: 360: }
+  4965                           ;main.c: 362: return;
   4966                           
   4967                           
   4968                           	psect	text1
   4969  03F7                     __ptext1:	
   4970 ;; *************** function _reset *****************
   4971 ;; Defined at:
-  4972 ;;		line 499 in file "main.c"
+  4972 ;;		line 506 in file "main.c"
   4973 ;; Parameters:    Size  Location     Type
   4974 ;;		None
   4975 ;; Auto vars:     Size  Location     Type
@@ -5047,35 +5047,35 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   5002                           ;psect for function _reset
   5003  03F7                     _reset:	
   5004                           
-  5005                           ;main.c: 500: LATCbits.LATC1 = 1;
+  5005                           ;main.c: 507: LATCbits.LATC1 = 1;
   5006                           
   5007                           ;incstack = 0
   5008                           ; Regs used in _reset: [wreg+fsr1l+fsr1h+status,2+status,0+pclath+cstack]
   5009  03F7  0140               	movlb	0	; select bank0
   5010  03F8  1498               	bsf	24,1	;volatile
   5011                           
-  5012                           ;main.c: 501: INTCONbits.GIE = 0;
+  5012                           ;main.c: 508: INTCONbits.GIE = 0;
   5013  03F9  138B               	bcf	11,7	;volatile
   5014                           
-  5015                           ;main.c: 502: min = 1023;
+  5015                           ;main.c: 509: min = 1023;
   5016  03FA  30FF               	movlw	255
   5017  03FB  00D9               	movwf	_min
   5018  03FC  3003               	movlw	3
   5019  03FD  00DA               	movwf	_min+1
   5020                           
-  5021                           ;main.c: 503: max = 0;
+  5021                           ;main.c: 510: max = 0;
   5022  03FE  01C5               	clrf	_max
   5023  03FF  01C6               	clrf	_max+1
   5024                           
-  5025                           ;main.c: 504: threshold = 0;
+  5025                           ;main.c: 511: threshold = 0;
   5026  0400  01C3               	clrf	_threshold
   5027  0401  01C4               	clrf	_threshold+1
   5028                           
-  5029                           ;main.c: 505: communication_counter = 0;
+  5029                           ;main.c: 512: communication_counter = 0;
   5030  0402  01C1               	clrf	_communication_counter
   5031  0403  01C2               	clrf	_communication_counter+1
   5032  0404                     l235:	
-  5033                           ;main.c: 506: while (!isEmpty(&execution_queue)) {
+  5033                           ;main.c: 513: while (!isEmpty(&execution_queue)) {
   5034                           
   5035  0404  3049               	movlw	(low (_execution_queue| 0))& (0+255)
   5036  0405  3183  2344  3183   	fcall	_isEmpty
@@ -5085,22 +5085,22 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   5040  040B  1D03               	btfss	3,2
   5041  040C  2C12               	goto	l238
   5042                           
-  5043                           ;main.c: 507: dequeue(&execution_queue);
+  5043                           ;main.c: 514: dequeue(&execution_queue);
   5044  040D  3049               	movlw	(low (_execution_queue| 0))& (0+255)
   5045  040E  3181  21BB  3183   	fcall	_dequeue
   5046  0411  2C04               	goto	l235
   5047  0412                     l238:	
-  5048                           ;main.c: 508: }
-  5049                           ;main.c: 509: while (PORTBbits.RB5 == 1 || PORTCbits.RC0 == 1) { continue; }
+  5048                           ;main.c: 515: }
+  5049                           ;main.c: 516: while (PORTBbits.RB5 == 1 || PORTCbits.RC0 == 1) { continue; }
   5050                           
   5051  0412  1E8D               	btfss	13,5	;volatile
   5052  0413  180E               	btfsc	14,0	;volatile
   5053  0414  2C12               	goto	l238
   5054                           
-  5055                           ;main.c: 510: INTCONbits.GIE = 1;
+  5055                           ;main.c: 517: INTCONbits.GIE = 1;
   5056  0415  178B               	bsf	11,7	;volatile
   5057                           
-  5058                           ;main.c: 511: LATCbits.LATC1 = 0;
+  5058                           ;main.c: 518: LATCbits.LATC1 = 0;
   5059  0416  1098               	bcf	24,1	;volatile
   5060  0417  0008               	return
   5061  0418                     __end_of_reset:	
@@ -6441,7 +6441,7 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6201  0004                     __pintentry:	
   6202 ;; *************** function _ISR *****************
   6203 ;; Defined at:
-  6204 ;;		line 359 in file "main.c"
+  6204 ;;		line 366 in file "main.c"
   6205 ;; Parameters:    Size  Location     Type
   6206 ;;		None
   6207 ;; Auto vars:     Size  Location     Type
@@ -6498,20 +6498,20 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6243  0007  087F               	movf	127,w
   6244  0008  00A9               	movwf	??_ISR+3
   6245                           
-  6246                           ;main.c: 361: if (IOCCFbits.IOCCF0 == 1) {
+  6246                           ;main.c: 368: if (IOCCFbits.IOCCF0 == 1) {
   6247  0009  017E               	movlb	62	; select bank62
   6248  000A  1C55               	btfss	85,0	;volatile
   6249  000B  2810               	goto	i1l1663
   6250                           
-  6251                           ;main.c: 362: IOCCFbits.IOCCF0 = 0;
+  6251                           ;main.c: 369: IOCCFbits.IOCCF0 = 0;
   6252  000C  1055               	bcf	85,0	;volatile
   6253                           
-  6254                           ;main.c: 363: reset();
+  6254                           ;main.c: 370: reset();
   6255  000D  3184  2418  3180   	fcall	i1_reset
   6256  0010                     i1l1663:	
   6257                           
-  6258                           ;main.c: 364: }
-  6259                           ;main.c: 366: if (PIR0bits.IOCIF == 1 && IOCBFbits.IOCBF5 == 1) {
+  6258                           ;main.c: 371: }
+  6259                           ;main.c: 373: if (PIR0bits.IOCIF == 1 && IOCBFbits.IOCBF5 == 1) {
   6260  0010  014E               	movlb	14	; select bank14
   6261  0011  1E0C               	btfss	12,4	;volatile
   6262  0012  28BD               	goto	i1l232
@@ -6519,14 +6519,14 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6264  0014  1ECA               	btfss	74,5	;volatile
   6265  0015  28BD               	goto	i1l232
   6266                           
-  6267                           ;main.c: 373: _delay((unsigned long)((1)*(1000000/4000.0)));
+  6267                           ;main.c: 380: _delay((unsigned long)((1)*(1000000/4000.0)));
   6268  0016  3053               	movlw	83
   6269  0017                     u120_27:	
   6270  0017  0B89               	decfsz	9,f
   6271  0018  2817               	goto	u120_27
   6272  0019  0000               	nop
   6273                           
-  6274                           ;main.c: 374: if (PORTBbits.RB5 == (communication_counter % 2 ? 0 : 1)) {
+  6274                           ;main.c: 381: if (PORTBbits.RB5 == (communication_counter % 2 ? 0 : 1)) {
   6275  001A  0140               	movlb	0	; select bank0
   6276  001B  0E0D               	swapf	13,w	;volatile
   6277  001C  0C89               	rrf	9,f
@@ -6544,12 +6544,12 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6289  0026  28AC               	goto	i1l1729
   6290  0027  28BB               	goto	i1l214
   6291  0028                     i1l1673:	
-  6292                           ;main.c: 378: case 0:
+  6292                           ;main.c: 385: case 0:
   6293                           
-  6294                           ;main.c: 377: switch (communication_counter) {
+  6294                           ;main.c: 384: switch (communication_counter) {
   6295                           
   6296                           
-  6297                           ;main.c: 381: instruction = read();
+  6297                           ;main.c: 388: instruction = read();
   6298  0028  3184  247D  3180   	fcall	_read
   6299  002B  0871               	movf	?_read+1,w
   6300  002C  0140               	movlb	0	; select bank0
@@ -6557,19 +6557,19 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6302  002E  0870               	movf	?_read,w
   6303  002F  00BF               	movwf	_instruction
   6304                           
-  6305                           ;main.c: 382: TRISC &= 0x0F;
+  6305                           ;main.c: 389: TRISC &= 0x0F;
   6306  0030  300F               	movlw	15
   6307  0031  00A6               	movwf	??_ISR
   6308  0032  0826               	movf	??_ISR,w
   6309  0033  0593               	andwf	19,f	;volatile
   6310                           
-  6311                           ;main.c: 383: LATC &= 0x0F;
+  6311                           ;main.c: 390: LATC &= 0x0F;
   6312  0034  300F               	movlw	15
   6313  0035  00A6               	movwf	??_ISR
   6314  0036  0826               	movf	??_ISR,w
   6315  0037  0598               	andwf	24,f	;volatile
   6316                           
-  6317                           ;main.c: 384: LATC |= (instruction << 4);
+  6317                           ;main.c: 391: LATC |= (instruction << 4);
   6318  0038  083F               	movf	_instruction,w
   6319  0039  00A6               	movwf	??_ISR
   6320  003A  3003               	movlw	3
@@ -6584,21 +6584,21 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6329  0042  0498               	iorwf	24,f	;volatile
   6330  0043  28A0               	goto	i1l1719
   6331  0044                     i1l1683:	
-  6332                           ;main.c: 428: case 1:
+  6332                           ;main.c: 435: case 1:
   6333                           
-  6334                           ;main.c: 427: break;
+  6334                           ;main.c: 434: break;
   6335                           
-  6336                           ;main.c: 385: ++communication_counter;
+  6336                           ;main.c: 392: ++communication_counter;
   6337                           
   6338                           
-  6339                           ;main.c: 432: if (instruction == 0x2) {
+  6339                           ;main.c: 439: if (instruction == 0x2) {
   6340  0044  3002               	movlw	2
   6341  0045  063F               	xorwf	_instruction,w
   6342  0046  0440               	iorwf	_instruction+1,w
   6343  0047  1D03               	btfss	3,2
   6344  0048  285A               	goto	i1l1687
   6345                           
-  6346                           ;main.c: 433: write((adc_value >> 8) & 0x3);
+  6346                           ;main.c: 440: write((adc_value >> 8) & 0x3);
   6347  0049  0848               	movf	_adc_value+1,w
   6348  004A  00A7               	movwf	??_ISR+1
   6349  004B  0847               	movf	_adc_value,w
@@ -6618,10 +6618,10 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6363  0058  0527               	andwf	??_ISR+1,w
   6364  0059  2866               	goto	L9
   6365  005A                     i1l1687:	
-  6366                           ;main.c: 434: } else {
+  6366                           ;main.c: 441: } else {
   6367                           
   6368                           
-  6369                           ;main.c: 435: enqueue(&execution_queue, instruction);
+  6369                           ;main.c: 442: enqueue(&execution_queue, instruction);
   6370  005A  0140               	movlb	0	; select bank0
   6371  005B  0840               	movf	_instruction+1,w
   6372  005C  00A2               	movwf	enqueue@item+1
@@ -6630,7 +6630,7 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6375  005F  3049               	movlw	(low (_execution_queue| 0))& (0+255)
   6376  0060  3181  21F6  3180   	fcall	_enqueue
   6377                           
-  6378                           ;main.c: 436: write(0xE);
+  6378                           ;main.c: 443: write(0xE);
   6379  0063  300E               	movlw	14
   6380  0064  00F0               	movwf	write@instruction
   6381  0065  3000               	movlw	0
@@ -6638,37 +6638,37 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6383  0066  00F1               	movwf	write@instruction+1
   6384  0067  3184  245C  3180   	fcall	_write
   6385                           
-  6386                           ;main.c: 437: }
-  6387                           ;main.c: 438: TRISB &= 0xE1;
+  6386                           ;main.c: 444: }
+  6387                           ;main.c: 445: TRISB &= 0xE1;
   6388  006A  30E1               	movlw	225
   6389  006B  0140               	movlb	0	; select bank0
   6390  006C  00A6               	movwf	??_ISR
   6391  006D  0826               	movf	??_ISR,w
   6392  006E  0592               	andwf	18,f	;volatile
   6393  006F                     i1l1695:	
-  6394                           ;main.c: 441: case 2:
+  6394                           ;main.c: 448: case 2:
   6395                           
-  6396                           ;main.c: 440: break;
+  6396                           ;main.c: 447: break;
   6397                           
-  6398                           ;main.c: 439: ++communication_counter;
+  6398                           ;main.c: 446: ++communication_counter;
   6399                           
   6400  006F  28A0               	goto	i1l1719
   6401  0070                     i1l1697:	
-  6402                           ;main.c: 446: case 3:
+  6402                           ;main.c: 453: case 3:
   6403                           
-  6404                           ;main.c: 445: break;
+  6404                           ;main.c: 452: break;
   6405                           
-  6406                           ;main.c: 444: ++communication_counter;
+  6406                           ;main.c: 451: ++communication_counter;
   6407                           
   6408                           
-  6409                           ;main.c: 448: if (instruction == 0x2) {
+  6409                           ;main.c: 455: if (instruction == 0x2) {
   6410  0070  3002               	movlw	2
   6411  0071  063F               	xorwf	_instruction,w
   6412  0072  0440               	iorwf	_instruction+1,w
   6413  0073  1D03               	btfss	3,2
   6414  0074  28A5               	goto	i1l1721
   6415                           
-  6416                           ;main.c: 450: write((adc_value >> 4) & 0xF);
+  6416                           ;main.c: 457: write((adc_value >> 4) & 0xF);
   6417  0075  0848               	movf	_adc_value+1,w
   6418  0076  00A7               	movwf	??_ISR+1
   6419  0077  0847               	movf	_adc_value,w
@@ -6688,29 +6688,29 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6433  0084  0527               	andwf	??_ISR+1,w
   6434  0085  2899               	goto	L11
   6435  0086                     i1l1707:	
-  6436                           ;main.c: 457: case 4:
+  6436                           ;main.c: 464: case 4:
   6437                           
-  6438                           ;main.c: 455: }
-  6439                           ;main.c: 456: break;
+  6438                           ;main.c: 462: }
+  6439                           ;main.c: 463: break;
   6440                           
-  6441                           ;main.c: 454: communication_counter = 0;
+  6441                           ;main.c: 461: communication_counter = 0;
   6442                           
-  6443                           ;main.c: 453: TRISB |= 0x1E;
+  6443                           ;main.c: 460: TRISB |= 0x1E;
   6444                           
-  6445                           ;main.c: 452: } else {
+  6445                           ;main.c: 459: } else {
   6446                           
-  6447                           ;main.c: 451: ++communication_counter;
+  6447                           ;main.c: 458: ++communication_counter;
   6448                           
   6449  0086  28A0               	goto	i1l1719
   6450  0087                     i1l1709:	
-  6451                           ;main.c: 462: case 5:
+  6451                           ;main.c: 469: case 5:
   6452                           
-  6453                           ;main.c: 461: break;
+  6453                           ;main.c: 468: break;
   6454                           
-  6455                           ;main.c: 460: ++communication_counter;
+  6455                           ;main.c: 467: ++communication_counter;
   6456                           
   6457                           
-  6458                           ;main.c: 465: write(adc_value & 0xF);
+  6458                           ;main.c: 472: write(adc_value & 0xF);
   6459  0087  300F               	movlw	15
   6460  0088  0547               	andwf	_adc_value,w
   6461  0089  00F0               	movwf	write@instruction
@@ -6719,25 +6719,25 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6464  008C  00F1               	movwf	write@instruction+1
   6465  008D  3184  245C  3180   	fcall	_write
   6466                           
-  6467                           ;main.c: 466: ++communication_counter;
+  6467                           ;main.c: 473: ++communication_counter;
   6468  0090  3001               	movlw	1
   6469  0091  0140               	movlb	0	; select bank0
   6470  0092  07C1               	addwf	_communication_counter,f
   6471  0093  3000               	movlw	0
   6472  0094  3DC2               	addwfc	_communication_counter+1,f
   6473  0095                     i1l1713:	
-  6474                           ;main.c: 467: case 6:
+  6474                           ;main.c: 474: case 6:
   6475                           
   6476  0095  28A0               	goto	i1l1719
   6477  0096                     i1l1715:	
-  6478                           ;main.c: 471: case 7:
+  6478                           ;main.c: 478: case 7:
   6479                           
-  6480                           ;main.c: 470: break;
+  6480                           ;main.c: 477: break;
   6481                           
-  6482                           ;main.c: 469: ++communication_counter;
+  6482                           ;main.c: 476: ++communication_counter;
   6483                           
   6484                           
-  6485                           ;main.c: 473: write(0xE);
+  6485                           ;main.c: 480: write(0xE);
   6486  0096  300E               	movlw	14
   6487  0097  00F0               	movwf	write@instruction
   6488  0098  3000               	movlw	0
@@ -6745,49 +6745,49 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6490  0099  00F1               	movwf	write@instruction+1
   6491  009A  3184  245C  3180   	fcall	_write
   6492                           
-  6493                           ;main.c: 474: ++communication_counter;
+  6493                           ;main.c: 481: ++communication_counter;
   6494  009D  3001               	movlw	1
   6495  009E  0140               	movlb	0	; select bank0
   6496  009F  28A1               	goto	L8
   6497  00A0                     i1l1719:	
-  6498                           ;main.c: 476: case 8:
+  6498                           ;main.c: 483: case 8:
   6499                           
-  6500                           ;main.c: 475: break;
+  6500                           ;main.c: 482: break;
   6501                           
   6502                           
-  6503                           ;main.c: 477: ++communication_counter;
+  6503                           ;main.c: 484: ++communication_counter;
   6504  00A0  3001               	movlw	1
   6505  00A1                     L8:	
   6506  00A1  07C1               	addwf	_communication_counter,f
   6507  00A2  3000               	movlw	0
   6508  00A3  3DC2               	addwfc	_communication_counter+1,f
   6509                           
-  6510                           ;main.c: 479: break;
+  6510                           ;main.c: 486: break;
   6511  00A4  28BB               	goto	i1l214
   6512  00A5                     i1l1721:	
-  6513                           ;main.c: 480: case 9:
+  6513                           ;main.c: 487: case 9:
   6514                           
   6515                           
-  6516                           ;main.c: 482: TRISB |= 0x1E;
+  6516                           ;main.c: 489: TRISB |= 0x1E;
   6517  00A5  301E               	movlw	30
   6518  00A6  00A6               	movwf	??_ISR
   6519  00A7  0826               	movf	??_ISR,w
   6520  00A8  0492               	iorwf	18,f	;volatile
   6521  00A9                     i1l1725:	
-  6522                           ;main.c: 485: default:
+  6522                           ;main.c: 492: default:
   6523                           
-  6524                           ;main.c: 484: break;
+  6524                           ;main.c: 491: break;
   6525                           
-  6526                           ;main.c: 483: communication_counter = 0;
+  6526                           ;main.c: 490: communication_counter = 0;
   6527                           
   6528                           
-  6529                           ;main.c: 487: communication_counter = 0;
+  6529                           ;main.c: 494: communication_counter = 0;
   6530  00A9  01C1               	clrf	_communication_counter
   6531  00AA  01C2               	clrf	_communication_counter+1
   6532                           
-  6533                           ;main.c: 489: }
+  6533                           ;main.c: 496: }
   6534                           
-  6535                           ;main.c: 488: break;
+  6535                           ;main.c: 495: break;
   6536  00AB  28BB               	goto	i1l214
   6537  00AC                     i1l1729:	
   6538                           
@@ -6828,8 +6828,8 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6572  00BA  0082               	movwf	2
   6573  00BB                     i1l214:	
   6574                           
-  6575                           ;main.c: 491: }
-  6576                           ;main.c: 493: IOCBFbits.IOCBF5 = 0;
+  6575                           ;main.c: 498: }
+  6576                           ;main.c: 500: IOCBFbits.IOCBF5 = 0;
   6577  00BB  017E               	movlb	62	; select bank62
   6578  00BC  12CA               	bcf	74,5	;volatile
   6579  00BD                     i1l232:	
@@ -6858,7 +6858,7 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6602  0418                     __ptext16:	
   6603 ;; *************** function i1_reset *****************
   6604 ;; Defined at:
-  6605 ;;		line 499 in file "main.c"
+  6605 ;;		line 506 in file "main.c"
   6606 ;; Parameters:    Size  Location     Type
   6607 ;;		None
   6608 ;; Auto vars:     Size  Location     Type
@@ -6906,35 +6906,35 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6635                           ;psect for function i1_reset
   6636  0418                     i1_reset:	
   6637                           
-  6638                           ;main.c: 500: LATCbits.LATC1 = 1;
+  6638                           ;main.c: 507: LATCbits.LATC1 = 1;
   6639                           
   6640                           ;incstack = 0
   6641                           ; Regs used in i1_reset: [wreg+fsr1l+fsr1h+status,2+status,0+pclath+cstack]
   6642  0418  0140               	movlb	0	; select bank0
   6643  0419  1498               	bsf	24,1	;volatile
   6644                           
-  6645                           ;main.c: 501: INTCONbits.GIE = 0;
+  6645                           ;main.c: 508: INTCONbits.GIE = 0;
   6646  041A  138B               	bcf	11,7	;volatile
   6647                           
-  6648                           ;main.c: 502: min = 1023;
+  6648                           ;main.c: 509: min = 1023;
   6649  041B  30FF               	movlw	255
   6650  041C  00D9               	movwf	_min
   6651  041D  3003               	movlw	3
   6652  041E  00DA               	movwf	_min+1
   6653                           
-  6654                           ;main.c: 503: max = 0;
+  6654                           ;main.c: 510: max = 0;
   6655  041F  01C5               	clrf	_max
   6656  0420  01C6               	clrf	_max+1
   6657                           
-  6658                           ;main.c: 504: threshold = 0;
+  6658                           ;main.c: 511: threshold = 0;
   6659  0421  01C3               	clrf	_threshold
   6660  0422  01C4               	clrf	_threshold+1
   6661                           
-  6662                           ;main.c: 505: communication_counter = 0;
+  6662                           ;main.c: 512: communication_counter = 0;
   6663  0423  01C1               	clrf	_communication_counter
   6664  0424  01C2               	clrf	_communication_counter+1
   6665  0425                     i1l235:	
-  6666                           ;main.c: 506: while (!isEmpty(&execution_queue)) {
+  6666                           ;main.c: 513: while (!isEmpty(&execution_queue)) {
   6667                           
   6668  0425  3049               	movlw	(low (_execution_queue| 0))& (0+255)
   6669  0426  3183  23D4  3184   	fcall	i1_isEmpty
@@ -6943,23 +6943,23 @@ Microchip Technology Omniscient Code Generator v1.42 (Free mode) build 201704130
   6672  042B  1D03               	btfss	3,2
   6673  042C  2C32               	goto	i1l238
   6674                           
-  6675                           ;main.c: 507: dequeue(&execution_queue);
+  6675                           ;main.c: 514: dequeue(&execution_queue);
   6676  042D  3049               	movlw	(low (_execution_queue| 0))& (0+255)
   6677  042E  3182  2261  3184   	fcall	i1_dequeue
   6678  0431  2C25               	goto	i1l235
   6679  0432                     i1l238:	
-  6680                           ;main.c: 508: }
-  6681                           ;main.c: 509: while (PORTBbits.RB5 == 1 || PORTCbits.RC0 == 1) { continue; }
+  6680                           ;main.c: 515: }
+  6681                           ;main.c: 516: while (PORTBbits.RB5 == 1 || PORTCbits.RC0 == 1) { continue; }
   6682                           
   6683  0432  0140               	movlb	0	; select bank0
   6684  0433  1E8D               	btfss	13,5	;volatile
   6685  0434  180E               	btfsc	14,0	;volatile
   6686  0435  2C32               	goto	i1l238
   6687                           
-  6688                           ;main.c: 510: INTCONbits.GIE = 1;
+  6688                           ;main.c: 517: INTCONbits.GIE = 1;
   6689  0436  178B               	bsf	11,7	;volatile
   6690                           
-  6691                           ;main.c: 511: LATCbits.LATC1 = 0;
+  6691                           ;main.c: 518: LATCbits.LATC1 = 0;
   6692  0437  1098               	bcf	24,1	;volatile
   6693  0438  0008               	return
   6694  0439                     __end_ofi1_reset:	
@@ -8548,7 +8548,7 @@ BANK50              50      0       0     107        0.0%
 
 
 Microchip Technology PIC Macro Assembler V1.42 build -159332390 
-Symbol Table                                                                                   Tue Oct 24 20:59:07 2017
+Symbol Table                                                                                   Wed Oct 25 11:31:41 2017
 
                               pc 0002                      __CFG_CP$OFF 0000                      isEmpty@data 0032  
                      _PWM_Turn30 038C                       _PWM_Turn90 0368                      __CFG_LVP$ON 0000  

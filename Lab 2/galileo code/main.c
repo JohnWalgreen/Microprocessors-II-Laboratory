@@ -2,25 +2,38 @@
 GP_4 LSB and GP_7 MSB for data bus (A0-A3)
 */
 
+/*
+Main Program for galileo
+prints options and accepts command (with error checking)
+command is sent to PIC
+
+Strobe protocol:
+
+galileo sets bus as output (PIC should be inputs already)
+galileo puts data on bus
+galileo raises strobe
+galileo pauses for 10 ms and gives PIC time to read data on bus
+
+repeat this for every nibble that must be read:
+	galileo lowers strobe signal
+	galileo makes pins inputs
+	galileo pauses for 2 ms so that PIC has time to form response
+	galileo raises strobe signal
+	galileo pauses for 2 ms so that PIC has time to switch pins to outputs
+	galileo reads data on bus
+
+galileo lowers strobe signal
+*/
+
 #include "gpio.h"
+#include "bus_transfer.h"
 
-// Warning: is sleep_ms defined? use <<usleep(unsigned int)>> in unistd.h for microseconds
-
-void writeBus(int value, int *bus) {
-	writeGPIO(bus[0], value & 0x1);
-	writeGPIO(bus[1], (value >> 1) & 0x1);
-	writeGPIO(bus[2], (value >> 2) & 0x1);
-	writeGPIO(bus[3], (value >> 3) & 0x1);
-}
-
-int readBus(int *bus) {
-	// readGPIO must return 0 or 1 !!!
-	int value = 0;
-	value |= (readGPIO(bus[0]));
-	value |= (readGPIO(bus[1]) << 1);
-	value |= (readGPIO(bus[2]) << 2);
-	value |= (readGPIO(bus[3]) << 3);
-	return value;
+void flushLine() {
+	char fuckingGarbage;
+	do {
+		scanf("%c", &fuckingGarbage);
+	} while (fuckingGarbage != '\n');
+	return;
 }
 
 int main() {
@@ -52,19 +65,17 @@ int main() {
 			flag = 1 - scanf("%d", &input);
 
 			if (flag) {
-				char gahbage;
 
 				puts("ERROR: Invalid number input\n");
 
 				// must flush line!
-				do {
-					scanf("%c", &gahbage);
-				} while (gahbage != '\n');
 
 			} else if (input < -1 || input > 5) {			// remember that -1 is valid input
 				printf("Error: %d is an invalid option\n", input);
 				flag = -1;
 			}
+			
+			flushLine();
 
 		} while (flag);
 
