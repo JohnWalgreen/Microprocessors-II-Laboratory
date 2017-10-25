@@ -17596,12 +17596,8 @@ case 0:
 
 
 instruction = read();
-TRISC &= 0x0F;
-LATC &= 0x0F;
-LATC |= (instruction << 4);
 ++communication_counter;
 
-# 434
 break;
 case 1:
 
@@ -17613,12 +17609,12 @@ write((adc_value >> 8) & 0x3);
 enqueue(&execution_queue, instruction);
 write(0xE);
 }
-TRISB &= 0xE1;
 ++communication_counter;
 break;
 case 2:
 
 
+TRISB &= 0xE1;
 ++communication_counter;
 break;
 case 3:
