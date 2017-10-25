@@ -113,7 +113,7 @@ int main() {
 			7) read bus
 			*/
 
-			writeGPIO(Strobe, LOW);				// 1
+			writeGPIO(strobe, LOW);				// 1
 			writeBus(0, data);						// 2
 
 			// 3
@@ -127,7 +127,7 @@ int main() {
 			data[3] = openGPIO(GP_7, GPIO_DIRECTION_IN);
 
 			usleep(2000);						// 4
-			writeGPIO(Strobe, HIGH);			// 5
+			writeGPIO(strobe, HIGH);			// 5
 			usleep(2000);						// 6
 			response += (readBus(data) << flag);	// 7 + extra
 
@@ -137,7 +137,7 @@ int main() {
 		/*END STEP 2*/
 
 		/*START STEP 3 -- just switch strobe to low to indicate that communication is over, and close pins*/
-		writeGPIO(Strobe, LOW);
+		writeGPIO(strobe, LOW);
 		closeGPIO(GP_4, data[0]);
 		closeGPIO(GP_5, data[1]);
 		closeGPIO(GP_6, data[2]);

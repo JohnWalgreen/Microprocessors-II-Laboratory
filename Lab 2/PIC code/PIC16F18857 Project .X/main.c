@@ -219,6 +219,10 @@ before the PIC continues normal operation again.
 #include "pwm.h"
 #include "Queue.h"
 
+#define on 2000;
+ #define off 500;
+ #define pause 1000;
+
 
 /*Interrupt function for messages from computer*/
 void interrupt ISR();
@@ -374,61 +378,55 @@ void interrupt ISR() {
 					// first interrupt, read value from GPIO bus
 					// GPIO bus pins should already be set as inputs
 					instruction = read();
-					PORTC &= 0x0F;//TEMP
+					TRISC &= 0x0F;//TEMP
 					LATC &= 0x0F;//TEMP
 					LATC |= (instruction << 4);//TEMP
 					++communication_counter;
+
+					/*MAKE SURE THAT PIC READS DATA*/
+                    /*
+                    
+					LATCbits.LATC1 = HIGH;
+					if ((instruction >> 3) & 0x1) {
+						__delay_ms(on);
+					} else {
+						__delay_ms(off);
+					}
+					LATCbits.LATC1 = LOW;
+					__delay_ms(pause);
+
+					LATCbits.LATC1 = HIGH;
+					if ((instruction >> 2) & 0x1) {
+						__delay_ms(on);
+					} else {
+						__delay_ms(off);
+					}
+					LATCbits.LATC1 = LOW;
+					__delay_ms(pause);
+
+					LATCbits.LATC1 = HIGH;
+					if ((instruction >> 1) & 0x1) {
+						__delay_ms(on);
+					} else {
+						__delay_ms(off);
+					}
+					LATCbits.LATC1 = LOW;
+					__delay_ms(pause);
+
+					LATCbits.LATC1 = HIGH;
+					if (instruction & 0x1) {
+						__delay_ms(on);
+					} else {
+						__delay_ms(off);
+					}
+					LATCbits.LATC1 = LOW;
+					__delay_ms(pause);*/
+											/*END TEST*/
+
 					break;
 				case 1:
 					// computer is done outputting signal
 					// start processing and set up outputs already
-
-					/*MAKE SURE THAT PIC READS DATA*/
-
-					LATCbits.LATC1 = HIGH;
-					if ((instruction >> 3) & 0x1) {
-						__delay_ms(5000);
-					} else {
-						__delay_ms(1000);
-					}
-					LATCbits.LATC1 = LOW;
-					__delay_ms(3000);
-
-					LATCbits.LATC1 = HIGH;
-					if ((instruction >> 2) & 0x1) {
-						__delay_ms(5000);
-					} else {
-						__delay_ms(1000);
-					}
-					LATCbits.LATC1 = LOW;
-					__delay_ms(3000);
-
-					LATCbits.LATC1 = HIGH;
-					if ((instruction >> 1) & 0x1) {
-						__delay_ms(5000);
-					} else {
-						__delay_ms(1000);
-					}
-					LATCbits.LATC1 = LOW;
-					__delay_ms(3000);
-
-					LATCbits.LATC1 = HIGH;
-					if (instruction & 0x1) {
-						__delay_ms(5000);
-					} else {
-						__delay_ms(1000);
-					}
-					LATCbits.LATC1 = LOW;
-					__delay_ms(3000);
-
-					
-
-					
-
-					
-
-					INTCONbits.GIE = LOW;	// disable future interrupts
-					/*END TEST*/
 
 					if (instruction == MSG_GET) {
 						write((adc_value >> 8) & 0x3);
@@ -498,6 +496,7 @@ void interrupt ISR() {
 }
 
 void reset() {
+	LATCbits.LATC1 = HIGH;
 	INTCONbits.GIE = 0;
 	min = 1023;
 	max = 0;
@@ -506,7 +505,8 @@ void reset() {
 	while (!isEmpty(execution_queue)) {
 		dequeue(execution_queue);
 	}
-	while (PORTBbits.RB5 == HIGH) { continue; }
+	while (PORTBbits.RB5 == HIGH || PORTCbits.RC0 == HIGH) { continue; }
 	INTCONbits.GIE = 1;
+	LATCbits.LATC1 = LOW;
 }
 	

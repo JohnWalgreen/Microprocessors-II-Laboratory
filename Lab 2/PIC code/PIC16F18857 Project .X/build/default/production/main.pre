@@ -17464,7 +17464,7 @@ unsigned dequeue(Queue);
 
 Queue execution_queue;
 
-# 224 "main.c"
+# 228 "main.c"
 void interrupt ISR();
 
 void reset();
@@ -17490,7 +17490,7 @@ TRISCbits.TRISC1 = 0;
 
 IOCCPbits.IOCCP0 = 1;
 
-# 254
+# 258
 int led_counter;
 
 
@@ -17505,7 +17505,7 @@ reset();
 
 while (1) {
 
-# 288
+# 292
 if (led_counter < 0) {
 
 
@@ -17581,7 +17581,7 @@ reset();
 
 if (PIR0bits.IOCIF == 1 && IOCBFbits.IOCBF5 == 1) {
 
-# 368
+# 372
 _delay((unsigned long)((1)*(1000000/4000.0)));
 if (PORTBbits.RB5 == (communication_counter % 2 ? 0 : 1)) {
 
@@ -17591,52 +17591,15 @@ case 0:
 
 
 instruction = read();
-PORTC &= 0x0F;
+TRISC &= 0x0F;
 LATC &= 0x0F;
 LATC |= (instruction << 4);
 ++communication_counter;
+
+# 426
 break;
 case 1:
 
-# 388
-LATCbits.LATC1 = 1;
-if ((instruction >> 3) & 0x1) {
-_delay((unsigned long)((5000)*(1000000/4000.0)));
-} else {
-_delay((unsigned long)((1000)*(1000000/4000.0)));
-}
-LATCbits.LATC1 = 0;
-_delay((unsigned long)((3000)*(1000000/4000.0)));
-
-LATCbits.LATC1 = 1;
-if ((instruction >> 2) & 0x1) {
-_delay((unsigned long)((5000)*(1000000/4000.0)));
-} else {
-_delay((unsigned long)((1000)*(1000000/4000.0)));
-}
-LATCbits.LATC1 = 0;
-_delay((unsigned long)((3000)*(1000000/4000.0)));
-
-LATCbits.LATC1 = 1;
-if ((instruction >> 1) & 0x1) {
-_delay((unsigned long)((5000)*(1000000/4000.0)));
-} else {
-_delay((unsigned long)((1000)*(1000000/4000.0)));
-}
-LATCbits.LATC1 = 0;
-_delay((unsigned long)((3000)*(1000000/4000.0)));
-
-LATCbits.LATC1 = 1;
-if (instruction & 0x1) {
-_delay((unsigned long)((5000)*(1000000/4000.0)));
-} else {
-_delay((unsigned long)((1000)*(1000000/4000.0)));
-}
-LATCbits.LATC1 = 0;
-_delay((unsigned long)((3000)*(1000000/4000.0)));
-
-# 430
-INTCONbits.GIE = 0;
 
 
 if (instruction == 0x2) {
@@ -17707,6 +17670,7 @@ IOCBFbits.IOCBF5 = 0;
 }
 
 void reset() {
+LATCbits.LATC1 = 1;
 INTCONbits.GIE = 0;
 min = 1023;
 max = 0;
@@ -17715,7 +17679,8 @@ communication_counter = 0;
 while (!isEmpty(execution_queue)) {
 dequeue(execution_queue);
 }
-while (PORTBbits.RB5 == 1) { continue; }
+while (PORTBbits.RB5 == 1 || PORTCbits.RC0 == 1) { continue; }
 INTCONbits.GIE = 1;
+LATCbits.LATC1 = 0;
 }
 
