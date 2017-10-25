@@ -83,7 +83,12 @@ Version 3.2 HI-TECH Software Intermediate Code
 "10 adc_led.h
 [v _adc_value `i ~T0 @X0 1 e ]
 [; ;adc_led.h: 10: int adc_value;
-[; ;adc_led.h: 13: void ADC_LED_Init();
+"12
+[v _max `i ~T0 @X0 1 e ]
+[v _min `i ~T0 @X0 1 e ]
+[v _threshold `i ~T0 @X0 1 e ]
+[; ;adc_led.h: 12: int max, min, threshold;
+[; ;adc_led.h: 14: void ADC_LED_Init();
 [; ;htc.h: 26: extern const char __xc8_OPTIM_SPEED;
 [; ;htc.h: 28: extern double __fpnormalize(double);
 [; ;xc8debug.h: 14: extern void __builtin_software_breakpoint(void);

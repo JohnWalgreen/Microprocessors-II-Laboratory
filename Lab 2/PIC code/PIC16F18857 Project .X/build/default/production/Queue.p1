@@ -7,10 +7,10 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;Queue.h: 9: unsigned int front;
 [; ;Queue.h: 10: unsigned int back;
 [; ;Queue.h: 11: } Queue;
-[; ;Queue.h: 13: int isFull(Queue);
-[; ;Queue.h: 14: int isEmpty(Queue);
-[; ;Queue.h: 15: void enqueue(Queue, unsigned int);
-[; ;Queue.h: 16: unsigned dequeue(Queue);
+[; ;Queue.h: 13: int isFull(Queue *);
+[; ;Queue.h: 14: int isEmpty(Queue *);
+[; ;Queue.h: 15: void enqueue(Queue *, unsigned int);
+[; ;Queue.h: 16: unsigned dequeue(Queue *);
 "19 Queue.h
 [v _execution_queue `S1 ~T0 @X0 1 e ]
 [; ;Queue.h: 19: Queue execution_queue;
@@ -13094,55 +13094,55 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;mcc.h: 67: void SYSTEM_Initialize(void);
 [; ;mcc.h: 80: void OSCILLATOR_Initialize(void);
 "5 Queue.c
-[v _isFull `(i ~T0 @X0 1 ef1`S1 ]
+[v _isFull `(i ~T0 @X0 1 ef1`*S1 ]
 {
-[; ;Queue.c: 5: int isFull(Queue data) {
+[; ;Queue.c: 5: int isFull(Queue *data) {
 [e :U _isFull ]
-[v _data `S1 ~T0 @X0 1 r1 ]
+[v _data `*S1 ~T0 @X0 1 r1 ]
 [f ]
 [; ;Queue.c: 6: return (
-[; ;Queue.c: 7: ((data.back + 1) % (5 + 1))
-[; ;Queue.c: 8: == data.front);
+[; ;Queue.c: 7: ((data->back + 1) % (5 + 1))
+[; ;Queue.c: 8: == data->front);
 "8
-[e ) -> == % + . _data 2 -> -> 1 `i `ui -> + -> 5 `i -> 1 `i `ui . _data 1 `i ]
+[e ) -> == % + . *U _data 2 -> -> 1 `i `ui -> + -> 5 `i -> 1 `i `ui . *U _data 1 `i ]
 [e $UE 1559  ]
 [; ;Queue.c: 9: }
 "9
 [e :UE 1559 ]
 }
 "10
-[v _isEmpty `(i ~T0 @X0 1 ef1`S1 ]
+[v _isEmpty `(i ~T0 @X0 1 ef1`*S1 ]
 {
-[; ;Queue.c: 10: int isEmpty(Queue data) {
+[; ;Queue.c: 10: int isEmpty(Queue *data) {
 [e :U _isEmpty ]
-[v _data `S1 ~T0 @X0 1 r1 ]
+[v _data `*S1 ~T0 @X0 1 r1 ]
 [f ]
-[; ;Queue.c: 11: return (data.back == data.front);
+[; ;Queue.c: 11: return (data->back == data->front);
 "11
-[e ) -> == . _data 2 . _data 1 `i ]
+[e ) -> == . *U _data 2 . *U _data 1 `i ]
 [e $UE 1560  ]
 [; ;Queue.c: 12: }
 "12
 [e :UE 1560 ]
 }
 "13
-[v _enqueue `(v ~T0 @X0 1 ef2`S1`ui ]
+[v _enqueue `(v ~T0 @X0 1 ef2`*S1`ui ]
 {
-[; ;Queue.c: 13: void enqueue(Queue data, unsigned int item) {
+[; ;Queue.c: 13: void enqueue(Queue *data, unsigned int item) {
 [e :U _enqueue ]
-[v _data `S1 ~T0 @X0 1 r1 ]
+[v _data `*S1 ~T0 @X0 1 r1 ]
 [v _item `ui ~T0 @X0 1 r2 ]
 [f ]
 [; ;Queue.c: 14: if (!isFull(data)) {
 "14
 [e $ ! ! != ( _isFull (1 _data -> 0 `i 1562  ]
 {
-[; ;Queue.c: 15: data.vals[data.back] = item;
+[; ;Queue.c: 15: data->vals[data->back] = item;
 "15
-[e = *U + &U . _data 0 * -> . _data 2 `ux -> -> # *U &U . _data 0 `ui `ux _item ]
-[; ;Queue.c: 16: data.back = (data.back + 1) % (5 + 1);
+[e = *U + &U . *U _data 0 * -> . *U _data 2 `ux -> -> # *U &U . *U _data 0 `ui `ux _item ]
+[; ;Queue.c: 16: data->back = (data->back + 1) % (5 + 1);
 "16
-[e = . _data 2 % + . _data 2 -> -> 1 `i `ui -> + -> 5 `i -> 1 `i `ui ]
+[e = . *U _data 2 % + . *U _data 2 -> -> 1 `i `ui -> + -> 5 `i -> 1 `i `ui ]
 "17
 }
 [e :U 1562 ]
@@ -13152,11 +13152,11 @@ Version 3.2 HI-TECH Software Intermediate Code
 [e :UE 1561 ]
 }
 "19
-[v _dequeue `(ui ~T0 @X0 1 ef1`S1 ]
+[v _dequeue `(ui ~T0 @X0 1 ef1`*S1 ]
 {
-[; ;Queue.c: 19: unsigned int dequeue(Queue data) {
+[; ;Queue.c: 19: unsigned int dequeue(Queue *data) {
 [e :U _dequeue ]
-[v _data `S1 ~T0 @X0 1 r1 ]
+[v _data `*S1 ~T0 @X0 1 r1 ]
 [f ]
 "20
 [v _ret `ui ~T0 @X0 1 a ]
@@ -13165,12 +13165,12 @@ Version 3.2 HI-TECH Software Intermediate Code
 "21
 [e $ ! ! != ( _isEmpty (1 _data -> 0 `i 1564  ]
 {
-[; ;Queue.c: 22: ret = data.vals[data.front];
+[; ;Queue.c: 22: ret = data->vals[data->front];
 "22
-[e = _ret *U + &U . _data 0 * -> . _data 1 `ux -> -> # *U &U . _data 0 `ui `ux ]
-[; ;Queue.c: 23: data.front = (data.front + 1) % (5 + 1);
+[e = _ret *U + &U . *U _data 0 * -> . *U _data 1 `ux -> -> # *U &U . *U _data 0 `ui `ux ]
+[; ;Queue.c: 23: data->front = (data->front + 1) % (5 + 1);
 "23
-[e = . _data 1 % + . _data 1 -> -> 1 `i `ui -> + -> 5 `i -> 1 `i `ui ]
+[e = . *U _data 1 % + . *U _data 1 -> -> 1 `i `ui -> + -> 5 `i -> 1 `i `ui ]
 "24
 }
 [e :U 1564 ]

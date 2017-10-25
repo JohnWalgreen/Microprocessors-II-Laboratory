@@ -206,7 +206,7 @@ before the PIC continues normal operation again.
 */
 
 
-#define DEBOUNCE_DELAY 5        // amount to delay during iterrupt in order to debounce
+#define DEBOUNCE_DELAY 1        // amount to delay during iterrupt in order to debounce
 
 /*Include files and other shit here*/
 #define HIGH 0b1
@@ -224,6 +224,10 @@ before the PIC continues normal operation again.
 void interrupt ISR();
 // read, execute, and respond (write) accordingly
 
+/*HARD RESET!*/
+void reset();
+// do not use unless by hand
+
 void main() {
 
 	// initialise system w/ given functions
@@ -234,11 +238,25 @@ void main() {
 	ADC_LED_Init();
 	PWM_Init();
 	GPIO_Init();
+	
+	/*SET UP INTERRUPTS FOR rc0 to reset*/
+	TRISC = 0xFF;
+	ANSELC = 0x00;
+
+	TRISCbits.TRISC1 = LOW;
+
+	//PIE0bits.IOCIE = 1;
+	// PIE0bits.INTE = 1; // I don't need this line, so I fucking got rid of it
+	IOCCPbits.IOCCP0 = 1;               // enable positive-edge on-change interrupt for RB5, which will always be digital input
+	//IOCBNbits.IOCBN5 = 1;               // enable negative-edge
+	//INTCONbits.PEIE = 1;                // I think this is enable peripherel interrupts?
+	//INTCONbits.GIE = 1;                 // enable global interrupts
+	/*end*/
 
 	// declare other variables such as counters and other crap
 	int led_counter;
-	int max, min;
-	int threshold;
+	//int max, min;
+	//int threshold;
 
 	// initialisations
 	led_counter = 0;
@@ -246,6 +264,7 @@ void main() {
 	min = 1023;
 	threshold = 0;
 
+	reset();
 
 	while (1) {
 
@@ -312,8 +331,8 @@ void main() {
 		/*END LIGHT SENSOR AND LED PART*/
 		
 		/*Queue execution*/
-		if (!isEmpty(execution_queue)) {
-			switch (dequeue(execution_queue)) {
+		if (!isEmpty(&execution_queue)) {
+			switch (dequeue(&execution_queue)) {
 				case MSG_RESET:
 					min = 1023;
 					max = 0;
@@ -339,6 +358,10 @@ void main() {
 
 void interrupt ISR() {
 
+	if (IOCCFbits.IOCCF0 == HIGH) {
+		IOCCFbits.IOCCF0 = LOW;
+		reset();
+	}
 	// check source
 	if (PIR0bits.IOCIF == HIGH && IOCBFbits.IOCBF5 == HIGH) {
 		// check if <<Interrupt-on-Change Interrupt Flag bit (read-only); p. 142>> is HIGH
@@ -356,15 +379,60 @@ void interrupt ISR() {
 					// first interrupt, read value from GPIO bus
 					// GPIO bus pins should already be set as inputs
 					instruction = read();
+					TRISC &= 0x0F;//TEMP
+					LATC &= 0x0F;//TEMP
+					LATC |= (instruction << 4);//TEMP
 					++communication_counter;
+
+					/*MAKE SURE THAT PIC READS DATA*/
+                    /*
+                    
+					LATCbits.LATC1 = HIGH;
+					if ((instruction >> 3) & 0x1) {
+						__delay_ms(on);
+					} else {
+						__delay_ms(off);
+					}
+					LATCbits.LATC1 = LOW;
+					__delay_ms(pause);
+
+					LATCbits.LATC1 = HIGH;
+					if ((instruction >> 2) & 0x1) {
+						__delay_ms(on);
+					} else {
+						__delay_ms(off);
+					}
+					LATCbits.LATC1 = LOW;
+					__delay_ms(pause);
+
+					LATCbits.LATC1 = HIGH;
+					if ((instruction >> 1) & 0x1) {
+						__delay_ms(on);
+					} else {
+						__delay_ms(off);
+					}
+					LATCbits.LATC1 = LOW;
+					__delay_ms(pause);
+
+					LATCbits.LATC1 = HIGH;
+					if (instruction & 0x1) {
+						__delay_ms(on);
+					} else {
+						__delay_ms(off);
+					}
+					LATCbits.LATC1 = LOW;
+					__delay_ms(pause);*/
+											/*END TEST*/
+
 					break;
 				case 1:
 					// computer is done outputting signal
 					// start processing and set up outputs already
+
 					if (instruction == MSG_GET) {
 						write((adc_value >> 8) & 0x3);
 					} else {
-						enqueue(execution_queue, instruction);
+						enqueue(&execution_queue, instruction);
 						write(MSG_ACK);
 					}
 					TRISB &= 0xE1;          // set up outputs
@@ -379,7 +447,7 @@ void interrupt ISR() {
 					// computer done reading value
 					if (instruction == MSG_GET) {
 						// write bit again
-						write(adc_value >> 4 & 0xF);
+						write((adc_value >> 4) & 0xF);
 						++communication_counter;
 					} else {
 						TRISB |= 0x1E;  // back to inputs (high impedance)
@@ -427,3 +495,19 @@ void interrupt ISR() {
 	}   // else if other flags to determine other sources of interrupt
 
 }
+
+void reset() {
+	LATCbits.LATC1 = HIGH;
+	INTCONbits.GIE = 0;
+	min = 1023;
+	max = 0;
+	threshold = 0;
+	communication_counter = 0;
+	while (!isEmpty(&execution_queue)) {
+		dequeue(&execution_queue);
+	}
+	while (PORTBbits.RB5 == HIGH || PORTCbits.RC0 == HIGH) { continue; }
+	INTCONbits.GIE = 1;
+	LATCbits.LATC1 = LOW;
+}
+	

@@ -9,6 +9,7 @@
 
 int adc_value;      // global variable
                     // most recent adc value
+int max, min, threshold;
 
 void ADC_LED_Init();    // also make LED port an output
 

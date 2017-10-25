@@ -40,6 +40,7 @@ int openGPIO(int gpio, int direction)
 {
 	int handle;               //file variable
 	char buf[256];
+	int inout;
 
 						  //simple command to enable pin A0
 
@@ -59,10 +60,12 @@ int openGPIO(int gpio, int direction)
 	switch (direction) {
 		case GPIO_DIRECTION_OUT:
 			write(handle, "out", 3);
+			inout = O_WRONLY;
 			break;
 		case GPIO_DIRECTION_IN:
 		default:
 			write(handle, "in", 2);
+			inout = O_RDONLY;
 			break;
 
 	}
@@ -76,11 +79,11 @@ int openGPIO(int gpio, int direction)
 
 	switch (direction) {
 		case GPIO_DIRECTION_OUT:
-			handle = open(buf, O_WRONLY);
+			handle = open(buf, inout);
 			break;
 		case GPIO_DIRECTION_IN:
 		default:
-			handle = open(buf, O_RDONLY);
+			handle = open(buf, inout);
 	}
 	// handle = open(buf, O_WRONLY);
 
@@ -150,14 +153,25 @@ int main(void)
       //int fileHandleGPIO_7;
       int fileHandleGPIO_S;
 
-      fileHandleGPIO_4 = openGPIO(GP_5, GPIO_DIRECTION_IN);
       //fileHandleGPIO_5 = openGPIO(GP_5, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_6 = openGPIO(GP_6, GPIO_DIRECTION_OUT);
       //fileHandleGPIO_7 = openGPIO(GP_7, GPIO_DIRECTION_OUT);
 	  
       fileHandleGPIO_S = openGPIO(Strobe, GPIO_DIRECTION_OUT);
 
+	  // turn output on and off for one minute
+	  puts("turn output on and off for one minute");
+	  for (i = 0; i < 15; i++) {
+		  printf("%d / 14, ", i);
+		  writeGPIO(fileHandleGPIO_S, HIGH);
+		  sleep(2);
+		  writeGPIO(fileHandleGPIO_S, LOW);
+		  sleep(2);
+	  }
+
+	  printf("\n\nNow read and write\n");
 	  for (i = 0; i < 60; i++) {
+		  fileHandleGPIO_4 = openGPIO(GP_5, GPIO_DIRECTION_IN);
 		  j = readGPIO(fileHandleGPIO_4);
 		  printf("Value #%d: %d\n", i, j);
 		  if (j) {
@@ -165,8 +179,10 @@ int main(void)
 		  } else {
 			  writeGPIO(fileHandleGPIO_S, LOW);
 		  }
-		  
+
+		  closeGPIO(GP_5, fileHandleGPIO_4);
 		  sleep(1);
+		  
 		  /*if (readGPIO(fileHandleGPIO_4)) {
 			  writeGPIO(fileHandleGPIO_S, HIGH);
 		  } else {
@@ -185,7 +201,6 @@ int main(void)
 	  //close(fileHandleGPIO_S);
 
 	  closeGPIO(Strobe, fileHandleGPIO_S);
-	  closeGPIO(GP_5, fileHandleGPIO_4);
 
 
 	  return 0;
