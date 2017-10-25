@@ -17464,7 +17464,7 @@ unsigned dequeue(Queue *);
 
 Queue execution_queue;
 
-# 224 "main.c"
+# 231 "main.c"
 void interrupt ISR();
 
 
@@ -17493,7 +17493,7 @@ TRISCbits.TRISC1 = 0;
 
 IOCCPbits.IOCCP0 = 1;
 
-# 257
+# 264
 int led_counter;
 
 
@@ -17508,7 +17508,7 @@ reset();
 
 while (1) {
 
-# 291
+# 298
 if (led_counter < 0) {
 
 
@@ -17586,7 +17586,7 @@ reset();
 
 if (PIR0bits.IOCIF == 1 && IOCBFbits.IOCBF5 == 1) {
 
-# 373
+# 380
 _delay((unsigned long)((1)*(1000000/4000.0)));
 if (PORTBbits.RB5 == (communication_counter % 2 ? 0 : 1)) {
 
@@ -17601,7 +17601,7 @@ LATC &= 0x0F;
 LATC |= (instruction << 4);
 ++communication_counter;
 
-# 427
+# 434
 break;
 case 1:
 
