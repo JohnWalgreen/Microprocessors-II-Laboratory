@@ -13,6 +13,10 @@ DOWNLOADED:
 		All files inside TMP102 folder
 		https://www.sparkfun.com/products/13314
 
+	Interfacing with I2C Devices (eLinux) (SHOWN IN CLASS -- VERY GOOD!)
+		Interfacing with I2C Devices - eLinux.pdf
+		https://elinux.org/Interfacing_with_I2C_Devices
+
 NOT DOWNLOADED:
 
 	SparkFun RGB and Gesture Sensor - APDS-9960
