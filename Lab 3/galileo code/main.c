@@ -21,6 +21,10 @@ Lab objectives from provided materials:
 	3) Use temperature sensor to trigger capture of images from webcam.
 */
 
+#include <linux/i2c-dev.h>		// access i2c adapter from linux program; this may be incorrect library
+#define ADAPTER_NUMBER 0		// is determined dynamically [inspect /sys/class/i2c-dev/ or run "i2cdetect -l" to decide this.]
+
+
 
 int main() {
 
