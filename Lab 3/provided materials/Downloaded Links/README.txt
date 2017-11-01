@@ -1,4 +1,4 @@
-DOWNLOADED
+DOWNLOADED:
 
 	Linux I2C library documentation
 	Programming I2C devices from Linux
@@ -9,11 +9,11 @@ DOWNLOADED
 		Programming I2C devices from Linux - related tutroials.pdf
 		http://blog.chrysocome.net/2013/03/programming-i2c.html
 
+	SparkFun Digital Temperature Sensor Breakout - TMP102
+		All files inside TMP102 folder
+		https://www.sparkfun.com/products/13314
 
 NOT DOWNLOADED:
-
-	SparkFun Digital Temperature Sensor Breakout - TMP102
-		https://www.sparkfun.com/products/13314
 
 	SparkFun RGB and Gesture Sensor - APDS-9960
 		https://www.sparkfun.com/products/12787
