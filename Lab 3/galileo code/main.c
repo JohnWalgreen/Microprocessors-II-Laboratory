@@ -1,197 +1,75 @@
-/*Strobe (40) pin 8
-GP_4 LSB and GP_7 MSB for data bus (A0-A3)
+/*
+File Created on 1-Nov-2017
+
+CHANGES:
+
+Name: Hans
+Date: 1-Nov-2017
+Time: 1000 - 1044
+Description:		1) File created
+					2) Skeleton created
+					3) Note: add backdoor method of exiting main
+					4) Note: define temperature threshold as pre-processor directive OR make it dynamic
+					5) Note: download provided links as PDFs
+
 */
 
 /*
-Main Program for galileo
-prints options and accepts command (with error checking)
-command is sent to PIC
-
-Strobe protocol:
-
-galileo sets bus as output (PIC should be inputs already)
-galileo puts data on bus
-galileo raises strobe
-galileo pauses for 10 ms and gives PIC time to read data on bus
-
-repeat this for every nibble that must be read:
-	galileo lowers strobe signal
-	galileo makes pins inputs
-	galileo pauses for 2 ms so that PIC has time to form response
-	galileo raises strobe signal
-	galileo pauses for 2 ms so that PIC has time to switch pins to outputs
-	galileo reads data on bus
-
-galileo lowers strobe signal
+Lab objectives from provided materials:
+	1) program I2C devices from Linux. Use Linux I2C libraries and APIs
+	2) programming on Linux to handle webcam and capture images. Store images on SD card.
+	3) Use temperature sensor to trigger capture of images from webcam.
 */
 
-#include "gpio.h"
-#include "bus_transfer.h"
-
-void flushLine() {
-	char fuckingGarbage;
-	do {
-		scanf("%c", &fuckingGarbage);
-	} while (fuckingGarbage != '\n');
-	return;
-}
 
 int main() {
 
-	int input;			// user command input
-	int response;		// response from PIC
+	/*declare and initialise variables here*/
 
-	int flag;
+	/*PART 1 - COMPLETE FIRST OBJECTIVE*/
 
-	int strobe;				// handle for strobe signal
-	int data [4];			// handles for data bus pins (A3-A0)
+	// set up I2C protocol on devices (program the devices?)
+	/*Devices:
+		PIC? probably not
+		TMP102 (temperature sensor)
+		USB webcam
+	*/
+	// I2C on A4 (SDA) and A5 (SCL) of galileo
 
-	strobe = openGPIO(Strobe, GPIO_DIRECTION_OUT);	// always out!
-	writeGPIO(strobe, LOW);
+	/*END PART 1*/
 
+	// FIND PROTOCOL TO MAKE TEMPERATURE DYNAMIC
+
+	/*PART 2 - COMPLETE SECOND AND THIRED OBJECTIVES*/
+
+	// infinite loop - maybe add backdoor method of exiting
 	while (1) {
 
-		puts("Options");
-		puts("0) Reset");
-		puts("1) Ping");
-		puts("2) Get ADC value");
-		puts("3) Turn Senso-motor to 30 degrees");
-		puts("4) Turn Senso-motor to 90 degrees");
-		puts("5) Turn Senso-motor to 120 degrees\n");
-		puts("-1) Exit program");
+		// communicate via I2C with temperature sensor
+		// get temperature
+		// end I2C communicay
 
-		do {
-			printf("Enter command: ");
-			flag = 1 - scanf("%d", &input);
-
-			if (flag) {
-
-				puts("ERROR: Invalid number input\n");
-
-				// must flush line!
-
-			} else if (input < -1 || input > 5) {			// remember that -1 is valid input
-				printf("Error: %d is an invalid option\n", input);
-				flag = -1;
-			}
+		if (/*temerapture > threshold*/) {
 			
-			flushLine();
-
-		} while (flag);
-
-		// exit if input = -1
-		if (input < 0) {
-			closeGPIO(Strobe, strobe);
-			return 0;
-		}
-
-		/*
-		START STEP 1
-			1) open all pins as outputs
-			2) put data on bus
-			3) flip strobe on
-			4) Give pic 10ms to read data
-		*/
-
-		// 1
-		data[0] = openGPIO(GP_4, GPIO_DIRECTION_OUT);
-		data[1] = openGPIO(GP_5, GPIO_DIRECTION_OUT);
-		data[2] = openGPIO(GP_6, GPIO_DIRECTION_OUT);
-		data[3] = openGPIO(GP_7, GPIO_DIRECTION_OUT);
-
-		writeBus(input & 0xF, data);		// 2
-		writeGPIO(strobe, HIGH);		// 3
-		usleep(10000);					// 4
-
-
-		/*END STEP 1*/
-
-		/*STEP 2 -- read data from PIC*/
-		flag = 0;
-		response = 0;
-		while ((flag < 4 && input == MSG_GET) || flag < 1) {
-			// if msg_get, read 4 times
-			// else, just read response
+			// start I2C communicay with USB webcam
+			// capture image and store it on filesystem
+				// What I think protocol is
+				// send capture command via I2C
+				// create appropriate file on filesystem
+				// transfer data via I2C and put in buffer or directly to file
+			// end I2C communicay
 
 			/*
-			READ FROM PIC
-			1) bring strobe low
-			2) remove data from bus
-			3) make pins inputs after closing them
-			4) give PIC some auxiliary some extra time to generate response
-			5) raise strobe high
-			6) give PIC time to convert pins from inputs to outputs
-			7) read bus
+			YOU DON'T WANT TO MANY IMAGE CAPTURES AT ONCE, SO PUT A SLEEP HERE, I THINK
+			You want it in if-statement here for fast polling of temperature, but once image is captured, delay possibility of next image
 			*/
 
-			writeGPIO(strobe, LOW);				// 1
-			writeBus(0, data);						// 2
-
-			// 3
-			closeGPIO(GP_4, data[0]);
-			closeGPIO(GP_5, data[1]);
-			closeGPIO(GP_6, data[2]);
-			closeGPIO(GP_7, data[3]);
-			data[0] = openGPIO(GP_4, GPIO_DIRECTION_IN);
-			data[1] = openGPIO(GP_5, GPIO_DIRECTION_IN);
-			data[2] = openGPIO(GP_6, GPIO_DIRECTION_IN);
-			data[3] = openGPIO(GP_7, GPIO_DIRECTION_IN);
-
-			usleep(2000);						// 4
-			writeGPIO(strobe, HIGH);			// 5
-			usleep(2000);						// 6
-
-			// 7
-			if (input == MSG_GET) {
-				response += readBus(data) << (4 * (3 - flag));	// 7 + extra
-			} else {
-				response = readBus(data);
-			}
-
-			++flag;
-
 		}
-		/*END STEP 2*/
 
-		/*START STEP 3 -- just switch strobe to low to indicate that communication is over, and close pins*/
-		writeGPIO(strobe, LOW);
-		closeGPIO(GP_4, data[0]);
-		closeGPIO(GP_5, data[1]);
-		closeGPIO(GP_6, data[2]);
-		closeGPIO(GP_7, data[3]);
-		/*END STEP 3*/
 
-		// return status message
-		if ((response & 0xF) == MSG_ACK) {
-			// good response code
-			switch (input) {
-				case MSG_RESET:
-					puts("PIC successfully reset");
-					break;
-				case MSG_PING:
-					puts("PIC has returned ping");
-					break;
-				case MSG_GET:
-					response = (response >> 4);			// last 4 bits is MSG_ACK, upper 10 bits is data
-					printf("Last ADC value: %d\nVoltage across photoresistor: %lf\n", response, 3.3 * (double)response / 1023.0);
-					break;
-				case MSG_TURN30:
-					puts("PIC has queued command to turn senso-motor to 30 degrees");
-					break;
-				case MSG_TURN90:
-					puts("PIC has queued command to turn senso-motor to 90 degrees");
-					break;
-				case MSG_TURN120:
-					puts("PIC has queued command to turn senso-motor to 120 degrees");
-					break;
-			}
-		} else {
-			// if last 4 bits of response (the response code) are bad
-			puts("An unexpected error ocurred.");
-		}
-		puts("\n\n");
-		
 	}
 
+	/*END PART 2*/
+
 	return 0;
-}
+} // end main
