@@ -5,7 +5,7 @@ CHANGES:
 
 Name: Hans
 Date: 1-Nov-2017
-Time: 1000 - ...
+Time: 1000 - 1044
 Description:		1) File created
 					2) Skeleton created
 					3) Note: add backdoor method of exiting main
