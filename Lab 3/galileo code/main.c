@@ -50,7 +50,7 @@ int main() {
 
 	// FIND PROTOCOL TO MAKE TEMPERATURE DYNAMIC
 
-	/*PART 2 - COMPLETE SECOND AND THIRED OBJECTIVES*/
+	/*PART 2 - COMPLETE SECOND AND THIRD OBJECTIVES*/
 
 	// infinite loop - maybe add backdoor method of exiting
 	while (1) {
