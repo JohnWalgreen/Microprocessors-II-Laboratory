@@ -18,7 +18,7 @@ int openDevice(int adapter_number) {
 	file = open(filename, O_RDWR);
 	if (file < 0) {
 		// ERROR HANDLING; you can check errno to see what went wrong
-
+		
 		exit(1);
 	}*/
 }
