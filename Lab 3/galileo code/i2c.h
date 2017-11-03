@@ -1,8 +1,15 @@
 #ifndef I2C_H_
 #define I2C_H_
 
+#define ADDRESS 0x48
+#define NUM_SAMPLES 100
+#define MULTIPLIER 5		// used for dynamic threshold calculation
+
 // open device file
-int openDevice(int adapter_number); // returns file handle
+int InitTempDevice(int adapter_number); // returns file handle
+
+double readTemp(int handle);
+double determineTempThreshold(int handle);
 
 #endif
 

@@ -46,30 +46,13 @@ Lab objectives from provided materials:
 #include <fcntl.h>
 /*END*/
 
+#include "i2c.h"
+
 int main() {
 
-	// get temperature from TMP102
-	int handle;
-	int address;
-	char buf[2] = { 0 };
-	float data;
-	char channel;
-	int i;
-
-	address = 0x48;
-	handle = openDevice(0);
-	ioctl(handle, I2C_SLAVE, address);
-
-	buf[0] = 0;
-	write(handle, buf, 1);
-
-	while (1) {
-		read(handle, buf, 2);
-
-		printf("%d\n", (buf[0] << 4) + (buf[1] >> 4));
-
-		sleep(3);
-	}
+	int temp_sensor_handle;
+	double temp_threshold;
+	double temp;
 
 
 	/*declare and initialise variables here*/
@@ -84,20 +67,26 @@ int main() {
 	*/
 	// I2C on A4 (SDA) and A5 (SCL) of galileo
 
+	temp_sensor_handle = InitTempDevice(ADAPTER_NUMBER);
+
 	/*END PART 1*/
 
 	// FIND PROTOCOL TO MAKE TEMPERATURE DYNAMIC
+	printf("Threshold test begins in 5 seconds...");
+	sleep(5);
+	temp_threshold = determineTempThreshold(temp_sensor_handle);
+	printf("Threshold: %2.2lf degrees Celsius\n\n", temp_threshold);
 
 	/*PART 2 - COMPLETE SECOND AND THIRD OBJECTIVES*/
 
 	// infinite loop - maybe add backdoor method of exiting
-	//while (1) {
+	while (1) {
 
 		// communicate via I2C with temperature sensor
 		// get temperature
 		// end I2C communicay
-
-		//if (/*temerapture > threshold*/) {
+		temp = readTemp(temp_sensor_handle);
+		if (temp > temp_threshold) {
 			
 			// start I2C communicay with USB webcam
 			// capture image and store it on filesystem
@@ -112,10 +101,15 @@ int main() {
 			You want it in if-statement here for fast polling of temperature, but once image is captured, delay possibility of next image
 			*/
 
-		//}
+			printf("\rYour picture has been taken. Temperature (C) = %2.2lf\nhey", temp);
+			sleep(1);
+
+		} else {
+			printf("\r%2.2lf", temp);
+		}
 
 
-	//}
+	}
 
 	/*END PART 2*/
 
