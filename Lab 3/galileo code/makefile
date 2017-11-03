@@ -4,3 +4,6 @@ start:main.c gpio.c bus_transfer.c
 	./gal
 	grep out /sys/class/gpio/gpio*/direction
 	grep in /sys/class/gpio/gpio*/direction
+
+2: main.c i2c.c
+	gcc -Wall main.c i2c.c -o gal.out

@@ -12,6 +12,13 @@ Description:		1) File created
 					4) Note: define temperature threshold as pre-processor directive OR make it dynamic
 					5) Note: download provided links as PDFs
 
+Name: Hans
+Date: 3-Nov-2017
+Time: 1015 - ...
+Description:
+				1) We ran "i2cdetect -l" and saw i2c-0
+				2) We rand "i2cdetect -r 0" and got a table with something showing up at address 0x48 (the TMP102).  So it is connected via I2C.
+
 */
 
 /*
@@ -24,9 +31,29 @@ Lab objectives from provided materials:
 #include <linux/i2c-dev.h>		// access i2c adapter from linux program; this may be incorrect library
 #define ADAPTER_NUMBER 0		// is determined dynamically [inspect /sys/class/i2c-dev/ or run "i2cdetect -l" to decide this.]
 
+/*STUFF I STOLE FROM INTERNET*/
+//#include <glib.h>
+//#include <glib/gprintf.h>
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <linux/i2c-dev.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+/*END*/
 
+#include "i2c.h"
 
 int main() {
+
+	int temp_sensor_handle;
+	double temp_threshold;
+	double temp;
+
 
 	/*declare and initialise variables here*/
 
@@ -40,11 +67,17 @@ int main() {
 	*/
 	// I2C on A4 (SDA) and A5 (SCL) of galileo
 
+	temp_sensor_handle = InitTempDevice(ADAPTER_NUMBER);
+
 	/*END PART 1*/
 
 	// FIND PROTOCOL TO MAKE TEMPERATURE DYNAMIC
+	printf("Threshold test begins in 5 seconds...");
+	sleep(5);
+	temp_threshold = determineTempThreshold(temp_sensor_handle);
+	printf("Threshold: %2.2lf degrees Celsius\n\n", temp_threshold);
 
-	/*PART 2 - COMPLETE SECOND AND THIRED OBJECTIVES*/
+	/*PART 2 - COMPLETE SECOND AND THIRD OBJECTIVES*/
 
 	// infinite loop - maybe add backdoor method of exiting
 	while (1) {
@@ -52,8 +85,8 @@ int main() {
 		// communicate via I2C with temperature sensor
 		// get temperature
 		// end I2C communicay
-
-		if (/*temerapture > threshold*/) {
+		temp = readTemp(temp_sensor_handle);
+		if (temp > temp_threshold) {
 			
 			// start I2C communicay with USB webcam
 			// capture image and store it on filesystem
@@ -68,6 +101,11 @@ int main() {
 			You want it in if-statement here for fast polling of temperature, but once image is captured, delay possibility of next image
 			*/
 
+			printf("\rYour picture has been taken. Temperature (C) = %2.2lf\nhey", temp);
+			sleep(1);
+
+		} else {
+			printf("\r%2.2lf", temp);
 		}
 
 
