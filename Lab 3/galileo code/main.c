@@ -16,7 +16,8 @@ Name: Hans
 Date: 3-Nov-2017
 Time: 1015 - ...
 Description:
-				1)
+				1) We ran "i2cdetect -l" and saw i2c-0
+				2) We rand "i2cdetect -r 0" and got a table with something showing up at address 0x48 (the TMP102).  So it is connected via I2C.
 
 */
 
