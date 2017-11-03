@@ -32,8 +32,8 @@ Lab objectives from provided materials:
 #define ADAPTER_NUMBER 0		// is determined dynamically [inspect /sys/class/i2c-dev/ or run "i2cdetect -l" to decide this.]
 
 /*STUFF I STOLE FROM INTERNET*/
-#include <glib.h>
-#include <glib/gprintf.h>
+//#include <glib.h>
+//#include <glib/gprintf.h>
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
@@ -51,27 +51,24 @@ int main() {
 	// get temperature from TMP102
 	int handle;
 	int address;
-	char buf[10] = { 0 };
+	char buf[2] = { 0 };
 	float data;
 	char channel;
+	int i;
 
 	address = 0x48;
 	handle = openDevice(0);
 	ioctl(handle, I2C_SLAVE, address);
 
-	for (int i = 0; i<4; i++) {     // Using I2C Read
-		if (read(file,buf,2) != 2) {
-			/* ERROR HANDLING: i2c transaction failed */
-			printf("Failed to read from the i2c bus.\n");
-			buffer = g_strerror(errno);
-			printf(buffer);
-			printf("\n\n");
-		} else {
-			data = (float)((buf[0] & 0b00001111)<<8)+buf[1];
-			data = data/4096*5;
-			channel = ((buf[0] & 0b00110000)>>4);
-			printf("Channel %02d Data:  %04f\n",channel,data);
-		}
+	buf[0] = 0;
+	write(handle, buf, 1);
+
+	while (1) {
+		read(handle, buf, 2);
+
+		printf("%d\n", (buf[0] << 4) + (buf[1] >> 4));
+
+		sleep(3);
 	}
 
 
@@ -94,13 +91,13 @@ int main() {
 	/*PART 2 - COMPLETE SECOND AND THIRD OBJECTIVES*/
 
 	// infinite loop - maybe add backdoor method of exiting
-	while (1) {
+	//while (1) {
 
 		// communicate via I2C with temperature sensor
 		// get temperature
 		// end I2C communicay
 
-		if (/*temerapture > threshold*/) {
+		//if (/*temerapture > threshold*/) {
 			
 			// start I2C communicay with USB webcam
 			// capture image and store it on filesystem
@@ -115,10 +112,10 @@ int main() {
 			You want it in if-statement here for fast polling of temperature, but once image is captured, delay possibility of next image
 			*/
 
-		}
+		//}
 
 
-	}
+	//}
 
 	/*END PART 2*/
 
