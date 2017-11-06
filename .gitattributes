@@ -1,2 +1,6 @@
 # all batch files have Windows line endings
 *.bat text eol=crlf
+
+# all C files will have Unix line endings
+*.c text eol=lf
+*.h text eol=lf
