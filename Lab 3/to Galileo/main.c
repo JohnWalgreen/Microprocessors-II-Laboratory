@@ -14,11 +14,26 @@ Description:		1) File created
 
 Name: Hans
 Date: 3-Nov-2017
-Time: 1015 - ...
+Time: 1015 - Later
 Description:
 				1) We ran "i2cdetect -l" and saw i2c-0
 				2) We rand "i2cdetect -r 0" and got a table with something showing up at address 0x48 (the TMP102).  So it is connected via I2C.
+				3) We read temperature
 
+Name: Hans
+Date: 6-Nov-2017
+Time: 1230 - ...
+Description:			4) Discovered that OpenCV is already installed on Galileo
+						2) Made tutorial to connect Galileo via ethernet
+						1) made batch files on both devices to easily transfer files
+						3) Got C++ compiling statement and C++ skeleton code
+						5) Manipulated code to make it better and made it okay for gcc (command in makefile)
+						6) Can take pictures now with make take_picture_c
+						7) added and fixed take picture function and put it in here
+						8) TO DO: put files in SD card instead!
+						9) TO DO: figure out take picture function and clean up {???} comments
+						10) TO DO: this exits after first ten pictures.  In reality, change this
+						11) TO DO: Better threshold calculations
 */
 
 /*
@@ -31,11 +46,16 @@ Lab objectives from provided materials:
 #include <linux/i2c-dev.h>		// access i2c adapter from linux program; this may be incorrect library
 #define ADAPTER_NUMBER 0		// is determined dynamically [inspect /sys/class/i2c-dev/ or run "i2cdetect -l" to decide this.]
 
+#define DEST_FOLDER "/home/root/Documents/to PC"		// pictures end up here; SD drive is at /media/card/ etc.
+#define PICTURE_LIMIT 10
+
 /*STUFF I STOLE FROM INTERNET*/
 //#include <glib.h>
 //#include <glib/gprintf.h>
-#include <errno.h>
-#include <string.h>
+//#include <errno.h>
+
+//#include <string.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -46,10 +66,45 @@ Lab objectives from provided materials:
 #include <fcntl.h>
 /*END*/
 
+/*COPIED*/
+#include <sys/ioctl.h>
+
+//*** Opencv libraries ***
+#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+
+//*** Normal c/c++ code libraries ***
+//#include <fcntl.h>
+
+//#include <stdint.h>
+
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <sys/types.h>
+//#include <sys/stat.h>
+//#include <string.h>
+
+//#include <math.h>
+
+//#include <unistd.h>
+
+// mine
+//#include <stdio.h>
+//#include <stdlib.h>
+
+//#include <time.h>
+/*END*/
+
 #include "i2c.h"
+
+void takePicture(unsigned int id);
 
 int main() {
 
+	unsigned int pic_counter;		// # of pictures taken
 	int temp_sensor_handle;
 	double temp_threshold;
 	double temp;
@@ -68,6 +123,7 @@ int main() {
 	// I2C on A4 (SDA) and A5 (SCL) of galileo
 
 	temp_sensor_handle = InitTempDevice(ADAPTER_NUMBER);
+	pic_counter = 0;
 
 	/*END PART 1*/
 
@@ -87,22 +143,16 @@ int main() {
 		// end I2C communicay
 		temp = readTemp(temp_sensor_handle);
 		if (temp > temp_threshold) {
-			
-			// start I2C communicay with USB webcam
-			// capture image and store it on filesystem
-				// What I think protocol is
-				// send capture command via I2C
-				// create appropriate file on filesystem
-				// transfer data via I2C and put in buffer or directly to file
-			// end I2C communicay
+			// take picture and update counter
 
-			/*
-			YOU DON'T WANT TO MANY IMAGE CAPTURES AT ONCE, SO PUT A SLEEP HERE, I THINK
-			You want it in if-statement here for fast polling of temperature, but once image is captured, delay possibility of next image
-			*/
+			++pic_counter;
+			takePicture(pic_counter);
 
 			printf("\rYour picture has been taken. Temperature (C) = %2.2lf\nhey", temp);
-			sleep(1);
+			
+			if (pic_counter >= PICTURE_LIMIT) {
+				return 0;
+			}
 
 		} else {
 			printf("\r%2.2lf", temp);
@@ -115,3 +165,36 @@ int main() {
 
 	return 0;
 } // end main
+
+void takePicture(unsigned int id) {
+
+	// I added -lm to command line argument for C
+
+	/*
+	g++ -I/usr/local/include/opencv -I/usr/local/include/opencv2 -L/usr/local/lib/ -Wall "take picture.c" i2c.c -o ./gal.out -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_stitching
+	gcc -I/usr/local/include/opencv -I/usr/local/include/opencv2 -L/usr/local/lib/ -Wall "take picture.c" i2c.c -o ./gal.out -lm -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_stitching
+	*/
+
+	char filename[200];
+	CvCapture *capture;
+	IplImage *image;
+
+	/*
+	To take a picture:
+	1) Create filename
+	2) capture image
+	3) create image structure
+	4) save image to filename
+	5) de-initialise camera
+	*/
+
+	sprintf(filename, "%s/%u.jpg", DEST_FOLDER, id);		// step 1
+	// filename is [DEST_FOLDER]/[id].jpg
+
+	capture = cvCaptureFromCAM(CV_CAP_ANY);	// step 2; what is CV_CAP_ANY ???
+	image = cvQueryFrame(capture);			// step 3
+	cvSaveImage(filename, image, 0);		// step 4
+	cvReleaseCapture(&capture);				// step 5; why do we use pointer-to-pointer???
+
+	return;
+}
