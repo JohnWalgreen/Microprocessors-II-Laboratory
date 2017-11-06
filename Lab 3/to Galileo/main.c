@@ -34,6 +34,7 @@ Description:			4) Discovered that OpenCV is already installed on Galileo
 						9) TO DO: figure out take picture function and clean up {???} comments
 						10) TO DO: this exits after first ten pictures.  In reality, change this
 						11) TO DO: Better threshold calculations
+						12) dynamic threshold fixed!
 */
 
 /*
@@ -128,10 +129,18 @@ int main() {
 	/*END PART 1*/
 
 	// FIND PROTOCOL TO MAKE TEMPERATURE DYNAMIC
-	printf("Threshold test begins in 5 seconds...");
-	sleep(5);
-	temp_threshold = determineTempThreshold(temp_sensor_handle);
-	printf("Threshold: %2.2lf degrees Celsius\n\n", temp_threshold);
+	{
+		double num1, num2;
+		num1 = determineTempThreshold(temp_sensor_handle);
+		puts("Please put hand on temperature sensor. Do not remove until instructed to do so.");
+		sleep(10);
+		num2 = determineTempThreshold(temp_sensor_handle);
+		temp_threshold = ((num1 + num2) / 2) + (num2 - num1);		// average + range = threshold
+		puts("Please remove hand from temperature sensor, you creep.");
+		sleep(5);
+	}
+	printf("Threshold: %2.2lf degrees Celsius\nProgram will begin in 10 seconds...\n\n", temp_threshold);
+	sleep(10);
 
 	/*PART 2 - COMPLETE SECOND AND THIRD OBJECTIVES*/
 
