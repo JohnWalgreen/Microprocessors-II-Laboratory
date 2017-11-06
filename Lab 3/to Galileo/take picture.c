@@ -18,11 +18,15 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <math.h>
-#include <iostream>
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
+//#include <cstdio>
+//#include <cstdlib>
+//#include <ctime>
 #include <unistd.h>
+
+// mine
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void takePicture() {
 	char filename[200];
@@ -60,4 +64,9 @@ void takePicture() {
 	/*END PART 5*/
 
 	return;
+}
+
+int main() {
+	takePicture();
+	return 0;
 }
