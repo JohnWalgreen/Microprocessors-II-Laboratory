@@ -48,7 +48,7 @@ Lab objectives from provided materials:
 #define ADAPTER_NUMBER 0		// is determined dynamically [inspect /sys/class/i2c-dev/ or run "i2cdetect -l" to decide this.]
 
 #define DEST_FOLDER "/home/root/Documents/to PC"		// pictures end up here; SD drive is at /media/card/ etc.
-#define PICTURE_LIMIT 10
+#define PICTURE_LIMIT 20
 
 /*STUFF I STOLE FROM INTERNET*/
 //#include <glib.h>
@@ -131,16 +131,23 @@ int main() {
 	// FIND PROTOCOL TO MAKE TEMPERATURE DYNAMIC
 	{
 		double num1, num2;
-		num1 = determineTempThreshold(temp_sensor_handle);
-		puts("Please put hand on temperature sensor. Do not remove until instructed to do so.");
-		sleep(10);
+
+		//puts("Allow the temperature sensor to cool. Place your hand on it once instructed to do so.");
+		//sleep(5);
+		//num1 = determineTempThreshold(temp_sensor_handle);
+
+		puts("Hey asshole, put hand on temperature sensor. Do not remove until instructed to do so");
+		sleep(5);
 		num2 = determineTempThreshold(temp_sensor_handle);
-		temp_threshold = ((num1 + num2) / 2) + (num2 - num1);		// average + range = threshold
-		puts("Please remove hand from temperature sensor, you creep.");
+
+		puts("Now take your hand off the sensor, you motherfucker.");
+		sleep(5);
+
+		// I changed this to just the high
+		temp_threshold = num2;// ((num1 + num2) / 2) + (num2 - num1);		// average + range = threshold
+		printf("Threshold: %2.2lf degrees Celsius\nProgram will begin in 5 seconds...\n\n", temp_threshold);
 		sleep(5);
 	}
-	printf("Threshold: %2.2lf degrees Celsius\nProgram will begin in 10 seconds...\n\n", temp_threshold);
-	sleep(10);
 
 	/*PART 2 - COMPLETE SECOND AND THIRD OBJECTIVES*/
 
