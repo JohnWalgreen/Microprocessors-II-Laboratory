@@ -114,8 +114,7 @@ int main() {
 
 	unsigned int pic_counter;		// # of pictures taken
 	int temp_sensor_handle;
-	double avg_temp;
-	double cur, prev;
+	double temp, temp_threshold;
 
 
 	/*declare and initialise variables here*/
