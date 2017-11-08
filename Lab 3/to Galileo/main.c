@@ -35,6 +35,13 @@ Description:			4) Discovered that OpenCV is already installed on Galileo
 						10) TO DO: this exits after first ten pictures.  In reality, change this
 						11) TO DO: Better threshold calculations
 						12) dynamic threshold fixed!
+
+Name: Hans
+Date: 7-Nov-2017
+Time: 1330 - ...
+Description:			1) Got new camera
+						2) Acquired data
+						3) dynamic threshold work via peak detecting
 */
 
 /*
@@ -107,8 +114,7 @@ int main() {
 
 	unsigned int pic_counter;		// # of pictures taken
 	int temp_sensor_handle;
-	double temp_threshold;
-	double temp;
+	double temp, temp_threshold;
 
 
 	/*declare and initialise variables here*/
