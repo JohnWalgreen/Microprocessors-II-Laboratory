@@ -141,12 +141,12 @@ int main() {
 		//puts("Allow the temperature sensor to cool. Place your hand on it once instructed to do so.");
 		//sleep(5);
 		//num1 = determineTempThreshold(temp_sensor_handle);
-
-		puts("Hey asshole, put hand on temperature sensor. Do not remove until instructed to do so");
+		
+		puts("Put hand on temperature sensor. Do not remove until instructed to do so.");
 		sleep(5);
 		num2 = determineTempThreshold(temp_sensor_handle);
 
-		puts("Now take your hand off the sensor, you motherfucker.");
+		puts("Now take your hand off the sensor.");
 		sleep(5);
 
 		// I changed this to just the high
@@ -170,7 +170,7 @@ int main() {
 			++pic_counter;
 			takePicture(pic_counter);
 
-			printf("\rYour picture has been taken. Temperature (C) = %2.2lf\nhey", temp);
+			printf("\rYour picture has been taken. Temperature (C) = %2.2lf\n_", temp);
 			
 			if (pic_counter >= PICTURE_LIMIT) {
 				return 0;
