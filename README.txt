@@ -1,5 +1,5 @@
 # Microprocessors-II-Laboratory
-All code, schematics, and other files relating to our Microprocessors II Laboratory Group.
+All code, schematics, and other files relating to our Microprocessors II Laboratory Group 10.
 
 Group members:
 Hans-Edward Hoene
