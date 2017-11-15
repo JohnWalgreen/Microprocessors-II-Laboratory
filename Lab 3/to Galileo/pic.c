@@ -24,13 +24,13 @@ void takePicture(unsigned int id) {
 	5) de-initialise camera
 	*/
 
-	sprintf(filename, "%s/%u.jpg", DEST_FOLDER, id);		// step 1
-															// filename is [DEST_FOLDER]/[id].jpg
-
-	capture = cvCaptureFromCAM(CV_CAP_ANY);	// step 2; what is CV_CAP_ANY ???
-	image = cvQueryFrame(capture);			// step 3
-	cvSaveImage(filename, image, 0);		// step 4
-	cvReleaseCapture(&capture);				// step 5; why do we use pointer-to-pointer???
+	sprintf(filename, "%s/%u.jpg", DEST_FOLDER, id);		// filename is [DEST_FOLDER]/[id].jpg
+	capture = cvCaptureFromCAM(CV_CAP_ANY);					// capture frame from the camera; stop webcam
+															// argument can be zero since there is only one device connected
+	image = cvQueryFrame(capture);							// grabs and retrieves data from captured frame
+	cvSaveImage(filename, image, 0);						// save image to file as JPG
+	cvReleaseCapture(&capture);								// release capture
+	cvReleaseImage(&image);									// release image
 
 	return;
 }
