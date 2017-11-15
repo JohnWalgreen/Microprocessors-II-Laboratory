@@ -1,68 +1,8 @@
-/*
-File Created on 1-Nov-2017
-
-CHANGES:
-
-Name: Hans
-Date: 1-Nov-2017
-Time: 1000 - 1044
-Description:		1) File created
-					2) Skeleton created
-					3) Note: add backdoor method of exiting main
-					4) Note: define temperature threshold as pre-processor directive OR make it dynamic
-					5) Note: download provided links as PDFs
-
-Name: Hans
-Date: 3-Nov-2017
-Time: 1015 - Later
-Description:
-				1) We ran "i2cdetect -l" and saw i2c-0
-				2) We rand "i2cdetect -r 0" and got a table with something showing up at address 0x48 (the TMP102).  So it is connected via I2C.
-				3) We read temperature
-
-Name: Hans
-Date: 6-Nov-2017
-Time: 1230 - ...
-Description:			4) Discovered that OpenCV is already installed on Galileo
-						2) Made tutorial to connect Galileo via ethernet
-						1) made batch files on both devices to easily transfer files
-						3) Got C++ compiling statement and C++ skeleton code
-						5) Manipulated code to make it better and made it okay for gcc (command in makefile)
-						6) Can take pictures now with make take_picture_c
-						7) added and fixed take picture function and put it in here
-						8) TO DO: put files in SD card instead!
-						9) TO DO: figure out take picture function and clean up {???} comments
-						10) TO DO: this exits after first ten pictures.  In reality, change this
-						11) TO DO: Better threshold calculations
-						12) dynamic threshold fixed!
-
-Name: Hans
-Date: 7-Nov-2017
-Time: 1330 - ...
-Description:			1) Got new camera
-						2) Acquired data
-						3) dynamic threshold work via peak detecting
-*/
-
-/*
-Lab objectives from provided materials:
-	1) program I2C devices from Linux. Use Linux I2C libraries and APIs
-	2) programming on Linux to handle webcam and capture images. Store images on SD card.
-	3) Use temperature sensor to trigger capture of images from webcam.
-*/
-
 #include <linux/i2c-dev.h>		// access i2c adapter from linux program; this may be incorrect library
 #define ADAPTER_NUMBER 0		// is determined dynamically [inspect /sys/class/i2c-dev/ or run "i2cdetect -l" to decide this.]
 
 #define DEST_FOLDER "/home/root/Documents/to PC"		// pictures end up here; SD drive is at /media/card/ etc.
 #define PICTURE_LIMIT 20
-
-/*STUFF I STOLE FROM INTERNET*/
-//#include <glib.h>
-//#include <glib/gprintf.h>
-//#include <errno.h>
-
-//#include <string.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,29 +24,11 @@ Lab objectives from provided materials:
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-//*** Normal c/c++ code libraries ***
-//#include <fcntl.h>
-
-//#include <stdint.h>
-
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <sys/types.h>
-//#include <sys/stat.h>
-//#include <string.h>
-
-//#include <math.h>
-
-//#include <unistd.h>
-
-// mine
-//#include <stdio.h>
-//#include <stdlib.h>
-
-//#include <time.h>
-/*END*/
-
 #include "i2c.h"
+
+#define SWEARS {"asshole", "bitch", "bitch-ass bitch", "jackass", "fucktard", "moron", "idiot", "fatass", "shitstain", "shitsky", "motherfucker", "piece of shit", "son of a bitch"}
+#define NUM_SWEARS 13
+#include <time.h>
 
 void takePicture(unsigned int id);
 
@@ -115,8 +37,10 @@ int main() {
 	unsigned int pic_counter;		// # of pictures taken
 	int temp_sensor_handle;
 	double temp, temp_threshold;
-
-
+  
+  char *swears[NUM_SWEARS] = SWEARS;
+  srand(time(NULL));  // prepare for random #s
+  
 	/*declare and initialise variables here*/
 
 	/*PART 1 - COMPLETE FIRST OBJECTIVE*/
@@ -141,12 +65,12 @@ int main() {
 		//puts("Allow the temperature sensor to cool. Place your hand on it once instructed to do so.");
 		//sleep(5);
 		//num1 = determineTempThreshold(temp_sensor_handle);
-		
-		puts("Put hand on temperature sensor. Do not remove until instructed to do so.");
+
+		printf("Hey %s, put hand on temperature sensor. Do not remove until instructed to do so\n", swears[rand() % NUM_SWEARS]);
 		sleep(5);
 		num2 = determineTempThreshold(temp_sensor_handle);
 
-		puts("Now take your hand off the sensor.");
+		printf("Okay %s, now take your hand off the sensor\n", swears[rand() % NUM_SWEARS]);
 		sleep(5);
 
 		// I changed this to just the high
@@ -170,7 +94,7 @@ int main() {
 			++pic_counter;
 			takePicture(pic_counter);
 
-			printf("\rYour picture has been taken. Temperature (C) = %2.2lf\n_", temp);
+			printf("\rYour picture has been taken, %s. Temperature (C) = %2.2lf\n_", swears[rand() % NUM_SWEARS], temp);
 			
 			if (pic_counter >= PICTURE_LIMIT) {
 				return 0;
