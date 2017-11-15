@@ -52,30 +52,17 @@ Lab objectives from provided materials:
 */
 
 #include <linux/i2c-dev.h>		// access i2c adapter from linux program; this may be incorrect library
-#define ADAPTER_NUMBER 0		// is determined dynamically [inspect /sys/class/i2c-dev/ or run "i2cdetect -l" to decide this.]
-
-#define DEST_FOLDER "/home/root/Documents/to PC"		// pictures end up here; SD drive is at /media/card/ etc.
-#define PICTURE_LIMIT 20
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
-// Open CV Header Files
-#include <opencv2/objdetect/objdetect.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
 #include "i2c.h"
-
-void takePicture(unsigned int id);
+#include "pic.h"
 
 int main() {
 
@@ -131,36 +118,3 @@ int main() {
 	return 0;		// the code shall never reach this point
 
 } // end main
-
-void takePicture(unsigned int id) {
-
-	// I added -lm to command line argument for C
-
-	/*
-	g++ -I/usr/local/include/opencv -I/usr/local/include/opencv2 -L/usr/local/lib/ -Wall "take picture.c" i2c.c -o ./gal.out -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_stitching
-	gcc -I/usr/local/include/opencv -I/usr/local/include/opencv2 -L/usr/local/lib/ -Wall "take picture.c" i2c.c -o ./gal.out -lm -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_stitching
-	*/
-
-	char filename[200];
-	CvCapture *capture;
-	IplImage *image;
-
-	/*
-	To take a picture:
-	1) Create filename
-	2) capture image
-	3) create image structure
-	4) save image to filename
-	5) de-initialise camera
-	*/
-
-	sprintf(filename, "%s/%u.jpg", DEST_FOLDER, id);		// step 1
-	// filename is [DEST_FOLDER]/[id].jpg
-
-	capture = cvCaptureFromCAM(CV_CAP_ANY);	// step 2; what is CV_CAP_ANY ???
-	image = cvQueryFrame(capture);			// step 3
-	cvSaveImage(filename, image, 0);		// step 4
-	cvReleaseCapture(&capture);				// step 5; why do we use pointer-to-pointer???
-
-	return;
-}
