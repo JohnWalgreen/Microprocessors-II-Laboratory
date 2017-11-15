@@ -83,7 +83,7 @@ int main() {
 	sleep(5);
 	puts("Put hand on temperature sensor. Do not remove until instructed to do so.");
 	sleep(5);
-	temp_threshold = readTemp(temp_sensor_handle);
+	temp_threshold = sampleTemp(temp_sensor_handle);
 	puts("Now take your hand off the sensor.");
 
 	printf("Threshold: %2.2lf degrees Celsius\nProgram will begin in 5 seconds...\n\n", temp_threshold);
@@ -93,7 +93,7 @@ int main() {
 	// infinite loop - exit from inside
 	while (1) {
 
-		temp = readTemp(temp_sensor_handle);					// read temperature via I2C to temp sensor
+		temp = sampleTemp(temp_sensor_handle);					// read temperature via I2C to temp sensor
 
 		if (temp > temp_threshold) {
 			// temperature is above threshold, so take picture and update counter

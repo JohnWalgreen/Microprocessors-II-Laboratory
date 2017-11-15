@@ -29,10 +29,23 @@ int InitTempDevice(int adapter_number) {
 double readTemp(int handle) {
 	// return temperature in celsius
 
-	char buffer[2];				// bytes that shall be read will go here
-	int temp;
+	unsigned char buffer[2];				// bytes that shall be read will go here
+	unsigned int temp;
 
 	read(handle, buffer, 2);							// read 2 bytes from temperature register
-	temp = (buffer[0] << 4) | (buffer[1] >> 4);			// shift bytes by appropriate amounts to get 12-bit value
+	temp = (buffer[0] << 4) + (buffer[1] >> 4);			// shift bytes by appropriate amounts to get 12-bit value
 	return (double)temp * 0.0625;						// multiply by 0.0625 (2^-4) [the resolution] to get temperature in celsius
+}
+
+double sampleTemp(int handle) {
+
+	unsigned int i;
+	double sum;
+
+	sum = 0;
+	for (i = 0; i < NUM_SAMPLES; i++) {
+		sum += readTemp(handle);
+	}
+
+	return sum / NUM_SAMPLES;
 }

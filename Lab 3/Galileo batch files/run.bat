@@ -1,6 +1,7 @@
-cd "/home/root/Documents"
 cd "from PC"
-make now
+make main
 ./gal.out
 cd ..
-./delete.bat
+rm -r "from PC"
+mkdir "from PC"
+

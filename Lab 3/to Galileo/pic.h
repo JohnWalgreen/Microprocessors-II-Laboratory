@@ -8,8 +8,8 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-#define DEST_FOLDER "/home/root/Documents/to PC"		// pictures end up here; SD drive is at /media/card/ etc.
-#define PICTURE_LIMIT 20
+#define DEST_FOLDER "/media/card/to PC"		// pictures end up here; SD drive is at /media/card/ etc.
+#define PICTURE_LIMIT 5						// maximum number of pictures that will be taken
 
 void takePicture(unsigned int id);
 
