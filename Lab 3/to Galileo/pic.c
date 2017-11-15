@@ -16,12 +16,12 @@ void takePicture(unsigned int id) {
 	IplImage *image;
 
 	/*
-	To take a picture:
-	1) Create filename
-	2) capture image
-	3) create image structure
-	4) save image to filename
-	5) de-initialise camera
+		1) Establish file name
+		2) capture frame
+		3) retrieve data from frame
+		4) save image to file
+		5) release capture
+		6) release image
 	*/
 
 	sprintf(filename, "%s/%u.jpg", DEST_FOLDER, id);	// filename is [DEST_FOLDER]/[id].jpg
