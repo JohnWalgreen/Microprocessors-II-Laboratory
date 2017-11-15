@@ -24,13 +24,13 @@ void takePicture(unsigned int id) {
 	5) de-initialise camera
 	*/
 
-	sprintf(filename, "%s/%u.jpg", DEST_FOLDER, id);		// filename is [DEST_FOLDER]/[id].jpg
-	capture = cvCaptureFromCAM(CV_CAP_ANY);					// capture frame from the camera; stop webcam
-															// argument can be zero since there is only one device connected
-	image = cvQueryFrame(capture);							// grabs and retrieves data from captured frame
-	cvSaveImage(filename, image, 0);						// save image to file as JPG
-	cvReleaseCapture(&capture);								// release capture
-	cvReleaseImage(&image);									// release image
+	sprintf(filename, "%s/%u.jpg", DEST_FOLDER, id);	// filename is [DEST_FOLDER]/[id].jpg
+	capture = cvCaptureFromCAM(CV_CAP_ANY);			// capture frame from the camera; stop webcam
+								// argument can be zero since there is only one device connected
+	image = cvQueryFrame(capture);				// grabs and retrieves data from captured frame
+	cvSaveImage(filename, image, 0);			// save image to file as JPG
+	cvReleaseCapture(&capture);				// release capture
+	cvReleaseImage(&image);					// release image
 
 	return;
 }
