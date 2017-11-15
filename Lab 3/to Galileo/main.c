@@ -52,63 +52,17 @@ Lab objectives from provided materials:
 */
 
 #include <linux/i2c-dev.h>		// access i2c adapter from linux program; this may be incorrect library
-#define ADAPTER_NUMBER 0		// is determined dynamically [inspect /sys/class/i2c-dev/ or run "i2cdetect -l" to decide this.]
-
-#define DEST_FOLDER "/home/root/Documents/to PC"		// pictures end up here; SD drive is at /media/card/ etc.
-#define PICTURE_LIMIT 20
-
-/*STUFF I STOLE FROM INTERNET*/
-//#include <glib.h>
-//#include <glib/gprintf.h>
-//#include <errno.h>
-
-//#include <string.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-/*END*/
-
-/*COPIED*/
-#include <sys/ioctl.h>
-
-//*** Opencv libraries ***
-#include <opencv2/objdetect/objdetect.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
-//*** Normal c/c++ code libraries ***
-//#include <fcntl.h>
-
-//#include <stdint.h>
-
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <sys/types.h>
-//#include <sys/stat.h>
-//#include <string.h>
-
-//#include <math.h>
-
-//#include <unistd.h>
-
-// mine
-//#include <stdio.h>
-//#include <stdlib.h>
-
-//#include <time.h>
-/*END*/
 
 #include "i2c.h"
-
-void takePicture(unsigned int id);
+#include "pic.h"
 
 int main() {
 
@@ -119,104 +73,48 @@ int main() {
 
 	/*declare and initialise variables here*/
 
-	/*PART 1 - COMPLETE FIRST OBJECTIVE*/
-
-	// set up I2C protocol on devices (program the devices?)
-	/*Devices:
-		PIC? probably not
-		TMP102 (temperature sensor)
-		USB webcam
-	*/
-	// I2C on A4 (SDA) and A5 (SCL) of galileo
-
-	temp_sensor_handle = InitTempDevice(ADAPTER_NUMBER);
+	/* PART 1 - COMPLETE FIRST OBJECTIVE */
+	// Note: I2C on A4 (SDA) and A5 (SCL) of galileo
+	temp_sensor_handle = InitTempDevice(ADAPTER_NUMBER);	// get I2C handle to temp sesnor
 	pic_counter = 0;
 
-	/*END PART 1*/
+	/* protocol to determine temperature threshold dynamically */
+	puts("Get ready to put hand on the sensor...");
+	sleep(5);
+	puts("Put hand on temperature sensor. Do not remove until instructed to do so.");
+	sleep(5);
+	temp_threshold = sampleTemp(temp_sensor_handle);
+	puts("Now take your hand off the sensor.");
 
-	// FIND PROTOCOL TO MAKE TEMPERATURE DYNAMIC
-	{
-		double num1, num2;
+	printf("Threshold: %2.2lf degrees Celsius\nProgram will begin in 5 seconds...\n\n", temp_threshold);
+	sleep(5);
 
-		//puts("Allow the temperature sensor to cool. Place your hand on it once instructed to do so.");
-		//sleep(5);
-		//num1 = determineTempThreshold(temp_sensor_handle);
-		
-		puts("Put hand on temperature sensor. Do not remove until instructed to do so.");
-		sleep(5);
-		num2 = determineTempThreshold(temp_sensor_handle);
-
-		puts("Now take your hand off the sensor.");
-		sleep(5);
-
-		// I changed this to just the high
-		temp_threshold = num2;// ((num1 + num2) / 2) + (num2 - num1);		// average + range = threshold
-		printf("Threshold: %2.2lf degrees Celsius\nProgram will begin in 5 seconds...\n\n", temp_threshold);
-		sleep(5);
-	}
-
-	/*PART 2 - COMPLETE SECOND AND THIRD OBJECTIVES*/
-
-	// infinite loop - maybe add backdoor method of exiting
+	/* PART 2 - COMPLETE SECOND AND THIRD OBJECTIVES */
+	// infinite loop - exit from inside
 	while (1) {
 
-		// communicate via I2C with temperature sensor
-		// get temperature
-		// end I2C communicay
-		temp = readTemp(temp_sensor_handle);
+		temp = sampleTemp(temp_sensor_handle);					// read temperature via I2C to temp sensor
+
 		if (temp > temp_threshold) {
-			// take picture and update counter
+			// temperature is above threshold, so take picture and update counter
 
 			++pic_counter;
-			takePicture(pic_counter);
-
-			printf("\rYour picture has been taken. Temperature (C) = %2.2lf\n_", temp);
+			printf("\rYour picture is being taken. Temperature (C) = %2.2lf\n_", temp);
+			takePicture(pic_counter);		// stores as [pic_counter value].jpg
 			
 			if (pic_counter >= PICTURE_LIMIT) {
+				// if enough pictures have been taken, exit
 				return 0;
 			}
 
 		} else {
+			// if temperature is not above threshold, overwrite line with current 5temperature
 			printf("\r%2.2lf", temp);
 		}
 
 
 	}
 
-	/*END PART 2*/
+	return 0;		// the code shall never reach this point
 
-	return 0;
 } // end main
-
-void takePicture(unsigned int id) {
-
-	// I added -lm to command line argument for C
-
-	/*
-	g++ -I/usr/local/include/opencv -I/usr/local/include/opencv2 -L/usr/local/lib/ -Wall "take picture.c" i2c.c -o ./gal.out -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_stitching
-	gcc -I/usr/local/include/opencv -I/usr/local/include/opencv2 -L/usr/local/lib/ -Wall "take picture.c" i2c.c -o ./gal.out -lm -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_stitching
-	*/
-
-	char filename[200];
-	CvCapture *capture;
-	IplImage *image;
-
-	/*
-	To take a picture:
-	1) Create filename
-	2) capture image
-	3) create image structure
-	4) save image to filename
-	5) de-initialise camera
-	*/
-
-	sprintf(filename, "%s/%u.jpg", DEST_FOLDER, id);		// step 1
-	// filename is [DEST_FOLDER]/[id].jpg
-
-	capture = cvCaptureFromCAM(CV_CAP_ANY);	// step 2; what is CV_CAP_ANY ???
-	image = cvQueryFrame(capture);			// step 3
-	cvSaveImage(filename, image, 0);		// step 4
-	cvReleaseCapture(&capture);				// step 5; why do we use pointer-to-pointer???
-
-	return;
-}
