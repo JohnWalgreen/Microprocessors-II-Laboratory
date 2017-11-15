@@ -1,3 +1,12 @@
+#include "pic.h"
+
+// Open CV Header Files
+#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+
 void takePicture(unsigned int id) {
 
 	char filename[200];
