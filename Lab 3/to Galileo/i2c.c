@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
+#include <sys/ioctl.h>          // ioctl function
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -16,14 +16,15 @@ int InitTempDevice(int adapter_number) {
 	// opens i2c device and returns file handle
 	// returns <0 if error
 
-	int handle;
-	char filename[50];
+	int handle;         // handle to the temperature sensor; will be returned
+	char filename[50];  // to access temperature sensor
 
 	sprintf(filename, "/dev/i2c-%d", adapter_number);
 	handle = open(filename, O_RDWR);					// gets handle to temperature sensor
-	ioctl(handle, I2C_SLAVE, ADDRESS);
+	ioctl(handle, I2C_SLAVE, ADDRESS);                  // io control; set as I2C slave, which is at ADDRESS
 	write(handle, 0, 1);								// set pointer register byte to zero so that it acts as read-only temperature sensor
-	return handle;
+	
+	return handle;      // return the handle for further communicay
 }
 
 double readTemp(int handle) {
