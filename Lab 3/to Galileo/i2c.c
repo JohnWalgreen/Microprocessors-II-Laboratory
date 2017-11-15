@@ -29,7 +29,7 @@ int InitTempDevice(int adapter_number) {
 double readTemp(int handle) {
 	// return temperature in celsius
 
-	unsigned char buffer[2];				// bytes that shall be read will go here
+	unsigned char buffer[2];							// bytes that shall be read will go here
 	unsigned int temp;
 
 	read(handle, buffer, 2);							// read 2 bytes from temperature register
