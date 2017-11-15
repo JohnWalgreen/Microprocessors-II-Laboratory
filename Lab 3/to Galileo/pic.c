@@ -7,6 +7,8 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
+#include <stdio.h>
+
 void takePicture(unsigned int id) {
 
 	char filename[200];
