@@ -102,7 +102,7 @@ int main() {
 			printf("\rYour picture is being taken. Temperature (C) = %2.2lf\n_", temp);
 			takePicture(pic_counter);		// stores as [pic_counter value].jpg
 			
-			if (pic_counter >= PICTURE_LIMIT) {5
+			if (pic_counter >= PICTURE_LIMIT) {
 				// if enough pictures have been taken, exit
 				return 0;
 			}
