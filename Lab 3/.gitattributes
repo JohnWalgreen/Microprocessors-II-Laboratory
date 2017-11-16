@@ -1,2 +1,5 @@
 # do not export OpenCV zip file; it is really big
 opencv-3.3.1.zip export-ignore
+
+# also pretty big
+"/provided materials" export-ignore
