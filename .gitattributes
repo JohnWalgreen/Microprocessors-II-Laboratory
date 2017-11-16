@@ -5,5 +5,15 @@
 *.c text eol=lf filter=indent
 *.h text eol=lf flter=indent
 
-#declare binary files
+# declare binary files
 *.docx binary
+*.pdf binary
+
+# files to ignore when exporting
+*.gitattributes export-ignore
+*.gitignore export-ignore
+"/Lab 1" export-ignore
+"/Lab 2" export-ignore
+"/contact info.csv" export-ignore
+/scramble.exe export-ignore
+/CONTRIBUTING.txt export-ignore

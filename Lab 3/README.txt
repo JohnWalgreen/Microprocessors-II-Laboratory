@@ -2,12 +2,15 @@ Read these:
 https://docs.opencv.org/2.4/modules/core/doc/old_basic_structures.html
 https://www.quora.com/Is-there-any-OpenCV-for-C
 
-Folder descriptions
+Directions for managing files:
 
-"from Galileo" - the output files from the program running on the Galileo after "move from galileo.bat" is run.  These files come from Galileo's "to PC" folder.
-
-"Galileo batch files" - batch files to run on Galileo linux to quickly run and delete programs pushed from PC
-
-"sample run pics" - pictures outputted from Galileo program that have been manually saved from "from Galileo" folder.
-
-"to Galileo" - when "move to galileo.bat" is run, all files in this folder are pushed to "from PC" folder on Galileo.
+1) Export this repository to a Windows computer.
+2) Connect your computer to the Galileo via putty over SSH (see "open Galileo via Ethernet.docx").
+3) All files that are in "to Galileo" directory should me managed and edited inside that folder.
+4) On the Galileo terminal, go to "/home/root/Documents". Operate out of this directory.
+5) Remove everything inside Galileo's "from PC" directory.
+6) From this repository export, run "move to galileo.bat".  This moves all files from your "to Galileo" folder to the Galileo's "from PC" folder.
+7) On the Galileo, navigate into "from PC" and do what you need to do.  Program should be designed to put output files into SD card directory, "/media/card/to PC".  Make sure this directory exists!
+8) When done, run "move from galileo.bat" from this repository.  This move all output files from Galileo to this repository's "from Galileo" directory.
+9) Look over outputs.  Save important ones inside your "sample runs" directory. If necessary, go back to step 3 and repeat.
+10) When done, create pull requests on Github so that file changes can be merged.
