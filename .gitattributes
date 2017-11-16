@@ -17,4 +17,4 @@
 "/contact info.csv" export-ignore
 /scramble.exe export-ignore
 /CONTRIBUTING.txt export-ignore
-"/Lab 3/opencv-3.3.1.zip" export-ignore		# do not export this ridiculously large file
+"/Lab 3/opencv-3.3.1.zip" export-ignore
