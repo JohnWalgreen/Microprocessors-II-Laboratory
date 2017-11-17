@@ -1,0 +1,30 @@
+Directions for managing files:
+
+1) Export this repository to a Windows computer.
+
+2) Connect your computer to the Galileo via putty over SSH 
+(see "open Galileo via Ethernet.docx").
+
+3) All files that are in "to Galileo" directory should me managed and edited 
+inside that folder.
+
+4) On the Galileo terminal, go to "/home/root/Documents". Operate out of this 
+directory.
+
+5) Remove everything inside Galileo's "from PC" directory.
+
+6) From this repository export, run "move to galileo.bat".  This moves all files 
+from your "to Galileo" folder to the Galileo's "from PC" folder.
+
+7) On the Galileo, navigate into "from PC" and do what you need to do.  Program 
+should be designed to put output files into SD card directory, 
+"/media/card/to PC".  Make sure this directory exists!
+
+8) When done, run "move from galileo.bat" from this repository.  This move all 
+output files from Galileo to this repository's "from Galileo" directory.
+
+9) Look over outputs.  Save important ones inside your "sample runs" directory. 
+If necessary, go back to step 3 and repeat.
+
+10) When done, create pull requests on Github so that file changes can be 
+merged.
