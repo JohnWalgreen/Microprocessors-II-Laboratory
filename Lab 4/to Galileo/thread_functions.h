@@ -1,6 +1,9 @@
 #ifndef THREAD_FUNCTIONS_H_
 #define THREAD_FUNCTIONS_H_
 
+#include <pthread.h>        // threads; pthread_mutex_t
+#include <semaphore.h>      // semaphores; sem_t
+
 // HTTP static data
 #define ID 10       		// Group 10
 #define PASSWORD "password"
@@ -11,12 +14,30 @@ This file contains the three thread functions. From main, each function here
 will be initialised as a separate thread.
 */
 
-/* This structure is used to pass arguments to thread functions */
+/* This structure is used to pass arguments to thread functions. */
 typedef struct {
+	
+	// other tracking variables
+	unsigned double temperature;        	// last recorded temperature; set by
+											// thread 2, read by thread 1
+	unsigned double temperature_threshold;  // set by thread 1, read by thread 2
+	
+	// variables that are used to send communication data
 	int status;     				// 1 is "Online", 0 is "Error"
 	unsigned int data;      		// ADC value from PIC
 	unsigned int picture_counter;   // # of pictures taken
-	int picture_taken;              // if 1, filename="image[picture_counter].jpg"; otherwise, filename="No face detected"
+	int picture_taken;              // if 1, filename=
+									// "image[picture_counter].jpg"; otherwise,
+									// filename="No face detected"
+	
+	// synchronisation
+	pthread_mutex_t data_mux;   // mutex for preventing threads from accessing
+								// this structure at same time
+	sem_t data_sem;     		// binary semaphore complements data_mux
+	pthread_mutex_t pic_mux;    // mutex to stop threads from talking to PIC at
+								// same time
+	sem_t pic_mux;      		// binary semaphore that complements pic_mux
+	
 } Data;
 
 /* Thread functions. See descriptions below. */
