@@ -3,3 +3,6 @@ opencv-3.3.1.zip export-ignore
 
 # also pretty big
 "/provided materials" export-ignore
+"/sample runs" export-ignore
+"/Galileo batch files" export-ignore
+"/WebSite_SSH.docx" export-ignore
