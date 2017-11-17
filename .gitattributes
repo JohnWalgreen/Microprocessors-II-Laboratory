@@ -2,8 +2,13 @@
 *.bat text eol=crlf
 
 # all C files will have Unix line endings
-*.c text eol=lf filter=indent
-*.h text eol=lf flter=indent
+# *.c text eol=lf filter=indent
+# *.h text eol=lf flter=indent
+
+# actually, all files back to Windows line endings.  Make life easier.
+*.c text eol=crlf filter=indent
+*.h text eol=crlf flter=indent
+*.txt text eol=crlf filter=indent
 
 # declare binary files
 *.docx binary
