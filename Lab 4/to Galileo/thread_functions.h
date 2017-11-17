@@ -16,6 +16,13 @@ will be initialised as a separate thread.
 
 /* This structure is used to pass arguments to thread functions. */
 typedef struct {
+	
+	// other tracking variables
+	unsigned double temperature;        	// last recorded temperature; set by
+											// thread 2, read by thread 1
+	unsigned double temperature_threshold;  // set by thread 1, read by thread 2
+	
+	// variables that are used to send communication data
 	int status;     				// 1 is "Online", 0 is "Error"
 	unsigned int data;      		// ADC value from PIC
 	unsigned int picture_counter;   // # of pictures taken
@@ -30,6 +37,7 @@ typedef struct {
 	pthread_mutex_t pic_mux;    // mutex to stop threads from talking to PIC at
 								// same time
 	sem_t pic_mux;      		// binary semaphore that complements pic_mux
+	
 } Data;
 
 /* Thread functions. See descriptions below. */
