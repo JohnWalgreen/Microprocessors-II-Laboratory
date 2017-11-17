@@ -1,15 +1,23 @@
 #ifndef THREAD_FUNCTIONS_H_
 #define THREAD_FUNCTIONS_H_
 
+// HTTP static data
+#define ID 10       		// Group 10
+#define PASSWORD "password"
+#define NAME "Kyle"
+
 /*
 This file contains the three thread functions. From main, each function here
 will be initialised as a separate thread.
 */
 
 /* This structure is used to pass arguments to thread functions */
-struct ThreadArg {
-	
-};
+typedef struct {
+	int status;     				// 1 is "Online", 0 is "Error"
+	unsigned int data;      		// ADC value from PIC
+	unsigned int picture_counter;   // # of pictures taken
+	int picture_taken;              // if 1, filename="image[picture_counter].jpg"; otherwise, filename="No face detected"
+} Data;
 
 /* Thread functions. See descriptions below. */
 void *thread1(void *);
