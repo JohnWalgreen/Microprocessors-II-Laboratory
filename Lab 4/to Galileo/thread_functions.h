@@ -24,7 +24,7 @@ typedef struct {
 	
 	// variables that are used to send communication data
 	int status;     				// 1 is "Online", 0 is "Error"
-	unsigned int data;      		// ADC value from PIC
+	unsigned int adc_value;      	// ADC value from PIC
 	unsigned int picture_counter;   // # of pictures taken
 	int picture_taken;              // if 1, filename=
 									// "image[picture_counter].jpg"; otherwise,
@@ -41,9 +41,9 @@ typedef struct {
 } Data;
 
 /* Thread functions. See descriptions below. */
-void *thread1(void *);
-void *thread2(void *);
-void *thread3(void *);
+void *interface(void *);    					// thread 1
+void *sensor_control(void *);   				// thread 2
+void *client_server_communication(void *);    	// thread 3
 
 /*
 Thread 1 - User Command Interface:
