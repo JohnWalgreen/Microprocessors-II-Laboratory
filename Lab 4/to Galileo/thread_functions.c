@@ -1,5 +1,7 @@
 #include "thread_functions.h"
 #include <stdlib.h>     // defines NULL
+#include <pthread.h>
+#include <semaphore.h>
 
 /*
 Every thread takes one void * argument.  This argument will be casted to a
@@ -8,7 +10,7 @@ synchronisation.
 */
 
 // thread 1
-void *interface(void *) {
+void *interface(void *arg) {
 	
 	/*
 	Requirements:
@@ -34,36 +36,39 @@ void *interface(void *) {
 	protected via snchronisation.
 	Ex. "ping PIC (protect)" means ping the PIC but use the pic_mux and pic_sem
 	to make sure that communication is clean.
+	
+	Option 1, 2, 3, 4, 5, 6, 9, 10, 11:
+		Send command to PIC (proect), update value in Data (protect) if
+		applicable, and print message to user.
 		
-	Option 1:
-		Send reset command to PIC (protect), and use response to update
-		Data->status (protect) and print success message.
-		
-	Option 2:
-		Ping PIC (protect), and use response to update Data->status (protect),
-		and print success message.
-
-	Option 3:
-		Send GET command to PIC (protect), and use response to update
-		Data->adc_value (protect) and print adc value.
-
-	Option 4, 5, 6:
-		Send appropriate turn command to PIC (protect), and use response to
-		update Data->status (protect) and print message.
-
 	Option 7:
-		Read temperature from I2C device (protected), change Data temperature
-		(protected), and [add new semaphore for this], and print.
+		Communicate with TMP102 and read temperature (protect), update values
+		inside Data (protect) if applicable, and print temperature.
 
 	Option 8:
-		Prompt for and change Data temp threshold.
+		Prompt for new threshold and update value in Data (protect).
 
-	Option 9, 10, 11:
-		Send commands to PIC which update scanning variables.
+	TO DO (on outside):
+		1) add synchronisation variables for I2C inside Data.
+		2) add commands for scanning on Galileo and PIC side
 	*/
 	
+	Data *data;
+	
+	pthread_exit(NULL);
 	return NULL;
 }
 
-void *sensor_control(void *);   				// thread 2
-void *client_server_communication(void *);    	// thread 3
+void *sensor_control(void *arg) {
+	/*
+	Requirements:
+		talk to all sensors and update values in Data
+		tae picture if necessary
+	*/
+}
+void *client_server_communication(void *arg) {
+	/*
+	Requirements:
+		send data to server every two seconds
+	*/
+}
