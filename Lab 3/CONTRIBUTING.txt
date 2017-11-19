@@ -1,11 +1,7 @@
-Read these:
-https://docs.opencv.org/2.4/modules/core/doc/old_basic_structures.html
-https://www.quora.com/Is-there-any-OpenCV-for-C
-
 Directions for managing files:
 
 1) Export this repository to a Windows computer.
-2) Connect your computer to the Galileo via putty over SSH (see "open Galileo via Ethernet.docx").
+2) Connect your computer to the Galileo via putty over SSH (see "open Galileo via Ethernet.pdf").
 3) All files that are in "to Galileo" directory should me managed and edited inside that folder.
 4) On the Galileo terminal, go to "/home/root/Documents". Operate out of this directory.
 5) Remove everything inside Galileo's "from PC" directory.
